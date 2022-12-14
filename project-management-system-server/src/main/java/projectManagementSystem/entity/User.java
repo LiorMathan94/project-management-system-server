@@ -12,9 +12,6 @@ public class User {
     private String email;
     @Column(nullable = false)
     private String password;
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Role role;
 
     public User(){
 
@@ -26,7 +23,7 @@ public class User {
     }
 
     /**
-     *  Creates and returns a User with the simplest role (User role).
+     *  Creates and returns a User.
      *
      * @param email - String, email of the user.
      * @param password - String, password of the user.
@@ -34,20 +31,6 @@ public class User {
      */
     public static User createUser(String email,String password){
         User user = new User(email,password);
-        user.role=Role.USER;
-        return user;
-    }
-
-    /**
-     * Creates and returns a User with the Leader role.
-     *
-     * @param email - String, email of the user.
-     * @param password - String, password of the user.
-     * @return the created User object.
-     */
-    public static User createLeader(String email,String password){
-        User user = new User(email,password);
-        user.role=Role.LEADER;
         return user;
     }
 
@@ -63,20 +46,12 @@ public class User {
         return password;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
     public void setId(long id) {
         this.id = id;
     }
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 
 }
