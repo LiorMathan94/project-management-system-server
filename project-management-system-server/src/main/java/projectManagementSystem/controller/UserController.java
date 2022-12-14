@@ -20,7 +20,6 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST, path = "/register")
     public ResponseEntity<Response<String>> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
-
         if (userRegisterRequest == null) {
             return ResponseEntity.badRequest().body(Response.failure("Error during user registration. Reason: " + "User register request can't be null."));
         }
@@ -31,13 +30,11 @@ public class UserController {
             return ResponseEntity.badRequest().body(Response.failure("Password format is invalid! " + InputValidation.passwordConstraints()));
         }
         try{
-
-
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(Response.failure("Password format is invalid! " + InputValidation.passwordConstraints()));
+            String responseData = userService.createUser(userRegisterRequest.getEmail(),userRegisterRequest.getPassword());
+            return ResponseEntity.ok(Response.success(responseData));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure("Error occurred during user registration: " + e.getMessage()));
         }
-        return ResponseEntity.badRequest().body(Response.failure("Password format is invalid! " + InputValidation.passwordConstraints()));
-
     }
 
 }

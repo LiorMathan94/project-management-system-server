@@ -15,7 +15,7 @@ public class InputValidation {
      */
     public static boolean isValidEmail(String email) {
         String regexPattern = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-        if (email != null && patternMatches(email, regexPattern)) {
+        if (email != null && email!="" && patternMatches(email, regexPattern)) {
             return true;
         }
         return false;
@@ -35,12 +35,12 @@ public class InputValidation {
     }
 
     /**
-     * Checks if password contains at least one capital letter, at least one digit and is minimum 8 characters long.
+     * Checks if password contains at least one special character, at least one capital letter, at least one digit, and is 8-20 characters long.
      * @param password
      * @return Response if password is valid, otherwise - false.
      */
     public static boolean isValidPassword(String password) {
-        String regexPattern = "\"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,20}$";
+        String regexPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,20}$";
         if (password != null && password != "" && patternMatches(password, regexPattern)) {
             return true;
         }

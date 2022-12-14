@@ -1,7 +1,6 @@
 package projectManagementSystem.entity;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name = "user")
@@ -13,7 +12,7 @@ public class User {
     private String email;
     @Column(nullable = false)
     private String password;
-    @Column(name = "role")
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -78,19 +77,6 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return id == user.id && email.equals(user.email) && password.equals(user.password) && role == user.role;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, email, password, role);
     }
 
 }
