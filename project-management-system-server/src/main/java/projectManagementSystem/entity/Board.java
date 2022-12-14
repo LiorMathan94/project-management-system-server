@@ -3,7 +3,11 @@ package projectManagementSystem.entity;
 import projectManagementSystem.utils.InputValidation;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Entity
 @Table(name = "board")
@@ -16,6 +20,8 @@ public class Board {
     private List<String> statuses;
     @ElementCollection
     private List<String> types;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Item> items;
 
     public Board() {
     }
@@ -24,6 +30,7 @@ public class Board {
         this.title = title;
         this.statuses = statuses;
         this.types = types;
+        this.items = new ArrayList<Item>();
     }
 
     public long getId() {
@@ -40,6 +47,10 @@ public class Board {
 
     public List<String> getTypes() {
         return types;
+    }
+
+    public List<Item> getItems() {
+        return items;
     }
 
     public void setTitle(String title) {
@@ -68,5 +79,17 @@ public class Board {
 
     public void removeType(String type) {
         this.types.remove(type);
+    }
+
+    public void addItem(Item item) {
+        this.items.add(item);
+    }
+
+    public void removeItem(Item item) {
+        this.items.remove(item);
+    }
+
+    public Map<String, List<Item>> getItemsByStatus() {
+        return this.items.stream().collect(groupingBy(Item::getStatus));
     }
 }
