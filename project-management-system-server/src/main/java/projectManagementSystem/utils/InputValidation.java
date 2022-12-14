@@ -1,5 +1,7 @@
 package projectManagementSystem.utils;
 
+import projectManagementSystem.controller.response.Response;
+
 import java.util.regex.Pattern;
 
 public class InputValidation {
@@ -33,13 +35,13 @@ public class InputValidation {
     }
 
     /**
-     * Checks if password contains at least one letter, at least one digit and is minimum 8 digits long.
+     * Checks if password contains at least one capital letter, at least one digit and is minimum 8 characters long.
      * @param password
-     * @return true if name is valid, otherwise - false.
+     * @return Response if password is valid, otherwise - false.
      */
     public static boolean isValidPassword(String password) {
-        String regexPattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
-        if (password != null && patternMatches(password, regexPattern)) {
+        String regexPattern = "\"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,20}$";
+        if (password != null && password != "" && patternMatches(password, regexPattern)) {
             return true;
         }
         return false;
@@ -55,5 +57,15 @@ public class InputValidation {
         return Pattern.compile(regexPattern)
                 .matcher(fieldToValidate)
                 .matches();
+    }
+
+    public static String passwordConstraints(){
+        return "\nPassword must contain:\n" +
+                "At least 8 characters and at most 20 characters.\n" +
+                "At least one digit.\n" +
+                "At least one upper case letter.\n" +
+                "At least one lower case letter.\n" +
+                "At least one special character which includes !@#$%&*()-+=^.\n" +
+                "Must not contain any white spaces.";
     }
 }
