@@ -47,6 +47,14 @@ public class InputValidation {
         return false;
     }
 
+    public static boolean isValidItemLabel(String label) {
+        String regexPattern = ".{1,20}";
+        if (label != null && patternMatches(label, regexPattern)) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Checks if fieldToValidate string matches regexPattern
      * @param fieldToValidate

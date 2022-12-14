@@ -7,3 +7,4 @@ import projectManagementSystem.entity.Item;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Integer> {
 }
+
