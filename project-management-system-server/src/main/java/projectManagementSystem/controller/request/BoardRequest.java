@@ -1,6 +1,5 @@
 package projectManagementSystem.controller.request;
 
-import java.util.List;
 import java.util.Set;
 
 public class BoardRequest {
