@@ -1,23 +1,52 @@
 package projectManagementSystem.entity;
 
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "item")
 public class Item {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
     private String status;
     private String type;
+    @ManyToOne
+    @JoinColumn(name = "parent_id", referencedColumnName = "id")
     private Item parent;
-    private int creatorId;
-    private int assignedToId;
+    @Column(name = "creator_id")
+    private Long creatorId;
+    @Column(name = "assigned_user_id")
+    private Long assignedToId;
+    @Column(name = "due_date")
     private LocalDate dueDate;
+    @Enumerated(EnumType.ORDINAL)
     private Importance importance;
     private String title;
-    private String Description;
+    private String description;
+    @ElementCollection
+    @Column(name = "comments")
     private List<Comment> commentList;
 
+    public Item() {
+    }
 
-    public int getId() {
+    public Item(ItemBuilder builder) {
+        this.title = builder.title;
+        this.status = builder.status;
+        this.type = builder.type;
+        this.dueDate = builder.dueDate;
+        this.parent = builder.parent;
+        this.commentList = builder.commentList;
+        this.assignedToId = builder.assignedToId;
+        this.creatorId = builder.creatorId;
+        this.description = builder.description;
+        this.importance = builder.importance;
+    }
+
+    public long getId() {
         return id;
     }
 
@@ -33,11 +62,11 @@ public class Item {
         return parent;
     }
 
-    public int getCreatorId() {
+    public Long getCreatorId() {
         return creatorId;
     }
 
-    public int getAssignedToId() {
+    public Long getAssignedToId() {
         return assignedToId;
     }
 
@@ -54,7 +83,7 @@ public class Item {
     }
 
     public String getDescription() {
-        return Description;
+        return description;
     }
 
     public List<Comment> getCommentList() {
@@ -73,7 +102,7 @@ public class Item {
         this.parent = parent;
     }
 
-    public void setAssignedToId(int assignedToId) {
+    public void setAssignedToId(Long assignedToId) {
         this.assignedToId = assignedToId;
     }
 
@@ -90,10 +119,69 @@ public class Item {
     }
 
     public void setDescription(String description) {
-        Description = description;
+        this.description = description;
     }
 
     public void addComment(Comment comment) {
         this.commentList.add(comment);
+    }
+
+
+    public static class ItemBuilder {
+        private String status;
+        private String type;
+        private Item parent;
+        private Long creatorId;
+        private Long assignedToId;
+        private LocalDate dueDate;
+        private Importance importance;
+        private String title;
+        private String description;
+        private List<Comment> commentList;
+
+        public ItemBuilder(Long creatorId, String title) {
+            this.creatorId = creatorId;
+            this.title = title;
+            this.commentList = new ArrayList<>();
+        }
+
+        public ItemBuilder setStatus(String status) {
+            this.status = status;
+            return this;
+        }
+
+        public ItemBuilder setType(String type) {
+            this.type = type;
+            return this;
+        }
+
+        public ItemBuilder setParent(Item parent) {
+            this.parent = parent;
+            return this;
+        }
+
+        public ItemBuilder setAssignedToId(Long assignedToId) {
+            this.assignedToId = assignedToId;
+            return this;
+        }
+
+        public ItemBuilder setDueDate(LocalDate dueDate) {
+            this.dueDate = dueDate;
+            return this;
+        }
+
+        public ItemBuilder setImportance(Importance importance) {
+            this.importance = importance;
+            return this;
+        }
+
+        public ItemBuilder setDescription(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Item build() {
+            return new Item(this);
+        }
     }
 }
