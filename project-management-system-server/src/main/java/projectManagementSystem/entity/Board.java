@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -17,16 +18,16 @@ public class Board {
     private long id;
     private String title;
     @ElementCollection
-    private List<String> statuses;
+    private Set<String> statuses;
     @ElementCollection
-    private List<String> types;
+    private Set<String> types;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Item> items;
 
     public Board() {
     }
 
-    public Board(String title, List<String> statuses, List<String> types) {
+    public Board(String title, Set<String> statuses, Set<String> types) {
         this.title = title;
         this.statuses = statuses;
         this.types = types;
@@ -41,11 +42,11 @@ public class Board {
         return title;
     }
 
-    public List<String> getStatuses() {
+    public Set<String> getStatuses() {
         return statuses;
     }
 
-    public List<String> getTypes() {
+    public Set<String> getTypes() {
         return types;
     }
 
@@ -90,6 +91,12 @@ public class Board {
     }
 
     public Map<String, List<Item>> getItemsByStatus() {
-        return this.items.stream().collect(groupingBy(Item::getStatus));
+        Map<String, List<Item>> itemsByStatus = this.items.stream().collect(groupingBy(Item::getStatus));
+
+        for (String status : this.statuses) {
+            itemsByStatus.computeIfAbsent(status, k -> new ArrayList<>());
+        }
+
+        return itemsByStatus;
     }
 }
