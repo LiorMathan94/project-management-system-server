@@ -5,15 +5,19 @@ import projectManagementSystem.entity.User;
 import projectManagementSystem.repository.UserRepository;
 import projectManagementSystem.utils.ServiceUtils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class AuthenticationService {
-
     private UserRepository userRepository;
+
+    private final Map<Long, String> tokensMap;
 
     public AuthenticationService(UserRepository userRepository) {
         this.userRepository = userRepository;
+        tokensMap = new HashMap<>();
     }
 
     public String userLogin(String email, String password) {
@@ -21,13 +25,12 @@ public class AuthenticationService {
         if (!userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("No registered user with email " + email + " exists.");
         }
-        if(!ServiceUtils.isPasswordCorrect(user.get().getPassword(),password)){
+        if (!ServiceUtils.isPasswordCorrect(user.get().getPassword(), password)) {
             throw new IllegalArgumentException("Password is incorrect!");
         }
-        return createToken(user.get().getId(),user.get().getEmail());
-    }
-
-    private String createToken(long id, String email){
-        return "token" + email;
+        long id = user.get().getId();
+        String token = ServiceUtils.createToken(id);
+        tokensMap.put(id,token);
+        return token;
     }
 }

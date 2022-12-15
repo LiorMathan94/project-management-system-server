@@ -6,11 +6,8 @@ import projectManagementSystem.entity.User;
 import projectManagementSystem.repository.UserRepository;
 import projectManagementSystem.utils.ServiceUtils;
 
-import java.util.Optional;
-
 @Service
 public class UserService {
-
     private UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
