@@ -21,7 +21,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, path = "/register")
     public ResponseEntity<Response<String>> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null) {
-            return ResponseEntity.badRequest().body(Response.failure("Error during user registration. Reason: " + "User register request can't be null."));
+            return ResponseEntity.badRequest().body(Response.failure("Error during user registration. Reason: User register request can't be null."));
         }
         if (!InputValidation.isValidEmail(userRegisterRequest.getEmail())) {
             return ResponseEntity.badRequest().body(Response.failure("Email format is invalid!"));
