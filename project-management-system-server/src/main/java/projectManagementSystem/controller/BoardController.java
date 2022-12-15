@@ -26,11 +26,10 @@ public class BoardController {
     private ItemService itemService;
     private static final Logger logger = LogManager.getLogger(BoardController.class.getName());
 
-
     public BoardController() {
     }
 
-    @RequestMapping(method = RequestMethod.POST, path="/create")
+    @RequestMapping(method = RequestMethod.POST, path = "/create")
     public ResponseEntity<Response<BoardDTO>> create(@RequestBody BoardRequest boardRequest) {
         logger.info("in BoardController.create()");
 
@@ -42,7 +41,7 @@ public class BoardController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, path="/title")
+    @RequestMapping(method = RequestMethod.PATCH, path = "/title")
     public ResponseEntity<Response<BoardDTO>> setTitle(@RequestParam long boardId, @RequestParam String title) {
         logger.info("in BoardController.setTitle()");
 
@@ -58,7 +57,7 @@ public class BoardController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, path="/addStatus")
+    @RequestMapping(method = RequestMethod.PATCH, path = "/addStatus")
     public ResponseEntity<Response<BoardDTO>> addStatus(@RequestParam long boardId, @RequestParam String status) {
         logger.info("in BoardController.addStatus()");
 
@@ -74,7 +73,7 @@ public class BoardController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, path="/removeStatus")
+    @RequestMapping(method = RequestMethod.PATCH, path = "/removeStatus")
     public ResponseEntity<Response<BoardDTO>> removeStatus(@RequestParam long boardId, @RequestParam String status) {
         logger.info("in BoardController.removeStatus()");
 
@@ -86,7 +85,7 @@ public class BoardController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, path="/addType")
+    @RequestMapping(method = RequestMethod.PATCH, path = "/addType")
     public ResponseEntity<Response<BoardDTO>> addType(@RequestParam long boardId, @RequestParam String type) {
         logger.info("in BoardController.addType()");
 
@@ -102,7 +101,7 @@ public class BoardController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, path="/removeType")
+    @RequestMapping(method = RequestMethod.PATCH, path = "/removeType")
     public ResponseEntity<Response<BoardDTO>> removeType(@RequestParam long boardId, @RequestParam String type) {
         logger.info("in BoardController.removeType()");
 
@@ -114,11 +113,12 @@ public class BoardController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST, path="/addItem")
+    @RequestMapping(method = RequestMethod.POST, path = "/addItem")
     public ResponseEntity<Response<BoardDTO>> addItem(@RequestBody ItemRequest itemRequest) {
         logger.info("in BoardController.addItem()");
 
         try {
+            validateItemRequest(itemRequest);
             BoardDTO board = boardService.addItem(itemRequest.getBoardId(), itemService.createItem(itemRequest));
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
@@ -126,7 +126,7 @@ public class BoardController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, path="/removeItem")
+    @RequestMapping(method = RequestMethod.PATCH, path = "/removeItem")
     public ResponseEntity<Response<BoardDTO>> removeItem(@RequestParam long boardId, @RequestParam long itemId) {
         logger.info("in BoardController.removeItem()");
 
@@ -144,16 +144,40 @@ public class BoardController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, path="/updateItem")
+    @RequestMapping(method = RequestMethod.PATCH, path = "/updateItem")
     public ResponseEntity<Response<BoardDTO>> updateItem(@RequestBody ItemRequest itemRequest) {
         logger.info("in BoardController.updateItem()");
 
         try {
+            validateItemRequest(itemRequest);
             Item updatedItem = itemService.updateItem(itemRequest);
             BoardDTO board = boardService.updateItem(itemRequest.getBoardId(), updatedItem);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, path = "/delete")
+    public ResponseEntity<Response<Void>> delete(@RequestParam long boardId) {
+        logger.info("in BoardController.deleteBoard()");
+
+        try {
+            boardService.delete(boardId);
+            return ResponseEntity.ok(Response.success(null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        }
+    }
+
+    private void validateItemRequest(ItemRequest itemRequest) {
+        if (!boardService.hasStatus(itemRequest.getBoardId(), itemRequest.getStatus())) {
+            throw new IllegalArgumentException(String.format("Item's status %s does not exists in board #%d",
+                    itemRequest.getStatus(), itemRequest.getBoardId()));
+        }
+        if (!boardService.hasType(itemRequest.getBoardId(), itemRequest.getType())) {
+            throw new IllegalArgumentException(String.format("Item's type %s does not exists in board #%d",
+                    itemRequest.getType(), itemRequest.getBoardId()));
         }
     }
 }

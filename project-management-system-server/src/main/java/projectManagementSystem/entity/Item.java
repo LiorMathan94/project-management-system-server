@@ -35,6 +35,7 @@ public class Item {
     }
 
     public Item(ItemBuilder builder) {
+        this.boardId = builder.boardId;
         this.title = builder.title;
         this.status = builder.status;
         this.type = builder.type;
@@ -149,6 +150,7 @@ public class Item {
             this.boardId = boardId;
             this.creatorId = creatorId;
             this.title = title;
+            this.description = "";
             this.commentList = new ArrayList<>();
         }
 
@@ -188,12 +190,29 @@ public class Item {
         }
 
         public ItemBuilder setDescription(String description) {
-            this.description = description;
+            this.description = (description == null) ? "" : description;
             return this;
         }
 
         public Item build() {
             return new Item(this);
+        }
+
+        @Override
+        public String toString() {
+            return "ItemBuilder{" +
+                    "boardId=" + boardId +
+                    ", status='" + status + '\'' +
+                    ", type='" + type + '\'' +
+                    ", parent=" + parent +
+                    ", creatorId=" + creatorId +
+                    ", assignedToId=" + assignedToId +
+                    ", dueDate=" + dueDate +
+                    ", importance=" + importance +
+                    ", title='" + title + '\'' +
+                    ", description='" + description + '\'' +
+                    ", commentList=" + commentList +
+                    '}';
         }
     }
 }

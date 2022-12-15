@@ -24,8 +24,7 @@ public class ItemService {
     }
 
     public Item createItem(ItemRequest itemRequest) {
-        Optional<Item> parentOptional = itemRepository.findById(itemRequest.getParentId());
-        Item parent = parentOptional.isPresent() ? parentOptional.get() : null;
+        Item parent = extractParentFromItemRequest(itemRequest);
 
         Item newItem = new Item.ItemBuilder(itemRequest.getBoardId(), itemRequest.getCreatorId(), itemRequest.getTitle())
                 .setAssignedToId(itemRequest.getAssignedToId())
@@ -84,7 +83,7 @@ public class ItemService {
                 case "importance":
                     item.setImportance((Importance) fieldValue);
                     break;
-                case "item":
+                case "title":
                     item.setTitle((String) fieldValue);
                     break;
                 case "description":
@@ -92,5 +91,15 @@ public class ItemService {
                     break;
             }
         }
+    }
+
+    private Item extractParentFromItemRequest(ItemRequest itemRequest) {
+        Item parent = null;
+        if (itemRequest.getParentId() != null) {
+            Optional<Item> parentOptional = itemRepository.findById(itemRequest.getParentId());
+            parent = parentOptional.isPresent() ? parentOptional.get() : null;
+        }
+
+        return parent;
     }
 }

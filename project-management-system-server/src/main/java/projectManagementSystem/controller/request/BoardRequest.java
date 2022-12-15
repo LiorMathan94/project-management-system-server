@@ -7,6 +7,9 @@ public class BoardRequest {
     private Set<String> statuses;
     private Set<String> types;
 
+    public BoardRequest() {
+    }
+
     public BoardRequest(String title, Set<String> statuses, Set<String> types) {
         this.title = title;
         this.statuses = statuses;
