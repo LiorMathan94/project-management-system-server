@@ -1,10 +1,10 @@
 package projectManagementSystem.controller.request;
 
-public class UserRegisterRequest {
+public class UserLoginRequest {
     private String email;
     private String password;
 
-    public UserRegisterRequest() {
+    public UserLoginRequest() {
 
     }
 
