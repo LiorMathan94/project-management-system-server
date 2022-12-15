@@ -1,14 +1,8 @@
 package projectManagementSystem.utils;
 
-import projectManagementSystem.controller.response.Response;
-
 import java.util.regex.Pattern;
 
 public class InputValidation {
-    public enum Field {NAME, EMAIL, PASSWORD}
-
-    public Field field;
-
     /**
      * Checks if the email is in the appropriate format.
      *
@@ -51,6 +45,12 @@ public class InputValidation {
         return false;
     }
 
+    /**
+     * Checks if label is not null and contains 1-20 characters.
+     *
+     * @param label
+     * @return true if label is valid, otherwise - false.
+     */
     public static boolean isValidLabel(String label) {
         String regexPattern = ".{1,20}";
         if (label != null && patternMatches(label, regexPattern)) {
@@ -72,6 +72,9 @@ public class InputValidation {
                 .matches();
     }
 
+    /**
+     * @return a string that explains password constraints
+     */
     public static String passwordConstraints() {
         return "\nPassword must contain:\n" +
                 "At least 8 characters and at most 20 characters.\n" +

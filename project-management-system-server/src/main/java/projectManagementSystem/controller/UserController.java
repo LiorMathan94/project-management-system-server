@@ -1,14 +1,11 @@
 package projectManagementSystem.controller;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projectManagementSystem.controller.request.UserRegisterRequest;
 import projectManagementSystem.controller.response.Response;
 import projectManagementSystem.entity.DTO.UserDTO;
-import projectManagementSystem.entity.User;
 import projectManagementSystem.service.UserService;
 import projectManagementSystem.utils.InputValidation;
 
@@ -33,6 +30,7 @@ public class UserController {
         if (!InputValidation.isValidPassword(userRegisterRequest.getPassword())) {
             return ResponseEntity.badRequest().body(Response.failure("Password format is invalid! " + InputValidation.passwordConstraints()));
         }
+
         try {
             UserDTO user = userService.createUser(userRegisterRequest.getEmail(), userRegisterRequest.getPassword());
             return ResponseEntity.ok(Response.success(user));

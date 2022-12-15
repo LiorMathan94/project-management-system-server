@@ -103,6 +103,17 @@ public class BoardService {
         return new BoardDTO(boardRepository.save(board.get()));
     }
 
+    public BoardDTO updateItem(long boardId, Item item) {
+        Optional<Board> board = boardRepository.findById(boardId);
+
+        if (!board.isPresent()) {
+            throw new IllegalArgumentException("Could not find board ID: " + boardId);
+        }
+
+        board.get().updateItem(item);
+        return new BoardDTO(boardRepository.save(board.get()));
+    }
+
     public BoardDTO removeItem(long boardId, Item item) {
         Optional<Board> board = boardRepository.findById(boardId);
 
