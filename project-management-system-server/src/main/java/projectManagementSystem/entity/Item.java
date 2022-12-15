@@ -195,5 +195,22 @@ public class Item {
         public Item build() {
             return new Item(this);
         }
+
+        @Override
+        public String toString() {
+            return "ItemBuilder{" +
+                    "boardId=" + boardId +
+                    ", status='" + status + '\'' +
+                    ", type='" + type + '\'' +
+                    ", parent=" + parent +
+                    ", creatorId=" + creatorId +
+                    ", assignedToId=" + assignedToId +
+                    ", dueDate=" + dueDate +
+                    ", importance=" + importance +
+                    ", title='" + title + '\'' +
+                    ", description='" + description + '\'' +
+                    ", commentList=" + commentList +
+                    '}';
+        }
     }
 }
