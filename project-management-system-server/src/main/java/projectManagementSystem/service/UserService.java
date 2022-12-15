@@ -30,7 +30,7 @@ public class UserService {
             throw new IllegalArgumentException("User with email " + email + " already exists.");
         }
         String encryptedPassword = ServiceUtils.encryptPassword(password);
-        User user = new User(email, encryptedPassword);
-        return new UserDTO(userRepository.save(user));
+        User user = User.createUser(email, encryptedPassword);
+        return UserDTO.createUserDtoFromUser(userRepository.save(user));
     }
 }
