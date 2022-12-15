@@ -13,18 +13,18 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    public User() {
+    }
+
     public User(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-    public User() {
-
-    }
-
     public long getId() {
         return id;
     }
+
     public String getEmail() {
         return email;
     }
@@ -36,5 +36,4 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
-
 }

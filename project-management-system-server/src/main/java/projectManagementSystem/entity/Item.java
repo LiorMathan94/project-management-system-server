@@ -11,6 +11,7 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+    private long boardId;
     private String status;
     private String type;
     @ManyToOne
@@ -48,6 +49,10 @@ public class Item {
 
     public long getId() {
         return id;
+    }
+
+    public long getBoardId() {
+        return boardId;
     }
 
     public String getStatus() {
@@ -128,21 +133,28 @@ public class Item {
 
 
     public static class ItemBuilder {
+        private long boardId;
         private String status;
         private String type;
         private Item parent;
-        private Long creatorId;
-        private Long assignedToId;
+        private long creatorId;
+        private long assignedToId;
         private LocalDate dueDate;
         private Importance importance;
         private String title;
         private String description;
         private List<Comment> commentList;
 
-        public ItemBuilder(Long creatorId, String title) {
+        public ItemBuilder(long boardId, long creatorId, String title) {
+            this.boardId = boardId;
             this.creatorId = creatorId;
             this.title = title;
             this.commentList = new ArrayList<>();
+        }
+
+        public ItemBuilder setBoardId(long boardId) {
+            this.boardId = boardId;
+            return this;
         }
 
         public ItemBuilder setStatus(String status) {
@@ -160,7 +172,7 @@ public class Item {
             return this;
         }
 
-        public ItemBuilder setAssignedToId(Long assignedToId) {
+        public ItemBuilder setAssignedToId(long assignedToId) {
             this.assignedToId = assignedToId;
             return this;
         }
