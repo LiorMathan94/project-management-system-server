@@ -41,7 +41,7 @@ public class InputValidation {
      * Checks if password contains at least one special character, at least one capital letter, at least one digit, and is 8-20 characters long.
      *
      * @param password
-     * @return Response if password is valid, otherwise - false.
+     * @return true if password is valid, otherwise - false.
      */
     public static boolean isValidPassword(String password) {
         String regexPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,20}$";
