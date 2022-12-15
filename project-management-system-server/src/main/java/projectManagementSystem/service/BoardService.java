@@ -1,5 +1,6 @@
 package projectManagementSystem.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import projectManagementSystem.controller.request.BoardRequest;
 import projectManagementSystem.entity.Board;
@@ -18,7 +19,10 @@ import java.util.Optional;
 
 @Service
 public class BoardService {
+
+    @Autowired
     private BoardRepository boardRepository;
+    @Autowired
     private ItemRepository itemRepository;
 
     public BoardService(BoardRepository boardRepository, ItemRepository itemRepository) {
