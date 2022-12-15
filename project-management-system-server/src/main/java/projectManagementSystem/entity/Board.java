@@ -3,7 +3,12 @@ package projectManagementSystem.entity;
 import projectManagementSystem.utils.InputValidation;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Entity
 @Table(name = "board")
@@ -13,17 +18,20 @@ public class Board {
     private long id;
     private String title;
     @ElementCollection
-    private List<String> statuses;
+    private Set<String> statuses;
     @ElementCollection
-    private List<String> types;
+    private Set<String> types;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Item> items;
 
     public Board() {
     }
 
-    public Board(String title, List<String> statuses, List<String> types) {
+    public Board(String title, Set<String> statuses, Set<String> types) {
         this.title = title;
         this.statuses = statuses;
         this.types = types;
+        this.items = new ArrayList<Item>();
     }
 
     public long getId() {
@@ -34,12 +42,16 @@ public class Board {
         return title;
     }
 
-    public List<String> getStatuses() {
+    public Set<String> getStatuses() {
         return statuses;
     }
 
-    public List<String> getTypes() {
+    public Set<String> getTypes() {
         return types;
+    }
+
+    public List<Item> getItems() {
+        return items;
     }
 
     public void setTitle(String title) {
@@ -47,7 +59,7 @@ public class Board {
     }
 
     public void addStatus(String status) {
-        if (!InputValidation.isValidItemLabel(status)) {
+        if (!InputValidation.isValidLabel(status)) {
             throw new IllegalArgumentException(String.format("Bad status: %s. A status can contain 1-20 characters.", status));
         }
 
@@ -59,7 +71,7 @@ public class Board {
     }
 
     public void addType(String type) {
-        if (!InputValidation.isValidItemLabel(type)) {
+        if (!InputValidation.isValidLabel(type)) {
             throw new IllegalArgumentException(String.format("Bad type: %s. A type can contain 1-20 characters.", type));
         }
 
@@ -68,5 +80,23 @@ public class Board {
 
     public void removeType(String type) {
         this.types.remove(type);
+    }
+
+    public void addItem(Item item) {
+        this.items.add(item);
+    }
+
+    public void removeItem(Item item) {
+        this.items.remove(item);
+    }
+
+    public Map<String, List<Item>> getItemsByStatus() {
+        Map<String, List<Item>> itemsByStatus = this.items.stream().collect(groupingBy(Item::getStatus));
+
+        for (String status : this.statuses) {
+            itemsByStatus.computeIfAbsent(status, k -> new ArrayList<>());
+        }
+
+        return itemsByStatus;
     }
 }
