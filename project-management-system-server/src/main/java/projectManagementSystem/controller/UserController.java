@@ -26,11 +26,11 @@ public class UserController {
         if (!InputValidation.isValidEmail(userRegisterRequest.getEmail())) {
             return ResponseEntity.badRequest().body(Response.failure("Email format is invalid!"));
         }
-        if (!InputValidation.isValidPassword(userRegisterRequest.getPassword())){
+        if (!InputValidation.isValidPassword(userRegisterRequest.getPassword())) {
             return ResponseEntity.badRequest().body(Response.failure("Password format is invalid! " + InputValidation.passwordConstraints()));
         }
-        try{
-            String responseData = userService.createUser(userRegisterRequest.getEmail(),userRegisterRequest.getPassword());
+        try {
+            String responseData = userService.createUser(userRegisterRequest.getEmail(), userRegisterRequest.getPassword());
             return ResponseEntity.ok(Response.success(responseData));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during user registration: " + e.getMessage()));

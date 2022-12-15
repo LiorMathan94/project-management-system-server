@@ -13,7 +13,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    public User(){
+    public User() {
 
     }
 
@@ -23,14 +23,14 @@ public class User {
     }
 
     /**
-     *  Creates and returns a User.
+     * Creates and returns a User.
      *
-     * @param email - String, email of the user.
+     * @param email    - String, email of the user.
      * @param password - String, password of the user.
      * @return the created User object.
      */
-    public static User createUser(String email,String password){
-        User user = new User(email,password);
+    public static User createUser(String email, String password) {
+        User user = new User(email, password);
         return user;
     }
 
