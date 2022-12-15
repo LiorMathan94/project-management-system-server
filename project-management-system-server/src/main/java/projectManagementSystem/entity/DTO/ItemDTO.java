@@ -1,15 +1,16 @@
-package projectManagementSystem.controller.request;
+package projectManagementSystem.entity.DTO;
 
 import projectManagementSystem.entity.Importance;
+import projectManagementSystem.entity.Item;
 
 import java.time.LocalDate;
 
-public class ItemRequest {
-    private Long itemId;
-    private Long boardId;
+public class ItemDTO {
+    private long id;
+    private long boardId;
     private String status;
     private String type;
-    private Long parentId;
+    private long parentId;
     private Long creatorId;
     private Long assignedToId;
     private LocalDate dueDate;
@@ -17,27 +18,25 @@ public class ItemRequest {
     private String title;
     private String description;
 
-    public ItemRequest() {
+    public ItemDTO(Item item) {
+        this.id = item.getId();
+        this.boardId = item.getBoardId();
+        this.status = item.getStatus();
+        this.type = item.getType();
+        this.parentId = item.getParent().getId();
+        this.creatorId = item.getCreatorId();
+        this.assignedToId = item.getAssignedToId();
+        this.dueDate = item.getDueDate();
+        this.importance = item.getImportance();
+        this.title = item.getTitle();
+        this.description = item.getDescription();
     }
 
-    public ItemRequest(Long boardId, String status, String type, Long parentId, Long creatorId, Long assignedToId, LocalDate dueDate, Importance importance, String title, String description) {
-        this.boardId = boardId;
-        this.status = status;
-        this.type = type;
-        this.parentId = parentId;
-        this.creatorId = creatorId;
-        this.assignedToId = assignedToId;
-        this.dueDate = dueDate;
-        this.importance = importance;
-        this.title = title;
-        this.description = description;
+    public long getId() {
+        return id;
     }
 
-    public Long getItemId() {
-        return itemId;
-    }
-
-    public Long getBoardId() {
+    public long getBoardId() {
         return boardId;
     }
 
@@ -49,7 +48,7 @@ public class ItemRequest {
         return type;
     }
 
-    public Long getParentId() {
+    public long getParentId() {
         return parentId;
     }
 
@@ -75,9 +74,5 @@ public class ItemRequest {
 
     public String getDescription() {
         return description;
-    }
-
-    public void setItemId(Long itemId) {
-        this.itemId = itemId;
     }
 }

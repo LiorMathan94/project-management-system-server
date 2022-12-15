@@ -143,4 +143,17 @@ public class BoardController {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
         }
     }
+
+    @RequestMapping(method = RequestMethod.PATCH, path="/updateItem")
+    public ResponseEntity<Response<BoardDTO>> updateItem(@RequestBody ItemRequest itemRequest) {
+        logger.info("in BoardController.updateItem()");
+
+        try {
+            Item updatedItem = itemService.updateItem(itemRequest);
+            BoardDTO board = boardService.updateItem(itemRequest.getBoardId(), updatedItem);
+            return ResponseEntity.ok(Response.success(board));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        }
+    }
 }

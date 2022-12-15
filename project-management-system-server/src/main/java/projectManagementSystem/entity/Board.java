@@ -86,6 +86,15 @@ public class Board {
         this.items.add(item);
     }
 
+    public void updateItem(Item item) {
+        Item existingItem = findItemById(item.getId());
+
+        if (existingItem != null) {
+            removeItem(existingItem);
+            addItem(item);
+        }
+    }
+
     public void removeItem(Item item) {
         this.items.remove(item);
     }
@@ -98,5 +107,9 @@ public class Board {
         }
 
         return itemsByStatus;
+    }
+
+    private Item findItemById(long requiredId) {
+        return this.items.stream().filter(item -> item.getId() == (requiredId)).findFirst().orElse(null);
     }
 }
