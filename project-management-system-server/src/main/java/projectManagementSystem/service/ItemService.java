@@ -26,7 +26,7 @@ public class ItemService {
         Optional<Item> parentOptional = itemRepository.findById(itemRequest.getParentId());
         Item parent = parentOptional.isPresent() ? parentOptional.get() : null;
 
-        Item newItem = new Item.ItemBuilder(itemRequest.getCreatorId(), itemRequest.getTitle())
+        Item newItem = new Item.ItemBuilder(itemRequest.getBoardId(), itemRequest.getCreatorId(), itemRequest.getTitle())
                 .setAssignedToId(itemRequest.getAssignedToId())
                 .setDescription(itemRequest.getDescription())
                 .setDueDate(itemRequest.getDueDate())
