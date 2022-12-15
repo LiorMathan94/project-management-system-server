@@ -19,6 +19,10 @@ public class ItemService {
         this.itemRepository = itemRepository;
     }
 
+    public Optional<Item> getById(long itemId) {
+        return this.itemRepository.findById(itemId);
+    }
+
     public Item createItem(ItemRequest itemRequest) {
         Optional<Item> parentOptional = itemRepository.findById(itemRequest.getParentId());
         Item parent = parentOptional.isPresent() ? parentOptional.get() : null;

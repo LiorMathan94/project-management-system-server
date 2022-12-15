@@ -6,7 +6,8 @@ import java.time.LocalDate;
 
 public class ItemRequest {
     private Long itemId;
-    private Long userId;
+
+    private Long boardId;
     private String status;
     private String type;
     private Long parentId;
@@ -20,9 +21,8 @@ public class ItemRequest {
     public ItemRequest() {
     }
 
-    public ItemRequest(Long itemId, Long userId, String status, String type, Long parentId, Long creatorId, Long assignedToId, LocalDate dueDate, Importance importance, String title, String description) {
-        this.itemId = itemId;
-        this.userId = userId;
+    public ItemRequest(Long boardId, String status, String type, Long parentId, Long creatorId, Long assignedToId, LocalDate dueDate, Importance importance, String title, String description) {
+        this.boardId = boardId;
         this.status = status;
         this.type = type;
         this.parentId = parentId;
@@ -38,8 +38,8 @@ public class ItemRequest {
         return itemId;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getBoardId() {
+        return boardId;
     }
 
     public String getStatus() {
@@ -76,5 +76,9 @@ public class ItemRequest {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
     }
 }
