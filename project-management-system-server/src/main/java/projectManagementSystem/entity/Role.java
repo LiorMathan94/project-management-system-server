@@ -1,6 +1,6 @@
 package projectManagementSystem.entity;
 
-public enum Permission {
+public enum Role {
     ADMIN,
     LEADER,
     USER
