@@ -1,13 +1,17 @@
 package projectManagementSystem.utils;
 
+import projectManagementSystem.controller.response.Response;
+
 import java.util.regex.Pattern;
 
 public class InputValidation {
     public enum Field {NAME, EMAIL, PASSWORD}
+
     public Field field;
 
     /**
      * Checks if the email is in the appropriate format.
+     *
      * @param email
      * @return true if email is valid, otherwise - false.
      */
@@ -21,6 +25,7 @@ public class InputValidation {
 
     /**
      * Checks if name consists only of letters and is 2-30 characters long.
+     *
      * @param name
      * @return true if name is valid, otherwise - false.
      */
@@ -33,12 +38,13 @@ public class InputValidation {
     }
 
     /**
-     * Checks if password contains at least one letter, at least one digit and is minimum 8 digits long.
+     * Checks if password contains at least one special character, at least one capital letter, at least one digit, and is 8-20 characters long.
+     *
      * @param password
-     * @return true if name is valid, otherwise - false.
+     * @return true if password is valid, otherwise - false.
      */
     public static boolean isValidPassword(String password) {
-        String regexPattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
+        String regexPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,20}$";
         if (password != null && patternMatches(password, regexPattern)) {
             return true;
         }
@@ -55,6 +61,7 @@ public class InputValidation {
 
     /**
      * Checks if fieldToValidate string matches regexPattern
+     *
      * @param fieldToValidate
      * @param regexPattern
      * @return true if fieldToValidate matches regexPattern, otherwise - false.
@@ -63,5 +70,15 @@ public class InputValidation {
         return Pattern.compile(regexPattern)
                 .matcher(fieldToValidate)
                 .matches();
+    }
+
+    public static String passwordConstraints() {
+        return "\nPassword must contain:\n" +
+                "At least 8 characters and at most 20 characters.\n" +
+                "At least one digit.\n" +
+                "At least one upper case letter.\n" +
+                "At least one lower case letter.\n" +
+                "At least one special character which includes !@#$%&*()-+=^.\n" +
+                "Must not contain any white spaces.";
     }
 }
