@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import projectManagementSystem.entity.DTO.UserDTO;
 import projectManagementSystem.entity.User;
 import projectManagementSystem.repository.UserRepository;
+import projectManagementSystem.utils.InputValidation;
+import projectManagementSystem.utils.ServiceUtils;
 
 @Service
 public class UserService {
@@ -15,7 +17,8 @@ public class UserService {
     }
 
     public UserDTO createUser(String email, String password) {
-        User user = new User(email, password);
+        String encryptedPassword = ServiceUtils.encryptPassword(password);
+        User user = new User(email, encryptedPassword);
         return new UserDTO(userRepository.save(user));
     }
 }

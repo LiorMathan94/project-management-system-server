@@ -2,7 +2,6 @@ package projectManagementSystem.entity.DTO;
 import projectManagementSystem.entity.User;
 
 public class UserDTO {
-    private long id;
     private String email;
 
     public UserDTO(){
