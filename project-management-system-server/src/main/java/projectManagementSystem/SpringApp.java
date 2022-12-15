@@ -38,12 +38,11 @@ public class SpringApp {
         HashMap<String, Object> map = new HashMap<>();
         map.put("status", "to-do");
         map.put("type", "type1");
-//        map.put("status", "to-do");
 
-        List<Item> list = filterCriteriaService.filterByProperty(items, map);
-        for (Item item: list) {
-            System.out.println(item.getStatus() + " "+ item.getType());
-
-        }
+//        List<Item> list = filterCriteriaService.filterByProperty(items, map);
+//        for (Item item: list) {
+//            System.out.println(item.getStatus() + " "+ item.getType());
+//
+//        }
         }
 }
