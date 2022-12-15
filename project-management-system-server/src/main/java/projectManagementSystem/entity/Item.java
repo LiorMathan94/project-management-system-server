@@ -34,12 +34,6 @@ public class Item {
     public Item() {
     }
 
-    public Item(String status,String type, LocalDate dueDate) {
-        this.status = status;
-        this.type = type;
-        this.dueDate = dueDate;
-    }
-
     public Item(ItemBuilder builder) {
         this.title = builder.title;
         this.status = builder.status;
