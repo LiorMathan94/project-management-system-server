@@ -35,6 +35,7 @@ public class Item {
     }
 
     public Item(ItemBuilder builder) {
+        this.boardId = builder.boardId;
         this.title = builder.title;
         this.status = builder.status;
         this.type = builder.type;
@@ -149,6 +150,7 @@ public class Item {
             this.boardId = boardId;
             this.creatorId = creatorId;
             this.title = title;
+            this.description = "";
             this.commentList = new ArrayList<>();
         }
 
@@ -188,7 +190,7 @@ public class Item {
         }
 
         public ItemBuilder setDescription(String description) {
-            this.description = description;
+            this.description = (description == null) ? "" : description;
             return this;
         }
 

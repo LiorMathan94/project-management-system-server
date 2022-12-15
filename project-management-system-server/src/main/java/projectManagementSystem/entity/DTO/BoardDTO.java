@@ -16,8 +16,29 @@ public class BoardDTO {
 
     public BoardDTO(Board board) {
         this.id = board.getId();
+        this.title = board.getTitle();
         this.statuses = board.getStatuses();
         this.types = board.getTypes();
         this.items = board.getItemsByStatus();
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Set<String> getStatuses() {
+        return statuses;
+    }
+
+    public Set<String> getTypes() {
+        return types;
+    }
+
+    public Map<String, List<Item>> getItems() {
+        return items;
     }
 }
