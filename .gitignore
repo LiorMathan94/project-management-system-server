@@ -1,6 +1,8 @@
 *.idea/
 *target/
 *.DS_Store
-
+*pom.xml
+*log4j2.xml
+*project-management-system-server.iml
 *logs
 *application.properties
