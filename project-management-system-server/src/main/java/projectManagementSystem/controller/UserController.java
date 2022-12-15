@@ -19,6 +19,12 @@ public class UserController {
     public UserController() {
     }
 
+    /**
+     * Receives user's email and password. If they are valid sends them to createUser method of UserService, in order to register the user.
+     *
+     * @param userRegisterRequest - UserRegisterRequest object, contains inputted user email and password.
+     * @return ResponseEntity<Response < UserDTO>> - ResponseEntity.ok (with user details) if action was successful, otherwise - ResponseEntity.badRequest with error message.
+     */
     @RequestMapping(method = RequestMethod.POST, path = "/register")
     public ResponseEntity<Response<UserDTO>> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null) {

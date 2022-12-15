@@ -16,7 +16,18 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Adds a User to database (if he doesn't already exist), after encrypting his password.
+     *
+     * @param email    - String, user email inputted during registration.
+     * @param password - String, user password user email inputted during registration.
+     * @return UserDTO object, contains user data that can be shown if registration is successful.
+     * @throws IllegalArgumentException - if User with the given email already exists in the database.
+     */
     public UserDTO createUser(String email, String password) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new IllegalArgumentException("User with email " + email + " already exists.");
+        }
         String encryptedPassword = ServiceUtils.encryptPassword(password);
         User user = new User(email, encryptedPassword);
         return new UserDTO(userRepository.save(user));
