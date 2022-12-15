@@ -166,7 +166,6 @@ public class BoardService {
                     ImportanceCriteria importanceCriteria = new ImportanceCriteria((Importance) entry.getValue());
                     filteredItems = (importanceCriteria.meetCriteria(filteredItems));
                     break;
-
             }
         }
         return filteredItems;
