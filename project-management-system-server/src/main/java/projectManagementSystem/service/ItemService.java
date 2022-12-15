@@ -83,7 +83,7 @@ public class ItemService {
                 case "importance":
                     item.setImportance((Importance) fieldValue);
                     break;
-                case "item":
+                case "title":
                     item.setTitle((String) fieldValue);
                     break;
                 case "description":

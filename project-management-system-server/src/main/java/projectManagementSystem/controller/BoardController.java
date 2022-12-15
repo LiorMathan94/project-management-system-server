@@ -158,6 +158,18 @@ public class BoardController {
         }
     }
 
+    @RequestMapping(method = RequestMethod.DELETE, path = "/delete")
+    public ResponseEntity<Response<Void>> delete(@RequestParam long boardId) {
+        logger.info("in BoardController.deleteBoard()");
+
+        try {
+            boardService.delete(boardId);
+            return ResponseEntity.ok(Response.success(null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        }
+    }
+
     private void validateItemRequest(ItemRequest itemRequest) {
         if (!boardService.hasStatus(itemRequest.getBoardId(), itemRequest.getStatus())) {
             throw new IllegalArgumentException(String.format("Item's status %s does not exists in board #%d",

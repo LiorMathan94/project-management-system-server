@@ -135,6 +135,20 @@ public class BoardService {
         return board.get().getTypes().contains(type);
     }
 
+    public void delete(long boardId) {
+        Optional<Board> board = boardRepository.findById(boardId);
+
+        if (!board.isPresent()) {
+            throw new IllegalArgumentException("Could not find board ID: " + boardId);
+        }
+
+        for (Item item : board.get().getItems()) {
+            this.itemRepository.delete(item);
+        }
+
+        this.boardRepository.delete(board.get());
+    }
+
     private void deleteStatusItems(Board board, String status) {
         for (Item item : board.getItemsByStatus().get(status)) {
             board.removeItem(item);
