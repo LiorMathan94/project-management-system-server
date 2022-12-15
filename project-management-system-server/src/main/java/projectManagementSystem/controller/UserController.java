@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projectManagementSystem.controller.request.UserRegisterRequest;
 import projectManagementSystem.controller.response.Response;
+import projectManagementSystem.entity.DTO.UserDTO;
+import projectManagementSystem.entity.User;
 import projectManagementSystem.service.UserService;
 import projectManagementSystem.utils.InputValidation;
 
@@ -17,9 +19,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    public UserController() {
+    }
 
     @RequestMapping(method = RequestMethod.POST, path = "/register")
-    public ResponseEntity<Response<String>> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
+    public ResponseEntity<Response<UserDTO>> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null) {
             return ResponseEntity.badRequest().body(Response.failure("Error during user registration. Reason: User register request can't be null."));
         }
@@ -30,11 +34,10 @@ public class UserController {
             return ResponseEntity.badRequest().body(Response.failure("Password format is invalid! " + InputValidation.passwordConstraints()));
         }
         try {
-            String responseData = userService.createUser(userRegisterRequest.getEmail(), userRegisterRequest.getPassword());
-            return ResponseEntity.ok(Response.success(responseData));
+            UserDTO user = userService.createUser(userRegisterRequest.getEmail(), userRegisterRequest.getPassword());
+            return ResponseEntity.ok(Response.success(user));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during user registration: " + e.getMessage()));
         }
     }
-
 }

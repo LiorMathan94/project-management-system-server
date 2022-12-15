@@ -17,7 +17,7 @@ public class InputValidation {
      */
     public static boolean isValidEmail(String email) {
         String regexPattern = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-        if (email != null && email != "" && patternMatches(email, regexPattern)) {
+        if (email != null && patternMatches(email, regexPattern)) {
             return true;
         }
         return false;
@@ -45,7 +45,7 @@ public class InputValidation {
      */
     public static boolean isValidPassword(String password) {
         String regexPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,20}$";
-        if (password != null && password != "" && patternMatches(password, regexPattern)) {
+        if (password != null && patternMatches(password, regexPattern)) {
             return true;
         }
         return false;
