@@ -13,41 +13,24 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    public User(){
-
-    }
-
-    private User(String email, String password) {
+    public User(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-    /**
-     *  Creates and returns a User.
-     *
-     * @param email - String, email of the user.
-     * @param password - String, password of the user.
-     * @return the created User object.
-     */
-    public static User createUser(String email,String password){
-        User user = new User(email,password);
-        return user;
+    public User() {
+
     }
 
     public long getId() {
         return id;
     }
-
     public String getEmail() {
         return email;
     }
 
     public String getPassword() {
         return password;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public void setEmail(String email) {
