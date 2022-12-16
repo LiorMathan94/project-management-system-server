@@ -16,9 +16,13 @@ public class User {
     public User() {
     }
 
-    public User(String email, String password) {
+    private User(String email, String password) {
         this.email = email;
         this.password = password;
+    }
+
+    public static User createUser(String email, String password){
+        return new User(email,password);
     }
 
     public long getId() {

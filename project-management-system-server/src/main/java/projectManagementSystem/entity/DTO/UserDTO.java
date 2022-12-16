@@ -1,16 +1,18 @@
 package projectManagementSystem.entity.DTO;
+
 import projectManagementSystem.entity.User;
 
 public class UserDTO {
-    private long id;
     private String email;
 
-    public UserDTO(){
+    private UserDTO(String email) {
+        this.email = email;
     }
 
-    public UserDTO(User user) {
-        this.email = user.getEmail();
+    public static UserDTO createUserDtoFromUser(User user) {
+        return new UserDTO(user.getEmail());
     }
+
 
     public String getEmail() {
         return email;
