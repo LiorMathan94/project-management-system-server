@@ -66,7 +66,6 @@ public class AuthenticationService {
     public long getIdFromToken(String token) {
         try {
             String decodedString = new String(Base64.getDecoder().decode(token));
-            System.out.println(decodedString);
             try {
                 return Long.parseLong(decodedString.split("-")[1]);
             } catch (NumberFormatException | IndexOutOfBoundsException e) {

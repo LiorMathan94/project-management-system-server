@@ -50,13 +50,9 @@ public class TokenFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) servletResponse;
         String url = ((HttpServletRequest) servletRequest).getRequestURL().toString();
         if (url.contains("login") || url.contains("register")) {
-            System.out.println("no need for token");
             filterChain.doFilter(req, res);
         } else {
             String authToken = req.getHeader("Authorization");
-            System.out.println(authToken.equals("null"));
-            System.out.println("token is: " + authToken);
-            System.out.println("checking if token is correct");
             if (authService.isTokenCorrect(authToken)) {
                 req.setAttribute("userId", authService.getIdFromToken(authToken));
                 filterChain.doFilter(req, res);
