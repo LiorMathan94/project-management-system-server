@@ -2,11 +2,12 @@ package projectManagementSystem.service;
 
 import org.springframework.stereotype.Service;
 import projectManagementSystem.controller.request.BoardRequest;
-import projectManagementSystem.entity.Board;
+import projectManagementSystem.entity.*;
 import projectManagementSystem.entity.DTO.BoardDTO;
-import projectManagementSystem.entity.Item;
 import projectManagementSystem.repository.BoardRepository;
 import projectManagementSystem.repository.ItemRepository;
+import projectManagementSystem.repository.UserInBoardRepository;
+import projectManagementSystem.repository.UserRepository;
 
 import java.util.Optional;
 
@@ -14,15 +15,22 @@ import java.util.Optional;
 public class BoardService {
     private BoardRepository boardRepository;
     private ItemRepository itemRepository;
+    private UserInBoardRepository userInBoardRepository;
+    private UserRepository userRepository;
 
-    public BoardService(BoardRepository boardRepository, ItemRepository itemRepository) {
+    public BoardService(BoardRepository boardRepository, ItemRepository itemRepository,
+                        UserInBoardRepository userInBoardRepository, UserRepository userRepository) {
         this.boardRepository = boardRepository;
         this.itemRepository = itemRepository;
+        this.userInBoardRepository = userInBoardRepository;
+        this.userRepository = userRepository;
     }
 
     public BoardDTO createBoard(BoardRequest boardRequest) {
         Board board = new Board(boardRequest.getTitle(), boardRequest.getStatuses(), boardRequest.getTypes());
-        return new BoardDTO(boardRepository.save(board));
+        Board savedBoard = boardRepository.save(board);
+
+        return new BoardDTO(savedBoard);
     }
 
     public BoardDTO setTitle(long boardId, String title) {

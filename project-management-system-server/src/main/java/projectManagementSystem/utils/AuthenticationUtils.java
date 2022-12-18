@@ -1,11 +1,8 @@
 package projectManagementSystem.utils;
 
-import net.bytebuddy.utility.RandomString;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.Base64;
-
-public class ServiceUtils {
+public class AuthenticationUtils {
 
     /**
      * Encrypts a given password String using: spring-security-crypto bcrypt.BCryptPasswordEncoder
@@ -30,6 +27,4 @@ public class ServiceUtils {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.matches(inputPassword, dbPassword);
     }
-
-
 }

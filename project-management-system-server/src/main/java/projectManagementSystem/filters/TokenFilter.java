@@ -54,7 +54,7 @@ public class TokenFilter implements Filter {
         } else {
             String authToken = req.getHeader("Authorization");
             if (authService.isTokenCorrect(authToken)) {
-                req.setAttribute("userId", authService.getIdFromToken(authToken));
+                req.setAttribute("userId", authService.extractIdFromToken(authToken));
                 filterChain.doFilter(req, res);
             } else {
                 returnBadResponse(res);

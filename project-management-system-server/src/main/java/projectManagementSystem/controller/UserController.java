@@ -7,6 +7,7 @@ import projectManagementSystem.controller.request.UserRequest;
 import projectManagementSystem.controller.response.Response;
 import projectManagementSystem.entity.DTO.UserDTO;
 import projectManagementSystem.service.AuthenticationService;
+import projectManagementSystem.service.UserRoleService;
 import projectManagementSystem.service.UserService;
 import projectManagementSystem.utils.InputValidation;
 
@@ -16,9 +17,10 @@ import projectManagementSystem.utils.InputValidation;
 public class UserController {
     @Autowired
     private UserService userService;
-
     @Autowired
     private AuthenticationService authService;
+    @Autowired
+    private UserRoleService userRoleService;
 
     public UserController() {
     }
@@ -30,7 +32,7 @@ public class UserController {
      * @return ResponseEntity<Response < UserDTO>> - ResponseEntity.ok (with user details) if action was successful, otherwise - ResponseEntity.badRequest with error message.
      */
     @RequestMapping(method = RequestMethod.POST, path = "/register")
-    public ResponseEntity<Response<UserDTO>> userRegister(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<Response<UserDTO>> register(@RequestBody UserRequest userRequest) {
         if (userRequest == null) {
             return ResponseEntity.badRequest().body(Response.failure("Error during user registration. Reason: User register request can't be null."));
         }
@@ -42,13 +44,12 @@ public class UserController {
         }
 
         try {
-            UserDTO user = userService.createUser(userRequest.getEmail(), userRequest.getPassword());
+            UserDTO user = userService.create(userRequest.getEmail(), userRequest.getPassword());
             return ResponseEntity.ok(Response.success(user));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during user registration: " + e.getMessage()));
         }
     }
-
 
     /**
      * Receives user's email and password. If they are valid sends them to userLogin method of UserService, in order to log in the user.
@@ -57,9 +58,9 @@ public class UserController {
      * @return ResponseEntity<Response < UserDTO>> - ResponseEntity.ok (with user details) if action was successful, otherwise - ResponseEntity.badRequest with error message.
      */
     @RequestMapping(method = RequestMethod.POST, path = "/login")
-    public ResponseEntity<Response<String>> userLogin(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<Response<String>> login(@RequestBody UserRequest userRequest) {
         if (userRequest == null) {
-            return ResponseEntity.badRequest().body(Response.failure("User login credentials can't be null."));
+            return ResponseEntity.badRequest().body(Response.failure("User login credentials cannot be null."));
         }
         if (!InputValidation.isValidEmail(userRequest.getEmail())) {
             return ResponseEntity.badRequest().body(Response.failure("Email format is invalid!"));
@@ -76,6 +77,21 @@ public class UserController {
         }
     }
 
-
-
+    /**
+     * Deletes the user that corresponds to userId and its existing roles.
+     *
+     * @param userId
+     * @return ResponseEntity<Response < Void>>
+     */
+    @RequestMapping(method = RequestMethod.DELETE, path = "/delete")
+    public ResponseEntity<Response<Void>> delete(@RequestParam long userId) {
+        try {
+            this.userRoleService.deleteByUser(userId);
+            userService.delete(userId);
+            return ResponseEntity.ok(Response.success(null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure("Error occurred while trying to delete user #"
+                    + userId + ": " + e.getMessage()));
+        }
+    }
 }

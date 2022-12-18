@@ -6,14 +6,16 @@ public class BoardRequest {
     private String title;
     private Set<String> statuses;
     private Set<String> types;
+    private Long userId;
 
     public BoardRequest() {
     }
 
-    public BoardRequest(String title, Set<String> statuses, Set<String> types) {
+    public BoardRequest(String title, Set<String> statuses, Set<String> types, Long userId) {
         this.title = title;
         this.statuses = statuses;
         this.types = types;
+        this.userId = userId;
     }
 
     public String getTitle() {
@@ -26,5 +28,13 @@ public class BoardRequest {
 
     public Set<String> getTypes() {
         return types;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getUserId() {
+        return userId;
     }
 }
