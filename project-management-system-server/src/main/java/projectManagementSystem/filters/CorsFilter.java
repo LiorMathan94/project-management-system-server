@@ -9,7 +9,7 @@ import java.util.Set;
 
 
 public class CorsFilter implements Filter {
-    private final Set<String> origins = new HashSet<>(Set.of("http://localhost:3000"));
+    private final Set<String> origins = new HashSet<>(Set.of("http://localhost:9000"));
 
     /**
      * Called by the web container to indicate to a filter that it is being placed into service.

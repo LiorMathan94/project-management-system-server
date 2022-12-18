@@ -10,7 +10,7 @@ public class InputValidation {
      * @return true if email is valid, otherwise - false.
      */
     public static boolean isValidEmail(String email) {
-        String regexPattern = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+        String regexPattern = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$";
         if (email != null && patternMatches(email, regexPattern)) {
             return true;
         }
@@ -38,7 +38,7 @@ public class InputValidation {
      * @return true if password is valid, otherwise - false.
      */
     public static boolean isValidPassword(String password) {
-        String regexPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,20}$";
+        String regexPattern = "(.*).{8,20}$";
         if (password != null && patternMatches(password, regexPattern)) {
             return true;
         }
@@ -76,12 +76,8 @@ public class InputValidation {
      * @return a string that explains password constraints
      */
     public static String passwordConstraints() {
-        return "\nPassword must contain:\n" +
-                "At least 8 characters and at most 20 characters.\n" +
-                "At least one digit.\n" +
-                "At least one upper case letter.\n" +
-                "At least one lower case letter.\n" +
-                "At least one special character which includes !@#$%&*()-+=^.\n" +
+        return "Password must contain: " +
+                "At least 8 characters and at most 20 characters. " +
                 "Must not contain any white spaces.";
     }
 }
