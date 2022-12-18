@@ -10,7 +10,7 @@ public class InputValidation {
      * @return true if email is valid, otherwise - false.
      */
     public static boolean isValidEmail(String email) {
-        String regexPattern = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+        String regexPattern = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$";
         if (email != null && patternMatches(email, regexPattern)) {
             return true;
         }
