@@ -7,11 +7,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projectManagementSystem.controller.request.BoardRequest;
 import projectManagementSystem.controller.request.ItemRequest;
+import projectManagementSystem.controller.request.RoleRequest;
 import projectManagementSystem.controller.response.Response;
 import projectManagementSystem.entity.DTO.BoardDTO;
+import projectManagementSystem.entity.DTO.UserInBoardDTO;
 import projectManagementSystem.entity.Item;
+import projectManagementSystem.entity.Role;
 import projectManagementSystem.service.BoardService;
 import projectManagementSystem.service.ItemService;
+import projectManagementSystem.service.UserRoleService;
 import projectManagementSystem.utils.InputValidation;
 
 import java.util.Optional;
@@ -24,6 +28,8 @@ public class BoardController {
     private BoardService boardService;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private UserRoleService userRoleService;
     private static final Logger logger = LogManager.getLogger(BoardController.class.getName());
 
     public BoardController() {
@@ -35,6 +41,7 @@ public class BoardController {
 
         try {
             BoardDTO board = boardService.createBoard(boardRequest);
+            this.userRoleService.add(board.getId(), boardRequest.getUserId(), Role.ADMIN);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
@@ -158,11 +165,25 @@ public class BoardController {
         }
     }
 
+    @RequestMapping(method = RequestMethod.PATCH, path = "/grantUserRole")
+    public ResponseEntity<Response<UserInBoardDTO>> grantUserRole(@RequestBody RoleRequest roleRequest) {
+        logger.info("in BoardController.grantUserRole()");
+
+        try {
+            return ResponseEntity.ok(Response.success(
+                    new UserInBoardDTO(userRoleService.add
+                            (roleRequest.getBoardId(), roleRequest.getUserId(), roleRequest.getRole()))));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        }
+    }
+
     @RequestMapping(method = RequestMethod.DELETE, path = "/delete")
     public ResponseEntity<Response<Void>> delete(@RequestParam long boardId) {
         logger.info("in BoardController.deleteBoard()");
 
         try {
+            userRoleService.deleteByBoard(boardId);
             boardService.delete(boardId);
             return ResponseEntity.ok(Response.success(null));
         } catch (Exception e) {

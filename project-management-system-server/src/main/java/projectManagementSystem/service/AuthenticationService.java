@@ -4,7 +4,7 @@ import net.bytebuddy.utility.RandomString;
 import org.springframework.stereotype.Service;
 import projectManagementSystem.entity.User;
 import projectManagementSystem.repository.UserRepository;
-import projectManagementSystem.utils.ServiceUtils;
+import projectManagementSystem.utils.AuthenticationUtils;
 
 import java.util.Base64;
 import java.util.HashMap;
@@ -14,8 +14,8 @@ import java.util.Optional;
 @Service
 public class AuthenticationService {
     private UserRepository userRepository;
-
     private final Map<Long, String> tokensMap;
+
 
     public AuthenticationService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -27,12 +27,14 @@ public class AuthenticationService {
         if (!userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("No registered user with email " + email + " exists.");
         }
-        if (!ServiceUtils.isPasswordCorrect(user.get().getPassword(), password)) {
+        if (!AuthenticationUtils.isPasswordCorrect(user.get().getPassword(), password)) {
             throw new IllegalArgumentException("Password is incorrect!");
         }
+
         long id = user.get().getId();
         String token = createToken(id);
         tokensMap.put(id, token);
+
         return token;
     }
 
@@ -43,7 +45,7 @@ public class AuthenticationService {
      * @return boolean, true if token format is valid and if it exists in the tokens map, otherwise-false.
      */
     public boolean isTokenCorrect(String token) {
-        long userId = getIdFromToken(token);
+        long userId = extractIdFromToken(token);
         return token.equals(tokensMap.get(userId));
     }
 
@@ -63,7 +65,7 @@ public class AuthenticationService {
      * @param token - String token to extract id from.
      * @return long, user id if it exists in token, otherwise - returns -1
      */
-    public long getIdFromToken(String token) {
+    public long extractIdFromToken(String token) {
         try {
             String decodedString = new String(Base64.getDecoder().decode(token));
             try {
