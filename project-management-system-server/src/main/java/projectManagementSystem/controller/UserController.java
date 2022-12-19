@@ -33,7 +33,7 @@ public class UserController {
 
 
     @RequestMapping(method = RequestMethod.POST, path = "/getBoards")
-    public ResponseEntity<Response<List<Board>>> getBoardsByUserId(@RequestBody long userId) {
+    public ResponseEntity<Response<List<Board>>> getBoardsByUserId(@RequestAttribute long userId) {
         logger.info("in BoardController.create()");
         try {
             List<Board> boards = userService.userBoards(userId);
