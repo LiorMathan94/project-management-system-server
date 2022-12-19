@@ -35,6 +35,8 @@ public class BoardController {
     public BoardController() {
     }
 
+
+
     @RequestMapping(method = RequestMethod.POST, path = "/create")
     public ResponseEntity<Response<BoardDTO>> create(@RequestBody BoardRequest boardRequest) {
         logger.info("in BoardController.create()");
@@ -201,4 +203,5 @@ public class BoardController {
                     itemRequest.getType(), itemRequest.getBoardId()));
         }
     }
+
 }
