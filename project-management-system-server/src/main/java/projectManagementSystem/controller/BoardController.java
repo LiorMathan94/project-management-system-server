@@ -36,7 +36,7 @@ public class BoardController {
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/create")
-    public ResponseEntity<Response<BoardDTO>> create(@RequestHeader long userId, @RequestBody BoardRequest boardRequest) {
+    public ResponseEntity<Response<BoardDTO>> create(@RequestAttribute long userId, @RequestBody BoardRequest boardRequest) {
         logger.info("in BoardController.create()");
 
         try {
