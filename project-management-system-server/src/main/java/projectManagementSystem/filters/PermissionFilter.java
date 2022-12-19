@@ -48,7 +48,7 @@ public class PermissionFilter implements Filter {
 
         if (url.contains("board") && !url.contains("create") && !url.contains("getBoardsByUserId")) {
             BoardAction action = BoardAction.getByRoute(url);
-            long userId = parseLong(req.getHeader("userId"));
+            long userId = (long) req.getAttribute("userId");
             long boardId = parseLong(req.getHeader("boardId"));
 
             if (!userRoleService.isAuthorized(boardId, userId, action)) {
