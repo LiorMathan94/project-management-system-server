@@ -10,8 +10,7 @@ public class RoleRequest {
     public RoleRequest() {
     }
 
-    public RoleRequest(long boardId, long userId, Role role) {
-        this.boardId = boardId;
+    public RoleRequest(long userId, Role role) {
         this.userId = userId;
         this.role = role;
     }
@@ -26,5 +25,9 @@ public class RoleRequest {
 
     public Role getRole() {
         return role;
+    }
+
+    public void setBoardId(long boardId) {
+        this.boardId = boardId;
     }
 }

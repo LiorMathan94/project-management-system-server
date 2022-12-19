@@ -1,10 +1,7 @@
 package projectManagementSystem.service;
 
 import org.springframework.stereotype.Service;
-import projectManagementSystem.entity.Board;
-import projectManagementSystem.entity.Role;
-import projectManagementSystem.entity.User;
-import projectManagementSystem.entity.UserInBoard;
+import projectManagementSystem.entity.*;
 import projectManagementSystem.repository.BoardRepository;
 import projectManagementSystem.repository.UserInBoardRepository;
 import projectManagementSystem.repository.UserRepository;
@@ -24,6 +21,22 @@ public class UserRoleService {
         this.userInBoardRepository = userInBoardRepository;
         this.boardRepository = boardRepository;
         this.userRepository = userRepository;
+    }
+
+    public boolean isAuthorized(long boardId, long userId, BoardAction action) {
+        Optional<Board> board = boardRepository.findById(boardId);
+        if (!board.isPresent()) {
+            throw new IllegalArgumentException("Could not find board ID: " + boardId);
+        }
+
+        Optional<User> user = userRepository.findById(userId);
+        if (!user.isPresent()) {
+            throw new IllegalArgumentException("Could not find user ID: " + userId);
+        }
+
+        List<UserInBoard> userInBoard = userInBoardRepository.findByBoardAndUser(board.get(), user.get());
+
+        return (!userInBoard.isEmpty() && userInBoard.get(0).getRole().ordinal() <= action.getRole().ordinal());
     }
 
     public UserInBoard add(long boardId, long userId, Role role) {
