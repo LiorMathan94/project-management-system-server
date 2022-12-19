@@ -7,16 +7,20 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import projectManagementSystem.service.AuthenticationService;
+import projectManagementSystem.service.UserRoleService;
 
 @Configuration
 public class AppConfig {
     public static final Logger logger = LogManager.getLogger(AppConfig.class);
     private final AuthenticationService authService;
+    private final UserRoleService userRoleService;
 
     @Autowired
-    public AppConfig(AuthenticationService authService) {
-        System.out.println("AppConfig is created");
+    public AppConfig(AuthenticationService authService, UserRoleService userRoleService) {
+        logger.info("AppConfig is created");
+
         this.authService = authService;
+        this.userRoleService = userRoleService;
     }
 
     /**
@@ -49,6 +53,16 @@ public class AppConfig {
         TokenFilter customURLFilter = new TokenFilter(authService);
         registrationBean.setFilter(customURLFilter);
         registrationBean.setOrder(2);
+        return registrationBean;
+    }
+
+    @Bean
+    public FilterRegistrationBean<PermissionFilter> filterPermissionBean() {
+        logger.info("filterPermissionBean has been created");
+        FilterRegistrationBean<PermissionFilter> registrationBean = new FilterRegistrationBean<>();
+        PermissionFilter permissionFilter = new PermissionFilter(userRoleService);
+        registrationBean.setFilter(permissionFilter);
+        registrationBean.setOrder(3);
         return registrationBean;
     }
 }
