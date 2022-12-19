@@ -38,7 +38,7 @@ public class InputValidation {
      * @return true if password is valid, otherwise - false.
      */
     public static boolean isValidPassword(String password) {
-        String regexPattern = "(.*).{8,20}$";
+        String regexPattern = "(.*).{6,20}";
         if (password != null && patternMatches(password, regexPattern)) {
             return true;
         }
