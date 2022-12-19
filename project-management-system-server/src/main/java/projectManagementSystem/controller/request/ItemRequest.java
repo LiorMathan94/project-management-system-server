@@ -20,8 +20,8 @@ public class ItemRequest {
     public ItemRequest() {
     }
 
-    public ItemRequest(Long boardId, String status, String type, Long parentId, Long creatorId, Long assignedToId, LocalDate dueDate, Importance importance, String title, String description) {
-        this.boardId = boardId;
+    public ItemRequest(String status, String type, Long parentId, Long creatorId, Long assignedToId, LocalDate dueDate,
+                       Importance importance, String title, String description) {
         this.status = status;
         this.type = type;
         this.parentId = parentId;
@@ -39,6 +39,10 @@ public class ItemRequest {
 
     public Long getBoardId() {
         return boardId;
+    }
+
+    public void setBoardId(long boardId) {
+        this.boardId = boardId;
     }
 
     public String getStatus() {
