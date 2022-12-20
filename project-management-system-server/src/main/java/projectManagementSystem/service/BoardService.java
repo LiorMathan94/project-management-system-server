@@ -9,7 +9,9 @@ import projectManagementSystem.repository.ItemRepository;
 import projectManagementSystem.repository.UserInBoardRepository;
 import projectManagementSystem.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BoardService {
@@ -155,6 +157,16 @@ public class BoardService {
         }
 
         this.boardRepository.delete(board.get());
+    }
+
+    public List<BoardDTO> getBoardsByUserId(long userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            throw new IllegalArgumentException("User ID: "+ userId +" does not exist");
+        }
+
+        return userInBoardRepository.findBoardsByUserId(user).stream()
+                .map(userInBoard -> new BoardDTO(userInBoard.getBoard())).collect(Collectors.toList());
     }
 
     private void deleteStatusItems(Board board, String status) {

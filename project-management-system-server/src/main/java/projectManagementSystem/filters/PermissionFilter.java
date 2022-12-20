@@ -2,7 +2,6 @@ package projectManagementSystem.filters;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.util.IOUtils;
 import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.service.UserRoleService;
 
@@ -10,7 +9,6 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.stream.Collectors;
 
 import static java.lang.Long.parseLong;
 
@@ -48,8 +46,11 @@ public class PermissionFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) servletResponse;
         String url = ((HttpServletRequest) servletRequest).getRequestURL().toString();
 
+
         if (url.contains("board") && !url.contains("create") && !url.contains("getBoardsByUserId")) {
-            BoardAction action = BoardAction.getByRoute(url);
+            BoardAction action = url.contains("updateItem") ?
+                    BoardAction.valueOf(req.getHeader("action")) : BoardAction.getByRoute(url);
+
             long userId = (long) req.getAttribute("userId");
             long boardId = parseLong(req.getHeader("boardId"));
 
