@@ -35,95 +35,48 @@ public class ItemService {
         return itemRepository.save(newItem);
     }
 
-    public Item setParent(ItemRequest itemRequest) {
+    public Item update(ItemRequest itemRequest) {
         Optional<Item> item = itemRepository.findById(itemRequest.getItemId());
 
         if (!item.isPresent()) {
             throw new IllegalArgumentException(String.format("Item ID: %d was not found!", itemRequest.getItemId()));
         }
 
-        Optional<Item> parentItem = itemRepository.findById(itemRequest.getParentId());
-        Item parent = parentItem.isPresent() ? parentItem.get() : null;
-        item.get().setParent(parent);
-
+        updateItem(item.get(), itemRequest);
         return itemRepository.save(item.get());
     }
 
-    public Item assign(ItemRequest itemRequest) {
-        Optional<Item> item = itemRepository.findById(itemRequest.getItemId());
-
-        if (!item.isPresent()) {
-            throw new IllegalArgumentException(String.format("Item ID: %d was not found!", itemRequest.getItemId()));
+    private void updateItem(Item item, ItemRequest itemRequest) {
+        switch (itemRequest.getBoardAction()) {
+            case ASSIGN_ITEM:
+                item.setAssignedToId(itemRequest.getAssignedToId());
+                break;
+            case SET_ITEM_TYPE:
+                item.setType(itemRequest.getType());
+                break;
+            case SET_ITEM_TITLE:
+                item.setTitle(itemRequest.getTitle());
+                break;
+            case SET_ITEM_PARENT:
+                Optional<Item> parentItem = itemRepository.findById(itemRequest.getParentId());
+                Item parent = parentItem.isPresent() ? parentItem.get() : null;
+                item.setParent(parent);
+                break;
+            case SET_ITEM_STATUS:
+                item.setStatus(itemRequest.getStatus());
+                break;
+            case SET_ITEM_DUE_DATE:
+                item.setDueDate(itemRequest.getDueDate());
+                break;
+            case SET_ITEM_IMPORTANCE:
+                item.setImportance(itemRequest.getImportance());
+                break;
+            case SET_ITEM_DESCRIPTION:
+                item.setDescription(itemRequest.getDescription());
+                break;
+            default:
+                throw new IllegalArgumentException("Item operation is not supported!");
         }
-
-        item.get().setAssignedToId(itemRequest.getAssignedToId());
-        return itemRepository.save(item.get());
-    }
-
-    public Item setType(ItemRequest itemRequest) {
-        Optional<Item> item = itemRepository.findById(itemRequest.getItemId());
-
-        if (!item.isPresent()) {
-            throw new IllegalArgumentException(String.format("Item ID: %d was not found!", itemRequest.getItemId()));
-        }
-
-        item.get().setType(itemRequest.getType());
-        return itemRepository.save(item.get());
-    }
-
-    public Item setStatus(ItemRequest itemRequest) {
-        Optional<Item> item = itemRepository.findById(itemRequest.getItemId());
-
-        if (!item.isPresent()) {
-            throw new IllegalArgumentException(String.format("Item ID: %d was not found!", itemRequest.getItemId()));
-        }
-
-        item.get().setStatus(itemRequest.getStatus());
-        return itemRepository.save(item.get());
-    }
-
-    public Item setDueDate(ItemRequest itemRequest) {
-        Optional<Item> item = itemRepository.findById(itemRequest.getItemId());
-
-        if (!item.isPresent()) {
-            throw new IllegalArgumentException(String.format("Item ID: %d was not found!", itemRequest.getItemId()));
-        }
-
-        item.get().setDueDate(itemRequest.getDueDate());
-        return itemRepository.save(item.get());
-    }
-
-    public Item setImportance(ItemRequest itemRequest) {
-        Optional<Item> item = itemRepository.findById(itemRequest.getItemId());
-
-        if (!item.isPresent()) {
-            throw new IllegalArgumentException(String.format("Item ID: %d was not found!", itemRequest.getItemId()));
-        }
-
-        item.get().setImportance(itemRequest.getImportance());
-        return itemRepository.save(item.get());
-    }
-
-    public Item setTitle(ItemRequest itemRequest) {
-        Optional<Item> item = itemRepository.findById(itemRequest.getItemId());
-
-        if (!item.isPresent()) {
-            throw new IllegalArgumentException(String.format("Item ID: %d was not found!", itemRequest.getItemId()));
-        }
-
-        item.get().setTitle(itemRequest.getTitle());
-        return itemRepository.save(item.get());
-    }
-
-    public Item setDescription(ItemRequest itemRequest) {
-        Optional<Item> item = itemRepository.findById(itemRequest.getItemId());
-
-        if (!item.isPresent()) {
-            throw new IllegalArgumentException(String.format("Item ID: %d was not found!", itemRequest.getItemId()));
-        }
-
-        item.get().setDescription(itemRequest.getDescription());
-        return itemRepository.save(item.get());
     }
 
     public void deleteItem(Long itemId) {

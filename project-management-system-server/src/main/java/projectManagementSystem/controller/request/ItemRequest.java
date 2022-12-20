@@ -1,11 +1,13 @@
 package projectManagementSystem.controller.request;
 
+import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.Importance;
 
 import java.time.LocalDate;
 
 public class ItemRequest {
     private Long itemId;
+    private BoardAction boardAction;
     private Long boardId;
     private String status;
     private String type;
@@ -83,5 +85,13 @@ public class ItemRequest {
 
     public void setItemId(Long itemId) {
         this.itemId = itemId;
+    }
+
+    public BoardAction getBoardAction() {
+        return boardAction;
+    }
+
+    public void setBoardAction(BoardAction boardAction) {
+        this.boardAction = boardAction;
     }
 }
