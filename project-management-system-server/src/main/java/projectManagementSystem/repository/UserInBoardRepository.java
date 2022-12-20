@@ -15,6 +15,7 @@ import java.util.List;
 public interface UserInBoardRepository extends JpaRepository<UserInBoard, Long> {
     @Query("SELECT u FROM UserInBoard u WHERE u.board=?1 AND u.user=?2")
     List<UserInBoard> findByBoardAndUser(Board board, User user);
+
     @Query("SELECT u FROM UserInBoard u WHERE u.user=?1")
     List<UserInBoard> findBoardsByUserId(User user);
 

@@ -2,7 +2,6 @@ package projectManagementSystem.filters;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.util.IOUtils;
 import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.service.UserRoleService;
 
@@ -10,7 +9,6 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.stream.Collectors;
 
 import static java.lang.Long.parseLong;
 

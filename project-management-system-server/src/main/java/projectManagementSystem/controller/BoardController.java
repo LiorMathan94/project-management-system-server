@@ -9,6 +9,7 @@ import projectManagementSystem.controller.request.BoardRequest;
 import projectManagementSystem.controller.request.ItemRequest;
 import projectManagementSystem.controller.request.RoleRequest;
 import projectManagementSystem.controller.response.Response;
+import projectManagementSystem.entity.Board;
 import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.DTO.BoardDTO;
 import projectManagementSystem.entity.DTO.UserInBoardDTO;
@@ -19,6 +20,7 @@ import projectManagementSystem.service.ItemService;
 import projectManagementSystem.service.UserRoleService;
 import projectManagementSystem.utils.InputValidation;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -35,8 +37,6 @@ public class BoardController {
 
     public BoardController() {
     }
-
-
 
     @RequestMapping(method = RequestMethod.POST, path = "/create")
     public ResponseEntity<Response<BoardDTO>> create(@RequestAttribute long userId, @RequestBody BoardRequest boardRequest) {
@@ -183,6 +183,17 @@ public class BoardController {
             return ResponseEntity.ok(Response.success(
                     new UserInBoardDTO(userRoleService.add
                             (boardId, roleRequest.getUserId(), roleRequest.getRole()))));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/getBoardsByUserId")
+    public ResponseEntity<Response<List<BoardDTO>>> getBoardsByUserId(@RequestAttribute long userId) {
+        logger.info("in BoardController.getBoardsByUserId()");
+        try {
+            List<BoardDTO> boards = boardService.getBoardsByUserId(userId);
+            return ResponseEntity.ok(Response.success(boards));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
         }
