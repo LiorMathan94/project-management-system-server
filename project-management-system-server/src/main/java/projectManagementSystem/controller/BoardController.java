@@ -36,9 +36,12 @@ public class BoardController {
     public BoardController() {
     }
 
+
+
     @RequestMapping(method = RequestMethod.POST, path = "/create")
     public ResponseEntity<Response<BoardDTO>> create(@RequestAttribute long userId, @RequestBody BoardRequest boardRequest) {
         logger.info("in BoardController.create()");
+        System.out.println("in BoardController.create()");
 
         try {
             BoardDTO board = boardService.createBoard(boardRequest);
@@ -210,4 +213,5 @@ public class BoardController {
                     itemRequest.getType(), itemRequest.getBoardId()));
         }
     }
+
 }
