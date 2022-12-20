@@ -76,12 +76,8 @@ public class InputValidation {
      * @return a string that explains password constraints
      */
     public static String passwordConstraints() {
-        return "\nPassword must contain:\n" +
-                "At least 8 characters and at most 20 characters.\n" +
-                "At least one digit.\n" +
-                "At least one upper case letter.\n" +
-                "At least one lower case letter.\n" +
-                "At least one special character which includes !@#$%&*()-+=^.\n" +
+        return "Password must contain: " +
+                "At least 8 characters and at most 20 characters. " +
                 "Must not contain any white spaces.";
     }
 }
