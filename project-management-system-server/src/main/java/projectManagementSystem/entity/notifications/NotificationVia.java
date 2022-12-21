@@ -2,5 +2,5 @@ package projectManagementSystem.entity.notifications;
 
 public enum NotificationVia {
     EMAIL,
-    POP_AP
+    POP_UP
 }

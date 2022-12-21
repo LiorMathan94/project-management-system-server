@@ -35,6 +35,16 @@ public class BoardService {
         return new BoardDTO(savedBoard);
     }
 
+    public BoardDTO join(long boardId) {
+        Optional<Board> board = boardRepository.findById(boardId);
+
+        if (!board.isPresent()) {
+            throw new IllegalArgumentException("Could not find board ID: " + boardId);
+        }
+
+        return new BoardDTO(board.get());
+    }
+
     public BoardDTO setTitle(long boardId, String title) {
         Optional<Board> board = boardRepository.findById(boardId);
 

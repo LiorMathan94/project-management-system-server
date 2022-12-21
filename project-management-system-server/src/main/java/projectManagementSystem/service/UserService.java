@@ -2,17 +2,16 @@ package projectManagementSystem.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import projectManagementSystem.entity.Board;
+import projectManagementSystem.controller.request.NotificationRequest;
 import projectManagementSystem.entity.DTO.UserDTO;
 import projectManagementSystem.entity.User;
-import projectManagementSystem.entity.UserInBoard;
+import projectManagementSystem.entity.notifications.NotificationPreference;
 import projectManagementSystem.repository.BoardRepository;
 import projectManagementSystem.repository.UserInBoardRepository;
 import projectManagementSystem.repository.UserRepository;
 import projectManagementSystem.utils.AuthenticationUtils;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -45,6 +44,22 @@ public class UserService {
         User user = User.createUser(email, encryptedPassword);
 
         return new UserDTO(userRepository.save(user));
+    }
+
+    public UserDTO setNotificationPreferences(NotificationRequest notificationRequest) {
+        Optional<User> user = userRepository.findById(notificationRequest.getUserId());
+
+        if (!user.isPresent()) {
+            throw new IllegalArgumentException("Could not find user ID: " + notificationRequest.getUserId());
+        }
+
+        NotificationPreference preference = new NotificationPreference(user.get());
+        preference.setNotificationViaList(notificationRequest.getNotificationViaList());
+        preference.setBoardActions(notificationRequest.getBoardActions());
+
+        user.get().setNotificationPreferences(preference);
+
+        return new UserDTO(userRepository.save(user.get()));
     }
 
     /**
