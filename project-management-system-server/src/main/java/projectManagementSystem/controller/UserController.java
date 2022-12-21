@@ -55,7 +55,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(Response.failure("Error during user registration. Reason: User register request can't be null."));
         }
         if (!InputValidation.isValidEmail(userRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(Response.failure("Email format is invalid!"));
+            return ResponseEntity.badRequest().body(Response.failure("EmailUtil format is invalid!"));
         }
         if (!InputValidation.isValidPassword(userRequest.getPassword())) {
             return ResponseEntity.badRequest().body(Response.failure("Password format is invalid! " + InputValidation.passwordConstraints()));
@@ -81,7 +81,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(Response.failure("User login credentials cannot be null."));
         }
         if (!InputValidation.isValidEmail(userRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(Response.failure("Email format is invalid!"));
+            return ResponseEntity.badRequest().body(Response.failure("EmailUtil format is invalid!"));
         }
         if (!InputValidation.isValidPassword(userRequest.getPassword())) {
             return ResponseEntity.badRequest().body(Response.failure("Password is incorrect!"));
