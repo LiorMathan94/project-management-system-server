@@ -2,22 +2,29 @@ package projectManagementSystem.utils;
 
 import org.springframework.mail.SimpleMailMessage;
 
+import java.util.Optional;
+
 public class EmailUtil {
     private static final String FROM = "startgooglproject@gmail.com";
 
     /**
+     * Creates and returns a simple mail message (includes data: from, to, subject and body text) if recipient's email is valid and email subject and body are not null.
+     *
      * @param recipient - String, email address of the recipient.
      * @param subject   - String, subject of the email.
      * @param body      - String, content of the email.
-     * @return SimpleMailMessage object - includes the data: from email address, to email address, email subject, and email body text.
+     * @return Optional<SimpleMailMessage> - contains SimpleMailMessage if recipient's email is valid and email subject and body are not null, else - Optional.empty().
      */
-    public static SimpleMailMessage prepareMessage(String recipient, String subject, String body) {
+    public static Optional<SimpleMailMessage> prepareMessage(String recipient, String subject, String body) {
+        if (!InputValidation.isValidEmail(recipient) || subject == null || body == null) {
+            return Optional.empty();
+        }
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(FROM);
         message.setTo(recipient);
         message.setSubject(subject);
         message.setText(body);
-        return message;
+        return Optional.of(message);
     }
 
 }
