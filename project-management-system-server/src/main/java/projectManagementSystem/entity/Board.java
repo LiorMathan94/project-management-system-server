@@ -3,10 +3,7 @@ package projectManagementSystem.entity;
 import projectManagementSystem.utils.InputValidation;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -97,6 +94,10 @@ public class Board {
 
     public void removeItem(Item item) {
         this.items.remove(item);
+    }
+
+    public Optional<Item> getItemById(long itemId) {
+        return this.items.stream().filter(item -> item.getId() == itemId).findAny();
     }
 
     public Map<String, List<Item>> getItemsByStatus() {
