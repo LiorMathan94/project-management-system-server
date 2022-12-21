@@ -9,6 +9,8 @@ import projectManagementSystem.controller.request.BoardRequest;
 import projectManagementSystem.controller.request.ItemRequest;
 import projectManagementSystem.controller.request.RoleRequest;
 import projectManagementSystem.controller.response.Response;
+import projectManagementSystem.entity.Board;
+import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.DTO.BoardDTO;
 import projectManagementSystem.entity.DTO.UserInBoardDTO;
 import projectManagementSystem.entity.Item;
@@ -18,6 +20,7 @@ import projectManagementSystem.service.ItemService;
 import projectManagementSystem.service.UserRoleService;
 import projectManagementSystem.utils.InputValidation;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -30,7 +33,7 @@ public class BoardController {
     private ItemService itemService;
     @Autowired
     private UserRoleService userRoleService;
-    private static final Logger logger = LogManager.getLogger(BoardController.class.getName());
+    private final Logger logger = LogManager.getLogger(BoardController.class.getName());
 
     public BoardController() {
     }
@@ -153,128 +156,19 @@ public class BoardController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, path = "/assignItem")
-    public ResponseEntity<Response<BoardDTO>> assignItem(@RequestHeader long boardId, @RequestBody ItemRequest itemRequest) {
-        logger.info("in BoardController.assignItem()");
+    @RequestMapping(method = RequestMethod.PATCH, path = "/updateItem")
+    public ResponseEntity<Response<BoardDTO>> updateItem(@RequestHeader long boardId, @RequestHeader BoardAction action,
+                                                         @RequestBody ItemRequest itemRequest) {
+        logger.info("in BoardController.updateItem()");
 
         try {
             itemRequest.setBoardId(boardId);
             validateItemRequest(itemRequest);
 
-            Item updatedItem = itemService.assign(itemRequest);
+            itemRequest.setBoardAction(action);
+            Item updatedItem = itemService.update(itemRequest);
             BoardDTO board = boardService.updateItem(itemRequest.getBoardId(), updatedItem);
-            return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
-        }
-    }
 
-    @RequestMapping(method = RequestMethod.PATCH, path = "/setItemImportance")
-    public ResponseEntity<Response<BoardDTO>> setItemImportance(@RequestHeader long boardId, @RequestBody ItemRequest itemRequest) {
-        logger.info("in BoardController.setItemImportance()");
-
-        try {
-            itemRequest.setBoardId(boardId);
-            validateItemRequest(itemRequest);
-
-            Item updatedItem = itemService.setImportance(itemRequest);
-            BoardDTO board = boardService.updateItem(itemRequest.getBoardId(), updatedItem);
-            return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
-        }
-    }
-
-    @RequestMapping(method = RequestMethod.PATCH, path = "/setItemDueDate")
-    public ResponseEntity<Response<BoardDTO>> setItemDueDate(@RequestHeader long boardId, @RequestBody ItemRequest itemRequest) {
-        logger.info("in BoardController.setItemDueDate()");
-
-        try {
-            itemRequest.setBoardId(boardId);
-            validateItemRequest(itemRequest);
-
-            Item updatedItem = itemService.setDueDate(itemRequest);
-            BoardDTO board = boardService.updateItem(itemRequest.getBoardId(), updatedItem);
-            return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
-        }
-    }
-
-    @RequestMapping(method = RequestMethod.PATCH, path = "/setItemStatus")
-    public ResponseEntity<Response<BoardDTO>> setItemStatus(@RequestHeader long boardId, @RequestBody ItemRequest itemRequest) {
-        logger.info("in BoardController.setItemStatus()");
-
-        try {
-            itemRequest.setBoardId(boardId);
-            validateItemRequest(itemRequest);
-
-            Item updatedItem = itemService.setStatus(itemRequest);
-            BoardDTO board = boardService.updateItem(itemRequest.getBoardId(), updatedItem);
-            return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
-        }
-    }
-
-    @RequestMapping(method = RequestMethod.PATCH, path = "/setItemTitle")
-    public ResponseEntity<Response<BoardDTO>> setItemTitle(@RequestHeader long boardId, @RequestBody ItemRequest itemRequest) {
-        logger.info("in BoardController.setItemTitle()");
-
-        try {
-            itemRequest.setBoardId(boardId);
-            validateItemRequest(itemRequest);
-
-            Item updatedItem = itemService.setTitle(itemRequest);
-            BoardDTO board = boardService.updateItem(itemRequest.getBoardId(), updatedItem);
-            return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
-        }
-    }
-
-    @RequestMapping(method = RequestMethod.PATCH, path = "/setItemDescription")
-    public ResponseEntity<Response<BoardDTO>> setItemDescription(@RequestHeader long boardId, @RequestBody ItemRequest itemRequest) {
-        logger.info("in BoardController.setItemDescription()");
-
-        try {
-            itemRequest.setBoardId(boardId);
-            validateItemRequest(itemRequest);
-
-            Item updatedItem = itemService.setDescription(itemRequest);
-            BoardDTO board = boardService.updateItem(itemRequest.getBoardId(), updatedItem);
-            return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
-        }
-    }
-
-    @RequestMapping(method = RequestMethod.PATCH, path = "/setItemParent")
-    public ResponseEntity<Response<BoardDTO>> setItemParent(@RequestHeader long boardId, @RequestBody ItemRequest itemRequest) {
-        logger.info("in BoardController.setItemParent()");
-
-        try {
-            itemRequest.setBoardId(boardId);
-            validateItemRequest(itemRequest);
-
-            Item updatedItem = itemService.setParent(itemRequest);
-            BoardDTO board = boardService.updateItem(itemRequest.getBoardId(), updatedItem);
-            return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
-        }
-    }
-
-    @RequestMapping(method = RequestMethod.PATCH, path = "/setItemType")
-    public ResponseEntity<Response<BoardDTO>> setItemType(@RequestHeader long boardId, @RequestBody ItemRequest itemRequest) {
-        logger.info("in BoardController.setItemType()");
-
-        try {
-            itemRequest.setBoardId(boardId);
-            validateItemRequest(itemRequest);
-
-            Item updatedItem = itemService.setType(itemRequest);
-            BoardDTO board = boardService.updateItem(itemRequest.getBoardId(), updatedItem);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
@@ -289,6 +183,17 @@ public class BoardController {
             return ResponseEntity.ok(Response.success(
                     new UserInBoardDTO(userRoleService.add
                             (boardId, roleRequest.getUserId(), roleRequest.getRole()))));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/getBoardsByUserId")
+    public ResponseEntity<Response<List<BoardDTO>>> getBoardsByUserId(@RequestAttribute long userId) {
+        logger.info("in BoardController.getBoardsByUserId()");
+        try {
+            List<BoardDTO> boards = boardService.getBoardsByUserId(userId);
+            return ResponseEntity.ok(Response.success(boards));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
         }

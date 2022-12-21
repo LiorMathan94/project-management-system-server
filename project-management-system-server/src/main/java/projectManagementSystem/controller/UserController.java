@@ -8,10 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import projectManagementSystem.controller.request.UserRequest;
 import projectManagementSystem.controller.response.Response;
 import projectManagementSystem.entity.Board;
-import projectManagementSystem.entity.DTO.BoardDTO;
 import projectManagementSystem.entity.DTO.UserDTO;
-import projectManagementSystem.entity.Role;
-import projectManagementSystem.entity.User;
 import projectManagementSystem.service.AuthenticationService;
 import projectManagementSystem.service.UserRoleService;
 import projectManagementSystem.service.UserService;
@@ -31,17 +28,6 @@ public class UserController {
     private UserRoleService userRoleService;
     private static final Logger logger = LogManager.getLogger(BoardController.class.getName());
 
-
-    @RequestMapping(method = RequestMethod.POST, path = "/getBoards")
-    public ResponseEntity<Response<List<Board>>> getBoardsByUserId(@RequestAttribute long userId) {
-        logger.info("in BoardController.create()");
-        try {
-            List<Board> boards = userService.userBoards(userId);
-            return ResponseEntity.ok(Response.success(boards));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
-        }
-    }
 
     /**
      * Receives user's email and password. If they are valid sends them to createUser method of UserService, in order to register the user.

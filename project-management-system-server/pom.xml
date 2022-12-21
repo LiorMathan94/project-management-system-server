@@ -73,13 +73,12 @@
             <version>5.8.0</version>
         </dependency>
 
+        <!--for java mail sender-->
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
             <version>1.6.2</version>
         </dependency>
-
-        <!--for java mail sender-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
