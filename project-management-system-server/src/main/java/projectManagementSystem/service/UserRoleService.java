@@ -71,6 +71,15 @@ public class UserRoleService {
         return this.userInBoardRepository.save(userRole);
     }
 
+    public List<UserInBoard> getByBoard(long boardId) {
+        Optional<Board> board = this.boardRepository.findById(boardId);
+        if (!board.isPresent()) {
+            throw new IllegalArgumentException("Could not find board ID: " + boardId);
+        }
+
+        return this.userInBoardRepository.findByBoard(board.get());
+    }
+
     public void deleteByBoard(long boardId) {
         Optional<Board> board = this.boardRepository.findById(boardId);
         if (!board.isPresent()) {

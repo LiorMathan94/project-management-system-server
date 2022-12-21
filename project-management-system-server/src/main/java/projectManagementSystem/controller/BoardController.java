@@ -6,22 +6,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projectManagementSystem.controller.request.BoardRequest;
+import projectManagementSystem.controller.request.CommentRequest;
 import projectManagementSystem.controller.request.ItemRequest;
 import projectManagementSystem.controller.request.RoleRequest;
+import projectManagementSystem.controller.response.NotificationResponse;
 import projectManagementSystem.controller.response.Response;
-import projectManagementSystem.entity.Board;
 import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.DTO.BoardDTO;
-import projectManagementSystem.entity.DTO.UserInBoardDTO;
 import projectManagementSystem.entity.Item;
 import projectManagementSystem.entity.Role;
+import projectManagementSystem.entity.UserInBoard;
 import projectManagementSystem.service.BoardService;
 import projectManagementSystem.service.ItemService;
+import projectManagementSystem.service.NotificationService;
 import projectManagementSystem.service.UserRoleService;
 import projectManagementSystem.utils.InputValidation;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -33,6 +36,10 @@ public class BoardController {
     private ItemService itemService;
     @Autowired
     private UserRoleService userRoleService;
+
+    @Autowired
+    private NotificationService notificationService;
+
     private final Logger logger = LogManager.getLogger(BoardController.class.getName());
 
     public BoardController() {
@@ -150,6 +157,7 @@ public class BoardController {
         try {
             BoardDTO board = boardService.removeItem(boardId, itemToDelete.get());
             itemService.deleteItem(itemId);
+            board.setNotifications(notifyBoardUsers(boardId, BoardAction.DELETE_ITEM));
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
@@ -169,6 +177,23 @@ public class BoardController {
             Item updatedItem = itemService.update(itemRequest);
             BoardDTO board = boardService.updateItem(itemRequest.getBoardId(), updatedItem);
 
+            board.setNotifications(notifyBoardUsers(boardId, action));
+
+            return ResponseEntity.ok(Response.success(board));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.PATCH, path = "/addItemComment")
+    public ResponseEntity<Response<BoardDTO>> addItemComment(@RequestHeader long boardId, @RequestBody CommentRequest commentRequest) {
+        logger.info("in BoardController.addItemComment()");
+
+        try {
+            BoardDTO board = boardService.addComment(boardId, commentRequest.getUserId(),
+                    commentRequest.getItemId(), commentRequest.getContent());
+            board.setNotifications(notifyBoardUsers(boardId, BoardAction.ADD_COMMENT));
+
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
@@ -176,13 +201,14 @@ public class BoardController {
     }
 
     @RequestMapping(method = RequestMethod.PATCH, path = "/grantUserRole")
-    public ResponseEntity<Response<UserInBoardDTO>> grantUserRole(@RequestHeader long boardId, @RequestBody RoleRequest roleRequest) {
+    public ResponseEntity<Response<BoardDTO>> grantUserRole(@RequestHeader long boardId, @RequestBody RoleRequest roleRequest) {
         logger.info("in BoardController.grantUserRole()");
 
         try {
-            return ResponseEntity.ok(Response.success(
-                    new UserInBoardDTO(userRoleService.addByEmail
-                            (boardId, roleRequest.getEmailOfAssignedUser(), roleRequest.getRole()))));
+            BoardDTO board = new BoardDTO(userRoleService.addByEmail(boardId, roleRequest.getEmailOfAssignedUser(), roleRequest.getRole()).getBoard());
+            board.setNotifications(notifyBoardUsers(boardId, BoardAction.GRANT_USER_ROLE));
+
+            return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
         }
@@ -225,4 +251,8 @@ public class BoardController {
         }
     }
 
+    private List<NotificationResponse> notifyBoardUsers(long boardId, BoardAction action) {
+        return notificationService.notifyAll(userRoleService.getByBoard(boardId)
+                .stream().map(UserInBoard::getUser).collect(Collectors.toList()), boardId, action);
+    }
 }
