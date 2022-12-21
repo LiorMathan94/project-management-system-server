@@ -14,6 +14,9 @@ import projectManagementSystem.utils.EmailUtil;
 
 import java.util.Optional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class NotificationService {
     @Autowired
@@ -22,6 +25,16 @@ public class NotificationService {
 
     public NotificationService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    public List<NotificationResponse> notifyAll(List<User> users, long boardId, BoardAction action) {
+        List<NotificationResponse> responses = new ArrayList<>();
+
+        for (User user : users) {
+            responses.add(notify(user, boardId, action));
+        }
+
+        return responses;
     }
 
     public NotificationResponse notify(User user, long boardId, BoardAction action) {

@@ -124,6 +124,21 @@ public class BoardService {
         return new BoardDTO(boardRepository.save(board.get()));
     }
 
+    public BoardDTO addComment(long boardId, long userId, long itemId, String content) {
+        Optional<Board> board = boardRepository.findById(boardId);
+        if (!board.isPresent()) {
+            throw new IllegalArgumentException("Could not find board ID: " + boardId);
+        }
+
+        Optional<Item> item = board.get().getItemById(itemId);
+        if (!item.isPresent()) {
+            throw new IllegalArgumentException("Could not find item ID: " + itemId);
+        }
+
+        item.get().addComment(new Comment(userId, content));
+        return new BoardDTO(boardRepository.save(board.get()));
+    }
+
     public BoardDTO removeItem(long boardId, Item item) {
         Optional<Board> board = boardRepository.findById(boardId);
 
@@ -175,7 +190,7 @@ public class BoardService {
             throw new IllegalArgumentException("User ID: "+ userId +" does not exist");
         }
 
-        return userInBoardRepository.findBoardsByUserId(user).stream()
+        return userInBoardRepository.findByUserId(user).stream()
                 .map(userInBoard -> new BoardDTO(userInBoard.getBoard())).collect(Collectors.toList());
     }
 
