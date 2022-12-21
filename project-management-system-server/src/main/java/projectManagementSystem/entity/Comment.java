@@ -16,9 +16,9 @@ public class Comment {
     public Comment() {
     }
 
-    public Comment(Long userId) {
+    public Comment(Long userId, String content) {
         this.userId = userId;
-        this.content = "";
+        this.content = content;
         this.timestamp = LocalDateTime.now();
     }
 

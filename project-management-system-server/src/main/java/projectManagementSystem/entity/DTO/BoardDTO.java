@@ -1,8 +1,10 @@
 package projectManagementSystem.entity.DTO;
 
+import projectManagementSystem.controller.response.NotificationResponse;
 import projectManagementSystem.entity.Board;
 import projectManagementSystem.entity.Item;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +15,7 @@ public class BoardDTO {
     private Set<String> statuses;
     private Set<String> types;
     private Map<String, List<Item>> items;
+    private List<NotificationResponse> notifications;
 
     public BoardDTO(Board board) {
         this.id = board.getId();
@@ -20,6 +23,7 @@ public class BoardDTO {
         this.statuses = board.getStatuses();
         this.types = board.getTypes();
         this.items = board.getItemsByStatus();
+        this.notifications = new ArrayList<>();
     }
 
     public long getId() {
@@ -40,5 +44,13 @@ public class BoardDTO {
 
     public Map<String, List<Item>> getItems() {
         return items;
+    }
+
+    public List<NotificationResponse> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<NotificationResponse> notifications) {
+        this.notifications = notifications;
     }
 }

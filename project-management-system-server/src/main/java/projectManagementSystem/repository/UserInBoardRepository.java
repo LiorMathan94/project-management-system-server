@@ -17,7 +17,10 @@ public interface UserInBoardRepository extends JpaRepository<UserInBoard, Long> 
     List<UserInBoard> findByBoardAndUser(Board board, User user);
 
     @Query("SELECT u FROM UserInBoard u WHERE u.user=?1")
-    List<UserInBoard> findBoardsByUserId(User user);
+    List<UserInBoard> findByUserId(User user);
+
+    @Query("SELECT u FROM UserInBoard u WHERE u.board=?1")
+    List<UserInBoard> findByBoard(Board board);
 
     @Transactional
     @Modifying

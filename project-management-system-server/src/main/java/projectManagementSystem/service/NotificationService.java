@@ -8,12 +8,25 @@ import projectManagementSystem.entity.notifications.NotificationPreference;
 import projectManagementSystem.entity.notifications.NotificationVia;
 import projectManagementSystem.repository.UserRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class NotificationService {
     private UserRepository userRepository;
 
     public NotificationService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    public List<NotificationResponse> notifyAll(List<User> users, long boardId, BoardAction action) {
+        List<NotificationResponse> responses = new ArrayList<>();
+
+        for (User user : users) {
+            responses.add(notify(user, boardId, action));
+        }
+
+        return responses;
     }
 
     public NotificationResponse notify(User user, long boardId, BoardAction action) {
