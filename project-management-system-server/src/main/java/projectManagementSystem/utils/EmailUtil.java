@@ -15,7 +15,7 @@ public class EmailUtil {
      * @param body      - String, content of the email.
      * @return Optional<SimpleMailMessage> - contains SimpleMailMessage if recipient's email is valid and email subject and body are not null, else - Optional.empty().
      */
-    public static Optional<SimpleMailMessage> prepareMessage(String recipient, String subject, String body) {
+    public static Optional<SimpleMailMessage> prepareMailMessage(String recipient, String subject, String body) {
         if (!InputValidation.isValidEmail(recipient) || subject == null || body == null) {
             return Optional.empty();
         }
