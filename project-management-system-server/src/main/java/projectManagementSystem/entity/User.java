@@ -1,5 +1,7 @@
 package projectManagementSystem.entity;
 
+import projectManagementSystem.entity.notifications.NotificationPreference;
+
 import javax.persistence.*;
 
 @Entity
@@ -13,12 +15,17 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "preference_id", referencedColumnName = "id")
+    private NotificationPreference notificationPreferences;
+
     public User() {
     }
 
     private User(String email, String password) {
         this.email = email;
         this.password = password;
+        this.notificationPreferences = new NotificationPreference(this);
     }
 
     public static User createUser(String email, String password){
@@ -39,5 +46,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public NotificationPreference getNotificationPreferences() {
+        return notificationPreferences;
+    }
+
+    public void setNotificationPreferences(NotificationPreference notificationPreferences) {
+        this.notificationPreferences = notificationPreferences;
     }
 }

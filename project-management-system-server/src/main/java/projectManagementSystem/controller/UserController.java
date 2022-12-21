@@ -5,16 +5,15 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import projectManagementSystem.controller.request.NotificationRequest;
 import projectManagementSystem.controller.request.UserRequest;
 import projectManagementSystem.controller.response.Response;
-import projectManagementSystem.entity.Board;
 import projectManagementSystem.entity.DTO.UserDTO;
+import projectManagementSystem.entity.User;
 import projectManagementSystem.service.AuthenticationService;
 import projectManagementSystem.service.UserRoleService;
 import projectManagementSystem.service.UserService;
 import projectManagementSystem.utils.InputValidation;
-
-import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -78,6 +77,20 @@ public class UserController {
             return ResponseEntity.ok(Response.success(token));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during user login: " + e.getMessage()));
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.PATCH, path = "/setNotificationPreferences")
+    public ResponseEntity<Response<UserDTO>> setNotificationPreferences(@RequestBody NotificationRequest notificationRequest) {
+        if (notificationRequest == null) {
+            return ResponseEntity.badRequest().body(Response.failure("Notification request cannot be null"));
+        }
+
+        try {
+            UserDTO user = userService.setNotificationPreferences(notificationRequest);
+            return ResponseEntity.ok(Response.success(user));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure("Error occurred during setting the notifications preferences: " + e.getMessage()));
         }
     }
 
