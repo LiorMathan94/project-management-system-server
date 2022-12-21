@@ -47,7 +47,7 @@ public class NotificationService {
             if (preference.getNotificationViaList().contains(NotificationVia.EMAIL)) {
                 Optional<SimpleMailMessage> mailMessage = EmailUtil.prepareMailMessage(user.getEmail(), "Notification From the Best Project Management System in the World", buildNotificationMessage(boardId, action));
                 if (!mailMessage.isPresent()) {
-                    throw new IllegalArgumentException("Recipient email must be valid, email subject and body can't be null.");
+                    throw new IllegalArgumentException("Error sending notification on action: " + action + "at board id: " + boardId + ", recipient email must be valid, email subject and body can't be null.");
                 }
                 mailSender.send(mailMessage.get());
             }
