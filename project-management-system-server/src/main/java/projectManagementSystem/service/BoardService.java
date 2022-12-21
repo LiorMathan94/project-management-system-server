@@ -175,4 +175,16 @@ public class BoardService {
             this.itemRepository.delete(item);
         }
     }
+
+    public BoardDTO join(long boardId) {
+        Optional<Board> board = boardRepository.findById(boardId);
+
+        if (!board.isPresent()) {
+            throw new IllegalArgumentException("Could not find board ID: " + boardId);
+        }
+
+        return new BoardDTO(board.get());
+    }
+
+
 }

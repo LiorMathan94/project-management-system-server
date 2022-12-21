@@ -53,15 +53,15 @@ public class BoardController {
     }
 
     @RequestMapping(method = RequestMethod.PATCH, path = "/title")
-    public ResponseEntity<Response<BoardDTO>> setTitle(@RequestHeader long boardId, @RequestParam String title) {
+    public ResponseEntity<Response<BoardDTO>> setTitle(@RequestHeader long boardId, @RequestParam String value) {
         logger.info("in BoardController.setTitle()");
 
-        if (!InputValidation.isValidLabel(title)) {
-            return ResponseEntity.badRequest().body(Response.failure("Invalid title: " + title));
+        if (!InputValidation.isValidLabel(value)) {
+            return ResponseEntity.badRequest().body(Response.failure("Invalid title: " + value));
         }
 
         try {
-            BoardDTO board = boardService.setTitle(boardId, title);
+            BoardDTO board = boardService.setTitle(boardId, value);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
@@ -69,15 +69,15 @@ public class BoardController {
     }
 
     @RequestMapping(method = RequestMethod.PATCH, path = "/addStatus")
-    public ResponseEntity<Response<BoardDTO>> addStatus(@RequestHeader long boardId, @RequestParam String status) {
+    public ResponseEntity<Response<BoardDTO>> addStatus(@RequestHeader long boardId, @RequestParam String value) {
         logger.info("in BoardController.addStatus()");
 
-        if (!InputValidation.isValidLabel(status)) {
-            return ResponseEntity.badRequest().body(Response.failure("Invalid status: " + status));
+        if (!InputValidation.isValidLabel(value)) {
+            return ResponseEntity.badRequest().body(Response.failure("Invalid status: " + value));
         }
 
         try {
-            BoardDTO board = boardService.addStatus(boardId, status);
+            BoardDTO board = boardService.addStatus(boardId, value);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
@@ -97,15 +97,15 @@ public class BoardController {
     }
 
     @RequestMapping(method = RequestMethod.PATCH, path = "/addType")
-    public ResponseEntity<Response<BoardDTO>> addType(@RequestHeader long boardId, @RequestParam String type) {
+    public ResponseEntity<Response<BoardDTO>> addType(@RequestHeader long boardId, @RequestParam String value) {
         logger.info("in BoardController.addType()");
 
-        if (!InputValidation.isValidLabel(type)) {
-            return ResponseEntity.badRequest().body(Response.failure("Invalid type: " + type));
+        if (!InputValidation.isValidLabel(value)) {
+            return ResponseEntity.badRequest().body(Response.failure("Invalid type: " + value));
         }
 
         try {
-            BoardDTO board = boardService.addType(boardId, type);
+            BoardDTO board = boardService.addType(boardId, value);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
@@ -113,11 +113,11 @@ public class BoardController {
     }
 
     @RequestMapping(method = RequestMethod.PATCH, path = "/removeType")
-    public ResponseEntity<Response<BoardDTO>> removeType(@RequestHeader long boardId, @RequestParam String type) {
+    public ResponseEntity<Response<BoardDTO>> removeType(@RequestHeader long boardId, @RequestParam String value) {
         logger.info("in BoardController.removeType()");
 
         try {
-            BoardDTO board = boardService.removeType(boardId, type);
+            BoardDTO board = boardService.removeType(boardId, value);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
@@ -181,8 +181,8 @@ public class BoardController {
 
         try {
             return ResponseEntity.ok(Response.success(
-                    new UserInBoardDTO(userRoleService.add
-                            (boardId, roleRequest.getUserId(), roleRequest.getRole()))));
+                    new UserInBoardDTO(userRoleService.addByEmail
+                            (boardId, roleRequest.getEmailOfAssignedUser(), roleRequest.getRole()))));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
         }
