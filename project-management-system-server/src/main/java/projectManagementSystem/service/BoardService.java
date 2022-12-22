@@ -35,8 +35,6 @@ public class BoardService {
         return new BoardDTO(savedBoard);
     }
 
-
-
     public BoardDTO setTitle(long boardId, String title) {
         Optional<Board> board = boardRepository.findById(boardId);
 

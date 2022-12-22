@@ -42,6 +42,7 @@ public class EmailUtil {
         if (!InputValidation.isValidEmail(recipient) || subject == null || body == null) {
             return Optional.empty();
         }
+
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(FROM);
         message.setTo(recipient);

@@ -56,10 +56,6 @@ public class Board {
     }
 
     public void addStatus(String status) {
-        if (!InputValidation.isValidLabel(status)) {
-            throw new IllegalArgumentException(String.format("Bad status: %s. A status can contain 1-20 characters.", status));
-        }
-
         this.statuses.add(status);
     }
 
@@ -68,10 +64,6 @@ public class Board {
     }
 
     public void addType(String type) {
-        if (!InputValidation.isValidLabel(type)) {
-            throw new IllegalArgumentException(String.format("Bad type: %s. A type can contain 1-20 characters.", type));
-        }
-
         this.types.add(type);
     }
 
