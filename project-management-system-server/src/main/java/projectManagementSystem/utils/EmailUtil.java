@@ -10,13 +10,20 @@ import java.util.Optional;
 @Service
 public class EmailUtil {
     private final String FROM = "startgooglproject@gmail.com";
-
     @Autowired
     private JavaMailSender mailSender;
 
-    public Optional<SimpleMailMessage> sendEmail(String recipient, String subject, String body){
-        Optional<SimpleMailMessage> mailMessage = prepareMailMessage(recipient,subject,body);
-        if(!mailMessage.isPresent()){
+    /**
+     * Sends an email using JavaMailSender.
+     *
+     * @param recipient - String, email address of the recipient.
+     * @param subject   - String, subject of the email.
+     * @param body      - String, content of the email.
+     * @return Optional<SimpleMailMessage> - contains SimpleMailMessage if recipient's email is valid and email subject and body are not null, else - Optional.empty().
+     */
+    public Optional<SimpleMailMessage> sendEmail(String recipient, String subject, String body) {
+        Optional<SimpleMailMessage> mailMessage = prepareMailMessage(recipient, subject, body);
+        if (!mailMessage.isPresent()) {
             return Optional.empty();
         }
         mailSender.send(mailMessage.get());
@@ -24,14 +31,14 @@ public class EmailUtil {
     }
 
     /**
-     * Creates and returns a simple mail message (includes data: from, to, subject and body text) if recipient's email is valid and email subject and body are not null.
+     * Creates a simple mail message (includes the data: from, to, subject and body text).
      *
      * @param recipient - String, email address of the recipient.
      * @param subject   - String, subject of the email.
      * @param body      - String, content of the email.
      * @return Optional<SimpleMailMessage> - contains SimpleMailMessage if recipient's email is valid and email subject and body are not null, else - Optional.empty().
      */
-    public Optional<SimpleMailMessage> prepareMailMessage(String recipient, String subject, String body) {
+    private Optional<SimpleMailMessage> prepareMailMessage(String recipient, String subject, String body) {
         if (!InputValidation.isValidEmail(recipient) || subject == null || body == null) {
             return Optional.empty();
         }
