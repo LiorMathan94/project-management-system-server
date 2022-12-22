@@ -30,26 +30,27 @@ import java.util.stream.Collectors;
 @CrossOrigin
 @RequestMapping("/board")
 public class BoardController {
-    @Autowired
-    private BoardService boardService;
-    @Autowired
-    private ItemService itemService;
-    @Autowired
-    private UserRoleService userRoleService;
-    @Autowired
-    private NotificationService notificationService;
-    @Autowired
-    private SocketUtil socketUtil;
+    private final BoardService boardService;
+    private final ItemService itemService;
+    private final UserRoleService userRoleService;
+    private final NotificationService notificationService;
+    private final SocketUtil socketUtil;
 
-    private final Logger logger = LogManager.getLogger(BoardController.class.getName());
+    private static final Logger logger = LogManager.getLogger(BoardController.class.getName());
 
-    public BoardController() {
+    @Autowired
+    public BoardController(BoardService boardService, ItemService itemService, UserRoleService userRoleService,
+                           NotificationService notificationService, SocketUtil socketUtil) {
+        this.boardService = boardService;
+        this.itemService = itemService;
+        this.notificationService = notificationService;
+        this.userRoleService = userRoleService;
+        this.socketUtil = socketUtil;
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/create")
     public ResponseEntity<Response<BoardDTO>> create(@RequestAttribute long userId, @RequestBody BoardRequest boardRequest) {
         logger.info("in BoardController.create()");
-        System.out.println("in BoardController.create()");
 
         try {
             BoardDTO board = boardService.createBoard(boardRequest);
