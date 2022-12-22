@@ -39,8 +39,18 @@ public class UserRoleService {
         return (!userInBoard.isEmpty() && userInBoard.get(0).getRole().ordinal() <= action.getRole().ordinal());
     }
 
+    public UserInBoard addByEmail(long boardId, String emailOfAssignedUser, Role role) {
+        Optional<User> user = userRepository.findByEmail(emailOfAssignedUser);
+        if (!user.isPresent()) {
+            throw new IllegalArgumentException("Could not find user with email: " + emailOfAssignedUser);
+        }
+
+        return add(boardId,user.get().getId(),role);
+    }
+
     public UserInBoard add(long boardId, long userId, Role role) {
         Optional<Board> board = boardRepository.findById(boardId);
+
         if (!board.isPresent()) {
             throw new IllegalArgumentException("Could not find board ID: " + boardId);
         }
@@ -95,4 +105,6 @@ public class UserRoleService {
 
         userInBoard.setRole(role);
     }
+
+
 }
