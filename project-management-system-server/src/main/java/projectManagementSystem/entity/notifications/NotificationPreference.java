@@ -27,6 +27,9 @@ public class NotificationPreference {
     @OneToOne(mappedBy = "notificationPreferences")
     private User user;
 
+    public NotificationPreference() {
+    }
+
     public NotificationPreference(User user) {
         this.boardActions = new ArrayList<>();
         this.notificationViaList = new ArrayList<>();

@@ -48,7 +48,7 @@ public class CorsFilter implements Filter {
             res.addHeader("Access-Control-Allow-Methods",
                     "GET, OPTIONS, HEAD, PUT, POST, DELETE, PATCH");
             res.addHeader("Access-Control-Allow-Credentials", "true");
-            res.addHeader("Access-Control-Allow-Credentials", "true");
+//            res.addHeader("Access-Control-Allow-Credentials", "true");
 
             if (request.getMethod().equals("OPTIONS")) {
                 res.setStatus(HttpServletResponse.SC_ACCEPTED);

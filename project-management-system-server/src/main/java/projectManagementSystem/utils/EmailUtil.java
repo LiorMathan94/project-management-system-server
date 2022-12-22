@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Service
 public class EmailUtil {
-    private final String FROM = "startgooglproject@gmail.com";
+    private static final String FROM = "startgooglproject@gmail.com";
     @Autowired
     private JavaMailSender mailSender;
 
@@ -38,7 +38,7 @@ public class EmailUtil {
      * @param body      - String, content of the email.
      * @return Optional<SimpleMailMessage> - contains SimpleMailMessage if recipient's email is valid and email subject and body are not null, else - Optional.empty().
      */
-    private Optional<SimpleMailMessage> prepareMailMessage(String recipient, String subject, String body) {
+    public static Optional<SimpleMailMessage> prepareMailMessage(String recipient, String subject, String body) {
         if (!InputValidation.isValidEmail(recipient) || subject == null || body == null) {
             return Optional.empty();
         }
