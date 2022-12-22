@@ -1,5 +1,8 @@
 package projectManagementSystem.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import projectManagementSystem.controller.response.NotificationResponse;
 import projectManagementSystem.entity.BoardAction;
@@ -7,12 +10,17 @@ import projectManagementSystem.entity.User;
 import projectManagementSystem.entity.notifications.NotificationPreference;
 import projectManagementSystem.entity.notifications.NotificationVia;
 import projectManagementSystem.repository.UserRepository;
+import projectManagementSystem.utils.EmailUtil;
+
+import java.util.Optional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class NotificationService {
+    @Autowired
+    JavaMailSender mailSender;
     private UserRepository userRepository;
 
     public NotificationService(UserRepository userRepository) {
@@ -37,8 +45,11 @@ public class NotificationService {
             String message = buildNotificationMessage(boardId, action);
 
             if (preference.getNotificationViaList().contains(NotificationVia.EMAIL)) {
-                String email = user.getEmail();
-                // TODO: send mail
+                Optional<SimpleMailMessage> mailMessage = EmailUtil.prepareMailMessage(user.getEmail(), "Notification From the Best Project Management System in the World", buildNotificationMessage(boardId, action));
+                if (!mailMessage.isPresent()) {
+                    throw new IllegalArgumentException("Error sending notification on action: " + action + "at board id: " + boardId + ", recipient email must be valid, email subject and body can't be null.");
+                }
+                mailSender.send(mailMessage.get());
             }
 
             if (preference.getNotificationViaList().contains(NotificationVia.POP_UP)) {
