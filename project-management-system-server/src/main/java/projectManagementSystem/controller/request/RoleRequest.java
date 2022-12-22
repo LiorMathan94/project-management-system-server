@@ -2,9 +2,13 @@ package projectManagementSystem.controller.request;
 
 import projectManagementSystem.entity.Role;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 public class RoleRequest {
     private long boardId;
     private String emailOfAssignedUser;
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     public RoleRequest() {

@@ -99,7 +99,7 @@ public class UserRoleService {
     }
 
     private void updateExisting(UserInBoard userInBoard, Role role) {
-        if (userInBoard.getRole() == Role.ADMIN) {
+        if (userInBoard.getRole() == Role.ADMIN && role != Role.ADMIN) {
             throw new IllegalArgumentException("Cannot change admin role!");
         }
 

@@ -206,7 +206,8 @@ public class BoardController {
 
         try {
             BoardDTO board = new BoardDTO(userRoleService.addByEmail(boardId, roleRequest.getEmailOfAssignedUser(), roleRequest.getRole()).getBoard());
-            board.setNotifications(notifyBoardUsers(boardId, BoardAction.GRANT_USER_ROLE));
+            List<NotificationResponse> notifications = notifyBoardUsers(boardId, BoardAction.GRANT_USER_ROLE);
+            board.setNotifications(notifications);
 
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
