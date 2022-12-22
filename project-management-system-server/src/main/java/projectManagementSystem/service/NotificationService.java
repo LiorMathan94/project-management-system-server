@@ -4,12 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import projectManagementSystem.controller.response.NotificationResponse;
-import projectManagementSystem.entity.Board;
 import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.User;
 import projectManagementSystem.entity.notifications.NotificationPreference;
 import projectManagementSystem.entity.notifications.NotificationVia;
-import projectManagementSystem.repository.BoardRepository;
 import projectManagementSystem.repository.UserRepository;
 import projectManagementSystem.utils.EmailUtil;
 
@@ -23,7 +21,6 @@ public class NotificationService {
     @Autowired
     private EmailUtil emailUtil;
     private UserRepository userRepository;
-    private BoardRepository boardRepository;
 
     public NotificationService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -47,11 +44,11 @@ public class NotificationService {
             String message = buildNotificationMessage(boardId, action);
 
             if (preference.getNotificationViaList().contains(NotificationVia.EMAIL)) {
-                Optional<SimpleMailMessage> mailMessage = EmailUtil.prepareMailMessage(user.getEmail(),
-                        "Notification From the Best Project Management System in the World", message);
+                Optional<SimpleMailMessage> mailMessage = emailUtil.sendEmail(user.getEmail(),
+                        buildNotificationSubject(boardId), message);
                 if (!mailMessage.isPresent()) {
                     throw new IllegalArgumentException("Error sending notification on action: " + action +
-                            "at board id: " + boardId + ", recipient email must be valid, email subject and body can't be null.");
+                            "at board id: " + boardId + ". Recipient email must be valid, email subject and body can't be null.");
                 }
             }
 
