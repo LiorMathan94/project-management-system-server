@@ -4,14 +4,14 @@ import projectManagementSystem.entity.Role;
 
 public class RoleRequest {
     private long boardId;
-    private long userId;
+    private String email;
     private Role role;
 
     public RoleRequest() {
     }
 
-    public RoleRequest(long userId, Role role) {
-        this.userId = userId;
+    public RoleRequest(String email, Role role) {
+        this.email = email;
         this.role = role;
     }
 
@@ -19,8 +19,8 @@ public class RoleRequest {
         return boardId;
     }
 
-    public long getUserId() {
-        return userId;
+    public String getEmail() {
+        return email;
     }
 
     public Role getRole() {

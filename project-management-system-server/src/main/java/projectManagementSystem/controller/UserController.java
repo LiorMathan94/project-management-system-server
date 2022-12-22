@@ -9,7 +9,6 @@ import projectManagementSystem.controller.request.NotificationRequest;
 import projectManagementSystem.controller.request.UserRequest;
 import projectManagementSystem.controller.response.Response;
 import projectManagementSystem.entity.DTO.UserDTO;
-import projectManagementSystem.entity.User;
 import projectManagementSystem.service.AuthenticationService;
 import projectManagementSystem.service.UserRoleService;
 import projectManagementSystem.service.UserService;
