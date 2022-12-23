@@ -40,7 +40,7 @@ public class NotificationService {
         NotificationResponse notificationResponse = null;
 
         NotificationPreference preference = user.getNotificationPreferences();
-        if (preference.getNotifyOnEvents().contains(action)) {
+        if (preference != null && preference.getNotifyOnEvents().contains(action)) {
             String message = buildNotificationMessage(boardId, action);
 
             if (preference.getNotificationViaList().contains(NotificationVia.EMAIL)) {
