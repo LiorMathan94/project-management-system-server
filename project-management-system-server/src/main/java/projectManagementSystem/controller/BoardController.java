@@ -131,6 +131,7 @@ public class BoardController {
 
         try {
             BoardDTO board = boardService.removeType(boardId, value);
+            socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
