@@ -20,7 +20,7 @@ public class ItemService {
     }
 
     public Item createItem(ItemRequest itemRequest) {
-        Item parent = extractParentFromItemRequest(itemRequest);git
+        Item parent = extractParentFromItemRequest(itemRequest);
         Item newItem = new Item.ItemBuilder(itemRequest.getBoardId(), itemRequest.getCreatorId(), itemRequest.getTitle())
                 .setAssignedToId(itemRequest.getAssignedToId())
                 .setDescription(itemRequest.getDescription())
