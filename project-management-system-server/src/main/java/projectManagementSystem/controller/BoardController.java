@@ -97,7 +97,7 @@ public class BoardController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, path = "/removeStatus")
+    @RequestMapping(method = RequestMethod.DELETE, path = "/removeStatus")
     public ResponseEntity<Response<BoardDTO>> removeStatus(@RequestHeader long boardId, @RequestParam String status) {
         logger.info("in BoardController.removeStatus()");
 
