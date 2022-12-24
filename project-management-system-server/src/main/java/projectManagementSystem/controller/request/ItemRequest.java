@@ -94,4 +94,22 @@ public class ItemRequest {
     public void setBoardAction(BoardAction boardAction) {
         this.boardAction = boardAction;
     }
+
+    @Override
+    public String toString() {
+        return "ItemRequest{" +
+                "itemId=" + itemId +
+                ", boardAction=" + boardAction +
+                ", boardId=" + boardId +
+                ", status='" + status + '\'' +
+                ", type='" + type + '\'' +
+                ", parentId=" + parentId +
+                ", creatorId=" + creatorId +
+                ", assignedToId=" + assignedToId +
+                ", dueDate=" + dueDate +
+                ", importance=" + importance +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

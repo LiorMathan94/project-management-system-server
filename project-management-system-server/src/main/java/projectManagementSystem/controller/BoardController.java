@@ -143,7 +143,6 @@ public class BoardController {
     @RequestMapping(method = RequestMethod.POST, path = "/addItem")
     public ResponseEntity<Response<BoardDTO>> addItem(@RequestHeader long boardId, @RequestBody ItemRequest itemRequest) {
         logger.info("in BoardController.addItem()");
-
         try {
             itemRequest.setBoardId(boardId);
             validateItemRequest(itemRequest);
