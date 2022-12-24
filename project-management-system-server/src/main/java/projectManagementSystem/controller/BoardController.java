@@ -71,6 +71,8 @@ public class BoardController {
 
         try {
             BoardDTO board = boardService.setTitle(boardId, value);
+            board.setNotifications(notifyBoardUsers(board.getId(), BoardAction.SET_TITLE));
+
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
