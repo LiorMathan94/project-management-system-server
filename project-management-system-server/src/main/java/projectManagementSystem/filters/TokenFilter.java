@@ -49,10 +49,12 @@ public class TokenFilter implements Filter {
         MutableHttpServletRequest req = new MutableHttpServletRequest((HttpServletRequest) servletRequest);
         HttpServletResponse res = (HttpServletResponse) servletResponse;
         String url = ((HttpServletRequest) servletRequest).getRequestURL().toString();
+        System.out.println(url);
         if (url.contains("login") || url.contains("register")|| url.contains("info") || url.contains("ws")) {
             filterChain.doFilter(req, res);
         } else {
             String authToken = req.getHeader("Authorization");
+            System.out.println(authToken);
             if (authToken != null && authService.isTokenCorrect(authToken)) {
                 req.setAttribute("userId", authService.extractIdFromToken(authToken));
                 filterChain.doFilter(req, res);
