@@ -80,10 +80,12 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.PATCH, path = "/setNotificationPreferences")
-    public ResponseEntity<Response<UserDTO>> setNotificationPreferences(@RequestBody NotificationRequest notificationRequest) {
+    public ResponseEntity<Response<UserDTO>> setNotificationPreferences(@RequestAttribute long userId, @RequestBody NotificationRequest notificationRequest) {
         if (notificationRequest == null) {
             return ResponseEntity.badRequest().body(Response.failure("Notification request cannot be null"));
         }
+
+        notificationRequest.setUserId(userId);
 
         try {
             UserDTO user = userService.setNotificationPreferences(notificationRequest);
