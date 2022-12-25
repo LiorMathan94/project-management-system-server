@@ -4,16 +4,17 @@ import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.Importance;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class ItemRequest {
-    private Long itemId;
+    private long itemId;
     private BoardAction boardAction;
-    private Long boardId;
+    private long boardId;
     private String status;
     private String type;
-    private Long parentId;
-    private Long creatorId;
-    private Long assignedToId;
+    private long parentId;
+    private long creatorId;
+    private long assignedToId;
     private LocalDate dueDate;
     private Importance importance;
     private String title;
@@ -35,11 +36,11 @@ public class ItemRequest {
         this.description = description;
     }
 
-    public Long getItemId() {
+    public long getItemId() {
         return itemId;
     }
 
-    public Long getBoardId() {
+    public long getBoardId() {
         return boardId;
     }
 
@@ -55,15 +56,15 @@ public class ItemRequest {
         return type;
     }
 
-    public Long getParentId() {
+    public long getParentId() {
         return parentId;
     }
 
-    public Long getCreatorId() {
+    public long getCreatorId() {
         return creatorId;
     }
 
-    public Long getAssignedToId() {
+    public long getAssignedToId() {
         return assignedToId;
     }
 
@@ -93,5 +94,9 @@ public class ItemRequest {
 
     public void setBoardAction(BoardAction boardAction) {
         this.boardAction = boardAction;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

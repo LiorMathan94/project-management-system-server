@@ -2,6 +2,8 @@ package projectManagementSystem.service;
 
 import org.springframework.stereotype.Service;
 import projectManagementSystem.controller.request.ItemRequest;
+import projectManagementSystem.entity.Comment;
+import projectManagementSystem.entity.DTO.ItemDTO;
 import projectManagementSystem.entity.Item;
 import projectManagementSystem.repository.ItemRepository;
 
@@ -9,17 +11,18 @@ import java.util.Optional;
 
 @Service
 public class ItemService {
-    private final ItemRepository itemRepository;
+    private ItemRepository itemRepository;
 
     public ItemService(ItemRepository itemRepository) {
         this.itemRepository = itemRepository;
     }
 
-    public Optional<Item> getById(long itemId) {
-        return this.itemRepository.findById(itemId);
+    public Item createItem(ItemRequest itemRequest) {
+        Item item = create(itemRequest);
+        return itemRepository.save(item);
     }
 
-    public Item createItem(ItemRequest itemRequest) {
+    private Item create(ItemRequest itemRequest) {
         Item parent = extractParentFromItemRequest(itemRequest);
 
         Item newItem = new Item.ItemBuilder(itemRequest.getBoardId(), itemRequest.getCreatorId(), itemRequest.getTitle())
@@ -32,21 +35,31 @@ public class ItemService {
                 .setType(itemRequest.getType())
                 .build();
 
-        return itemRepository.save(newItem);
+        return newItem;
     }
 
-    public Item update(ItemRequest itemRequest) {
-        Optional<Item> item = itemRepository.findById(itemRequest.getItemId());
+    private Item extractParentFromItemRequest(ItemRequest itemRequest) {
+        Item parent = null;
 
-        if (!item.isPresent()) {
-            throw new IllegalArgumentException(String.format("Item ID: %d was not found!", itemRequest.getItemId()));
+        if (itemRequest.getParentId() != 0) {
+            Optional<Item> parentOptional = itemRepository.findById(itemRequest.getParentId());
+            parent = parentOptional.isPresent() ? parentOptional.get() : null;
         }
 
-        updateItem(item.get(), itemRequest);
-        return itemRepository.save(item.get());
+        return parent;
     }
 
-    private void updateItem(Item item, ItemRequest itemRequest) {
+    public ItemDTO updateItem(ItemRequest itemRequest) {
+        Optional<Item> item = itemRepository.findById(itemRequest.getItemId());
+        if (!item.isPresent()) {
+            throw new IllegalArgumentException("Could not find item ID: " + itemRequest.getItemId());
+        }
+
+        updateBoardItem(item.get(), itemRequest);
+        return new ItemDTO(itemRepository.save(item.get()));
+    }
+
+    private void updateBoardItem(Item item, ItemRequest itemRequest) {
         switch (itemRequest.getBoardAction()) {
             case ASSIGN_ITEM:
                 item.setAssignedToId(itemRequest.getAssignedToId());
@@ -58,9 +71,7 @@ public class ItemService {
                 item.setTitle(itemRequest.getTitle());
                 break;
             case SET_ITEM_PARENT:
-                Optional<Item> parentItem = itemRepository.findById(itemRequest.getParentId());
-                Item parent = parentItem.orElse(null);
-                item.setParent(parent);
+                setParent(item, itemRequest);
                 break;
             case SET_ITEM_STATUS:
                 item.setStatus(itemRequest.getStatus());
@@ -79,17 +90,43 @@ public class ItemService {
         }
     }
 
-    public void deleteItem(Long itemId) {
+    public ItemDTO addComment(long itemId, long userId, String content) {
+        Optional<Item> item = itemRepository.findById(itemId);
+        if (!item.isPresent()) {
+            throw new IllegalArgumentException("Could not find item ID: " + itemId);
+        }
+
+        item.get().addComment(new Comment(userId, content));
+        return new ItemDTO(itemRepository.save(item.get()));
+    }
+
+    public void deleteItem(long itemId) {
         itemRepository.deleteById(itemId);
     }
 
-    private Item extractParentFromItemRequest(ItemRequest itemRequest) {
-        Item parent = null;
-        if (itemRequest.getParentId() != null) {
-            Optional<Item> parentOptional = itemRepository.findById(itemRequest.getParentId());
-            parent = parentOptional.isPresent() ? parentOptional.get() : null;
-        }
+    private void setParent(Item item, ItemRequest itemRequest) {
+        Item parent = extractParentFromItemRequest(itemRequest);
+        item.setParent(parent);
 
-        return parent;
+        try {
+            validateNoSelfReferenceLoop(item);
+        } catch (Exception e) {
+            item.setParent(null);
+            throw e;
+        }
+    }
+
+    private void validateNoSelfReferenceLoop(Item item) {
+        Item fastPointer = item;
+        Item slowPointer = item;
+
+        while (slowPointer != null && fastPointer != null && fastPointer.getParent() != null) {
+            slowPointer = slowPointer.getParent();
+            fastPointer = fastPointer.getParent().getParent();
+
+            if (fastPointer == slowPointer) {
+                throw new IllegalArgumentException("Items cannot contain self reference loop!");
+            }
+        }
     }
 }

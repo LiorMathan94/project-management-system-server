@@ -10,11 +10,13 @@ import projectManagementSystem.controller.response.NotificationResponse;
 import projectManagementSystem.controller.response.Response;
 import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.DTO.BoardDTO;
-import projectManagementSystem.entity.Item;
 import projectManagementSystem.entity.Role;
-import projectManagementSystem.entity.UserInBoard;
-import projectManagementSystem.entity.criterias.CriteriaName;
 import projectManagementSystem.service.*;
+import projectManagementSystem.entity.AuthorizedUser;
+import projectManagementSystem.service.BoardService;
+import projectManagementSystem.service.ItemService;
+import projectManagementSystem.service.NotificationService;
+import projectManagementSystem.service.UserRoleService;
 import projectManagementSystem.utils.InputValidation;
 
 import java.util.List;
@@ -36,8 +38,7 @@ public class BoardController {
     private static final Logger logger = LogManager.getLogger(BoardController.class.getName());
 
     @Autowired
-    public BoardController(BoardService boardService, ItemService itemService, UserRoleService userRoleService,
-                           NotificationService notificationService, SocketUtil socketUtil,FilterCriteriaService filterCriteriaService) {
+    public BoardController(BoardService boardService, ItemService itemService, NotificationService notificationService, SocketUtil socketUtil,FilterCriteriaService filterCriteriaService,UserRoleService userRoleService) {
         this.boardService = boardService;
         this.itemService = itemService;
         this.notificationService = notificationService;
@@ -70,7 +71,6 @@ public class BoardController {
         try {
             BoardDTO board = boardService.setTitle(boardId, value);
             board.setNotifications(notifyBoardUsers(board.getId(), BoardAction.SET_TITLE));
-
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
@@ -145,7 +145,8 @@ public class BoardController {
         try {
             itemRequest.setBoardId(boardId);
             validateItemRequest(itemRequest);
-            BoardDTO board = boardService.addItem(boardId, itemService.createItem(itemRequest));
+
+            BoardDTO board = boardService.addItem(itemService.createItem(itemRequest));
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
@@ -157,14 +158,9 @@ public class BoardController {
     public ResponseEntity<Response<BoardDTO>> removeItem(@RequestHeader long boardId, @RequestParam long itemId) {
         logger.info("in BoardController.removeItem()");
 
-        Optional<Item> itemToDelete = itemService.getById(itemId);
-        if (!itemToDelete.isPresent()) {
-            return ResponseEntity.badRequest().body(Response.failure("Could not find item ID: " + itemId));
-        }
-
         try {
-            BoardDTO board = boardService.removeItem(boardId, itemToDelete.get());
             itemService.deleteItem(itemId);
+            BoardDTO board = boardService.getBoardById(boardId);
             board.setNotifications(notifyBoardUsers(boardId, BoardAction.DELETE_ITEM));
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
@@ -180,15 +176,15 @@ public class BoardController {
 
         try {
             itemRequest.setBoardId(boardId);
+            itemRequest.setBoardAction(action);
             validateItemRequest(itemRequest);
 
-            itemRequest.setBoardAction(action);
-            Item updatedItem = itemService.update(itemRequest);
-            BoardDTO board = boardService.updateItem(itemRequest.getBoardId(), updatedItem);
+            itemService.updateItem(itemRequest);
 
+            BoardDTO board = boardService.getBoardById(itemRequest.getBoardId());
             board.setNotifications(notifyBoardUsers(boardId, action));
-            socketUtil.updateBoard(board);
 
+            socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
@@ -200,8 +196,8 @@ public class BoardController {
         logger.info("in BoardController.addItemComment()");
 
         try {
-            BoardDTO board = boardService.addComment(boardId, commentRequest.getUserId(),
-                    commentRequest.getItemId(), commentRequest.getContent());
+            itemService.addComment(commentRequest.getItemId(), commentRequest.getUserId(), commentRequest.getContent());
+            BoardDTO board = boardService.getBoardById(boardId);
             board.setNotifications(notifyBoardUsers(boardId, BoardAction.ADD_COMMENT));
             socketUtil.updateBoard(board);
 
@@ -216,7 +212,7 @@ public class BoardController {
         logger.info("in BoardController.grantUserRole()");
 
         try {
-            BoardDTO board = new BoardDTO(userRoleService.addByEmail(boardId, roleRequest.getEmail(), roleRequest.getRole()).getBoard());
+            BoardDTO board = userRoleService.addByEmail(boardId, roleRequest.getEmail(), roleRequest.getRole());
             board.setNotifications(notifyBoardUsers(boardId, BoardAction.GRANT_USER_ROLE));
             socketUtil.updateBoard(board);
 
@@ -242,7 +238,6 @@ public class BoardController {
         logger.info("in BoardController.deleteBoard()");
 
         try {
-            userRoleService.deleteByBoard(boardId);
             boardService.delete(boardId);
             return ResponseEntity.ok(Response.success(null));
         } catch (Exception e) {
@@ -266,6 +261,9 @@ public class BoardController {
             throw new IllegalArgumentException(String.format("Item's status %s does not exists in board #%d",
                     itemRequest.getStatus(), itemRequest.getBoardId()));
         }
+
+        String type = (itemRequest.getType() != null && itemRequest.getType().equals("")) ? null : itemRequest.getType();
+        itemRequest.setType(type);
         if (itemRequest.getType() != null &&
                 !boardService.hasType(itemRequest.getBoardId(), itemRequest.getType())) {
             throw new IllegalArgumentException(String.format("Item's type %s does not exists in board #%d",
@@ -275,6 +273,6 @@ public class BoardController {
 
     private List<NotificationResponse> notifyBoardUsers(long boardId, BoardAction action) {
         return notificationService.notifyAll(userRoleService.getByBoard(boardId)
-                .stream().map(UserInBoard::getUser).collect(Collectors.toList()), boardId, action);
+                .stream().map(AuthorizedUser::getUser).collect(Collectors.toList()), boardId, action);
     }
 }
