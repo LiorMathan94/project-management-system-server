@@ -9,6 +9,7 @@ import projectManagementSystem.repository.ItemRepository;
 import projectManagementSystem.repository.UserInBoardRepository;
 import projectManagementSystem.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -182,6 +183,16 @@ public class BoardService {
 
         return userInBoardRepository.findByUserId(user).stream()
                 .map(userInBoard -> new BoardDTO(userInBoard.getBoard())).collect(Collectors.toList());
+    }
+
+    public List<String> getUserEmailsByBoardId(long boardId){
+        List<String> emails = new ArrayList<>();
+        Optional<Board> board = boardRepository.findById(boardId);
+        if (!board.isPresent()) {
+            throw new IllegalArgumentException("Could not find board ID: " + boardId);
+        }
+        //List<UserInBoard> findByBoard(Board board);
+        return emails;
     }
 
     private void deleteStatusItems(Board board, String status) {

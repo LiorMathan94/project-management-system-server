@@ -143,6 +143,7 @@ public class BoardController {
     @RequestMapping(method = RequestMethod.POST, path = "/addItem")
     public ResponseEntity<Response<BoardDTO>> addItem(@RequestHeader long boardId, @RequestBody ItemRequest itemRequest) {
         logger.info("in BoardController.addItem()");
+
         try {
             itemRequest.setBoardId(boardId);
             validateItemRequest(itemRequest);
@@ -246,6 +247,17 @@ public class BoardController {
             userRoleService.deleteByBoard(boardId);
             boardService.delete(boardId);
             return ResponseEntity.ok(Response.success(null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/getUserEmailsByBoardId")
+    public ResponseEntity<Response<List<String>>> getUserEmailsByBoardId(@RequestHeader long boardId) {
+        logger.info("in BoardController.getUserEmailsByBoardId");
+        try {
+            List<String> emails = boardService.getUserEmailsByBoardId(boardId);
+            return ResponseEntity.ok(Response.success(emails));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
         }
