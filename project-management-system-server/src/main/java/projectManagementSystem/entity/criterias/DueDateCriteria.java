@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DueDateCriteria implements Criteria {
-    private LocalDate dueDate;
+    private List<LocalDate> dueDate;
 
-    public DueDateCriteria(LocalDate dueDate) {
+    public DueDateCriteria(List<LocalDate> dueDate) {
         this.dueDate = dueDate;
     }
 
@@ -18,7 +18,7 @@ public class DueDateCriteria implements Criteria {
         List<Item> filteredItems = new ArrayList<Item>();
 
         for (Item item : items) {
-            if (item.getDueDate().compareTo(dueDate) == 0) {
+            if (dueDate.contains(item.getDueDate())) {
                 filteredItems.add(item);
             }
         }

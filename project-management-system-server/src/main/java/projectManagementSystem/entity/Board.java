@@ -32,6 +32,16 @@ public class Board {
         this.authorizedUsers = new ArrayList<>();
     }
 
+    public Board(Board board) {
+        this.id = board.getId();
+        this.title = board.getTitle();
+        this.statuses = board.getStatuses();
+        this.types = board.getTypes();
+        this.items = board.getItems();
+    }
+
+
+
     public long getId() {
         return id;
     }
@@ -56,6 +66,10 @@ public class Board {
         this.title = title;
     }
 
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
     public void addStatus(String status) {
         this.statuses.add(status);
     }
@@ -76,7 +90,7 @@ public class Board {
 
     public void removeType(String type) {
         for (Item item : this.items) {
-            if (item.getType() != null && item.getType().equals(type)) {
+            if (item.getType().equals(type)) {
                 item.setType(null);
             }
         }
@@ -155,5 +169,16 @@ public class Board {
 
     private Item findItemById(long requiredId) {
         return this.items.stream().filter(item -> item.getId() == (requiredId)).findFirst().orElse(null);
+    }
+
+    @Override
+    public String toString() {
+        return "Board{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", statuses=" + statuses +
+                ", types=" + types +
+                ", items=" + items +
+                '}';
     }
 }

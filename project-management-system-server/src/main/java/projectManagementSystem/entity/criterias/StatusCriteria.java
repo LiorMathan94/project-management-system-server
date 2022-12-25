@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StatusCriteria implements Criteria {
-    private String status;
+    private List<String> status;
 
-    public StatusCriteria(String status) {
+    public StatusCriteria(List<String> status) {
         this.status = status;
     }
 
@@ -17,7 +17,7 @@ public class StatusCriteria implements Criteria {
         List<Item> filteredItems = new ArrayList<Item>();
 
         for (Item item : items) {
-            if (item.getStatus().equalsIgnoreCase(status)) {
+            if (status.contains(item.getStatus())) {
                 filteredItems.add(item);
             }
         }
