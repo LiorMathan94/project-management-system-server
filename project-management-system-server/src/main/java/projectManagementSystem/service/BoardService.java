@@ -2,10 +2,10 @@ package projectManagementSystem.service;
 
 import org.springframework.stereotype.Service;
 import projectManagementSystem.controller.request.BoardRequest;
+import projectManagementSystem.controller.request.ItemRequest;
 import projectManagementSystem.entity.*;
 import projectManagementSystem.entity.DTO.BoardDTO;
 import projectManagementSystem.repository.BoardRepository;
-import projectManagementSystem.repository.ItemRepository;
 import projectManagementSystem.repository.UserInBoardRepository;
 import projectManagementSystem.repository.UserRepository;
 
@@ -16,14 +16,12 @@ import java.util.stream.Collectors;
 @Service
 public class BoardService {
     private BoardRepository boardRepository;
-    private ItemRepository itemRepository;
     private UserInBoardRepository userInBoardRepository;
     private UserRepository userRepository;
 
-    public BoardService(BoardRepository boardRepository, ItemRepository itemRepository,
-                        UserInBoardRepository userInBoardRepository, UserRepository userRepository) {
+    public BoardService(BoardRepository boardRepository, UserInBoardRepository userInBoardRepository,
+                        UserRepository userRepository) {
         this.boardRepository = boardRepository;
-        this.itemRepository = itemRepository;
         this.userInBoardRepository = userInBoardRepository;
         this.userRepository = userRepository;
     }
@@ -64,8 +62,6 @@ public class BoardService {
             throw new IllegalArgumentException("Could not find board ID: " + boardId);
         }
 
-        deleteStatusItems(board.get(), status);
-
         board.get().removeStatus(status);
         return new BoardDTO(boardRepository.save(board.get()));
     }
@@ -92,26 +88,96 @@ public class BoardService {
         return new BoardDTO(boardRepository.save(board.get()));
     }
 
-    public BoardDTO addItem(long boardId, Item item) {
-        Optional<Board> board = boardRepository.findById(boardId);
+    public BoardDTO addItem(ItemRequest itemRequest) {
+        Optional<Board> board = boardRepository.findById(itemRequest.getBoardId());
 
         if (!board.isPresent()) {
-            throw new IllegalArgumentException("Could not find board ID: " + boardId);
+            throw new IllegalArgumentException("Could not find board ID: " + itemRequest.getBoardId());
         }
 
-        board.get().addItem(item);
+        board.get().addItem(createItem(itemRequest));
         return new BoardDTO(boardRepository.save(board.get()));
     }
 
-    public BoardDTO updateItem(long boardId, Item item) {
-        Optional<Board> board = boardRepository.findById(boardId);
+    private Item createItem(ItemRequest itemRequest) {
+        Item parent = extractParentFromItemRequest(itemRequest);
 
+        Item newItem = new Item.ItemBuilder(itemRequest.getBoardId(), itemRequest.getCreatorId(), itemRequest.getTitle())
+                .setAssignedToId(itemRequest.getAssignedToId())
+                .setDescription(itemRequest.getDescription())
+                .setDueDate(itemRequest.getDueDate())
+                .setImportance(itemRequest.getImportance())
+                .setParent(parent)
+                .setStatus(itemRequest.getStatus())
+                .setType(itemRequest.getType())
+                .build();
+
+        return newItem;
+    }
+
+    private Item extractParentFromItemRequest(ItemRequest itemRequest) {
+        Optional<Board> board = boardRepository.findById(itemRequest.getBoardId());
         if (!board.isPresent()) {
-            throw new IllegalArgumentException("Could not find board ID: " + boardId);
+            throw new IllegalArgumentException("Could not find board ID: " + itemRequest.getBoardId());
         }
 
-        board.get().updateItem(item);
+        Item parent = null;
+        if (itemRequest.getParentId() != null) {
+            Optional<Item> parentOptional = board.get().getItemById(itemRequest.getParentId());
+            parent = parentOptional.isPresent() ? parentOptional.get() : null;
+        }
+
+        return parent;
+    }
+
+    public BoardDTO updateItem(ItemRequest itemRequest) {
+        Optional<Board> board = boardRepository.findById(itemRequest.getBoardId());
+        if (!board.isPresent()) {
+            throw new IllegalArgumentException("Could not find board ID: " + itemRequest.getBoardId());
+        }
+
+        Optional<Item> item = board.get().getItemById(itemRequest.getItemId());
+        if (!item.isPresent()) {
+            throw new IllegalArgumentException("Could not find item ID: " + itemRequest.getItemId());
+        }
+
+        updateBoardItem(item.get(), board.get(), itemRequest);
+        board.get().updateItem(item.get());
+
         return new BoardDTO(boardRepository.save(board.get()));
+    }
+
+    private void updateBoardItem(Item item, Board board, ItemRequest itemRequest) {
+        switch (itemRequest.getBoardAction()) {
+            case ASSIGN_ITEM:
+                item.setAssignedToId(itemRequest.getAssignedToId());
+                break;
+            case SET_ITEM_TYPE:
+                item.setType(itemRequest.getType());
+                break;
+            case SET_ITEM_TITLE:
+                item.setTitle(itemRequest.getTitle());
+                break;
+            case SET_ITEM_PARENT:
+                Optional<Item> parentItem = board.getItemById(itemRequest.getParentId());
+                Item parent = parentItem.isPresent() ? parentItem.get() : null;
+                item.setParent(parent);
+                break;
+            case SET_ITEM_STATUS:
+                item.setStatus(itemRequest.getStatus());
+                break;
+            case SET_ITEM_DUE_DATE:
+                item.setDueDate(itemRequest.getDueDate());
+                break;
+            case SET_ITEM_IMPORTANCE:
+                item.setImportance(itemRequest.getImportance());
+                break;
+            case SET_ITEM_DESCRIPTION:
+                item.setDescription(itemRequest.getDescription());
+                break;
+            default:
+                throw new IllegalArgumentException("Item operation is not supported!");
+        }
     }
 
     public BoardDTO addComment(long boardId, long userId, long itemId, String content) {
@@ -129,14 +195,18 @@ public class BoardService {
         return new BoardDTO(boardRepository.save(board.get()));
     }
 
-    public BoardDTO removeItem(long boardId, Item item) {
+    public BoardDTO removeItem(long boardId, long itemId) {
         Optional<Board> board = boardRepository.findById(boardId);
-
         if (!board.isPresent()) {
             throw new IllegalArgumentException("Could not find board ID: " + boardId);
         }
 
-        board.get().removeItem(item);
+        Optional<Item> item = board.get().getItemById(itemId);
+        if (!item.isPresent()) {
+            throw new IllegalArgumentException("Could not find item ID: " + itemId);
+        }
+
+        board.get().removeItem(item.get());
         return new BoardDTO(boardRepository.save(board.get()));
     }
 
@@ -167,10 +237,6 @@ public class BoardService {
             throw new IllegalArgumentException("Could not find board ID: " + boardId);
         }
 
-        for (Item item : board.get().getItems()) {
-            this.itemRepository.delete(item);
-        }
-
         this.boardRepository.delete(board.get());
     }
 
@@ -182,22 +248,5 @@ public class BoardService {
 
         return userInBoardRepository.findByUserId(user).stream()
                 .map(userInBoard -> new BoardDTO(userInBoard.getBoard())).collect(Collectors.toList());
-    }
-
-    private void deleteStatusItems(Board board, String status) {
-        for (Item item : board.getItemsByStatus().get(status)) {
-            board.removeItem(item);
-            this.itemRepository.delete(item);
-        }
-    }
-
-       public BoardDTO join(long boardId) {
-        Optional<Board> board = boardRepository.findById(boardId);
-
-        if (!board.isPresent()) {
-            throw new IllegalArgumentException("Could not find board ID: " + boardId);
-        }
-
-        return new BoardDTO(board.get());
     }
 }

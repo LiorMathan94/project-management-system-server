@@ -1,7 +1,5 @@
 package projectManagementSystem.entity;
 
-import projectManagementSystem.utils.InputValidation;
-
 import javax.persistence.*;
 import java.util.*;
 
@@ -60,6 +58,12 @@ public class Board {
     }
 
     public void removeStatus(String status) {
+        for (Item item : this.items) {
+            if (item.getStatus().equals(status)) {
+                this.items.remove(item);
+            }
+        }
+
         this.statuses.remove(status);
     }
 
@@ -68,6 +72,12 @@ public class Board {
     }
 
     public void removeType(String type) {
+        for (Item item : this.items) {
+            if (item.getType().equals(type)) {
+                item.setType(null);
+            }
+        }
+
         this.types.remove(type);
     }
 

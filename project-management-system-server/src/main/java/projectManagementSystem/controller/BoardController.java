@@ -13,17 +13,14 @@ import projectManagementSystem.controller.response.NotificationResponse;
 import projectManagementSystem.controller.response.Response;
 import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.DTO.BoardDTO;
-import projectManagementSystem.entity.Item;
 import projectManagementSystem.entity.Role;
 import projectManagementSystem.entity.UserInBoard;
 import projectManagementSystem.service.BoardService;
-import projectManagementSystem.service.ItemService;
 import projectManagementSystem.service.NotificationService;
 import projectManagementSystem.service.UserRoleService;
 import projectManagementSystem.utils.InputValidation;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -31,7 +28,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/board")
 public class BoardController {
     private final BoardService boardService;
-    private final ItemService itemService;
     private final UserRoleService userRoleService;
     private final NotificationService notificationService;
     private final SocketUtil socketUtil;
@@ -39,10 +35,9 @@ public class BoardController {
     private static final Logger logger = LogManager.getLogger(BoardController.class.getName());
 
     @Autowired
-    public BoardController(BoardService boardService, ItemService itemService, UserRoleService userRoleService,
+    public BoardController(BoardService boardService, UserRoleService userRoleService,
                            NotificationService notificationService, SocketUtil socketUtil) {
         this.boardService = boardService;
-        this.itemService = itemService;
         this.notificationService = notificationService;
         this.userRoleService = userRoleService;
         this.socketUtil = socketUtil;
@@ -147,7 +142,7 @@ public class BoardController {
         try {
             itemRequest.setBoardId(boardId);
             validateItemRequest(itemRequest);
-            BoardDTO board = boardService.addItem(boardId, itemService.createItem(itemRequest));
+            BoardDTO board = boardService.addItem(itemRequest);
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
@@ -159,14 +154,8 @@ public class BoardController {
     public ResponseEntity<Response<BoardDTO>> removeItem(@RequestHeader long boardId, @RequestParam long itemId) {
         logger.info("in BoardController.removeItem()");
 
-        Optional<Item> itemToDelete = itemService.getById(itemId);
-        if (!itemToDelete.isPresent()) {
-            return ResponseEntity.badRequest().body(Response.failure("Could not find item ID: " + itemId));
-        }
-
         try {
-            BoardDTO board = boardService.removeItem(boardId, itemToDelete.get());
-            itemService.deleteItem(itemId);
+            BoardDTO board = boardService.removeItem(boardId, itemId);
             board.setNotifications(notifyBoardUsers(boardId, BoardAction.DELETE_ITEM));
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
@@ -182,11 +171,10 @@ public class BoardController {
 
         try {
             itemRequest.setBoardId(boardId);
+            itemRequest.setBoardAction(action);
             validateItemRequest(itemRequest);
 
-            itemRequest.setBoardAction(action);
-            Item updatedItem = itemService.update(itemRequest);
-            BoardDTO board = boardService.updateItem(itemRequest.getBoardId(), updatedItem);
+            BoardDTO board = boardService.updateItem(itemRequest);
 
             board.setNotifications(notifyBoardUsers(boardId, action));
             socketUtil.updateBoard(board);
