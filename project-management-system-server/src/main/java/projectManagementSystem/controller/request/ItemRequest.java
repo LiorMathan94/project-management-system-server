@@ -95,21 +95,7 @@ public class ItemRequest {
         this.boardAction = boardAction;
     }
 
-    @Override
-    public String toString() {
-        return "ItemRequest{" +
-                "itemId=" + itemId +
-                ", boardAction=" + boardAction +
-                ", boardId=" + boardId +
-                ", status='" + status + '\'' +
-                ", type='" + type + '\'' +
-                ", parentId=" + parentId +
-                ", creatorId=" + creatorId +
-                ", assignedToId=" + assignedToId +
-                ", dueDate=" + dueDate +
-                ", importance=" + importance +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                '}';
+    public void setType(String type) {
+        this.type = type;
     }
 }
