@@ -76,7 +76,7 @@ public class Board {
 
     public void removeType(String type) {
         for (Item item : this.items) {
-            if (item.getType().equals(type)) {
+            if (item.getType() != null && item.getType().equals(type)) {
                 item.setType(null);
             }
         }
