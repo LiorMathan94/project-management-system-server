@@ -260,6 +260,9 @@ public class BoardController {
             throw new IllegalArgumentException(String.format("Item's status %s does not exists in board #%d",
                     itemRequest.getStatus(), itemRequest.getBoardId()));
         }
+
+        String type = (itemRequest.getType() != null && itemRequest.getType().equals("")) ? null : itemRequest.getType();
+        itemRequest.setType(type);
         if (itemRequest.getType() != null &&
                 !boardService.hasType(itemRequest.getBoardId(), itemRequest.getType())) {
             throw new IllegalArgumentException(String.format("Item's type %s does not exists in board #%d",

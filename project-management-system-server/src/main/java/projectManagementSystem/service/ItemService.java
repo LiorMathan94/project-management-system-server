@@ -71,8 +71,7 @@ public class ItemService {
                 item.setTitle(itemRequest.getTitle());
                 break;
             case SET_ITEM_PARENT:
-                Item parent = extractParentFromItemRequest(itemRequest);
-                item.setParent(parent);
+                setParent(item, itemRequest);
                 break;
             case SET_ITEM_STATUS:
                 item.setStatus(itemRequest.getStatus());
@@ -103,5 +102,31 @@ public class ItemService {
 
     public void deleteItem(long itemId) {
         itemRepository.deleteById(itemId);
+    }
+
+    private void setParent(Item item, ItemRequest itemRequest) {
+        Item parent = extractParentFromItemRequest(itemRequest);
+        item.setParent(parent);
+
+        try {
+            validateNoSelfReferenceLoop(item);
+        } catch (Exception e) {
+            item.setParent(null);
+            throw e;
+        }
+    }
+
+    private void validateNoSelfReferenceLoop(Item item) {
+        Item fastPointer = item;
+        Item slowPointer = item;
+
+        while (slowPointer != null && fastPointer != null && fastPointer.getParent() != null) {
+            slowPointer = slowPointer.getParent();
+            fastPointer = fastPointer.getParent().getParent();
+
+            if (fastPointer == slowPointer) {
+                throw new IllegalArgumentException("Items cannot contain self reference loop!");
+            }
+        }
     }
 }

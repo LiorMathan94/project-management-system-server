@@ -10,16 +10,10 @@ import projectManagementSystem.service.FilterCriteriaService;
 
 @SpringBootApplication
 public class SpringApp {
-    @Autowired
-    FilterCriteriaService filterCriteriaService;
-
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(SpringApp.class);
         application.run(SpringApp.class, args);
     }
 
-    @EventListener(ApplicationReadyEvent.class)
-    void filterBoard(){
-    }
 }
