@@ -59,7 +59,7 @@ public class ItemService {
                 break;
             case SET_ITEM_PARENT:
                 Optional<Item> parentItem = itemRepository.findById(itemRequest.getParentId());
-                Item parent = parentItem.isPresent() ? parentItem.get() : null;
+                Item parent = parentItem.orElse(null);
                 item.setParent(parent);
                 break;
             case SET_ITEM_STATUS:

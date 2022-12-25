@@ -28,8 +28,18 @@ public class Board {
         this.title = title;
         this.statuses = statuses;
         this.types = types;
-        this.items = new ArrayList<Item>();
+        this.items = new ArrayList<>();
     }
+
+    public Board(Board board) {
+        this.id = board.getId();
+        this.title = board.getTitle();
+        this.statuses = board.getStatuses();
+        this.types = board.getTypes();
+        this.items = board.getItems();
+    }
+
+
 
     public long getId() {
         return id;
@@ -53,6 +63,10 @@ public class Board {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
     }
 
     public void addStatus(String status) {
@@ -104,5 +118,16 @@ public class Board {
 
     private Item findItemById(long requiredId) {
         return this.items.stream().filter(item -> item.getId() == (requiredId)).findFirst().orElse(null);
+    }
+
+    @Override
+    public String toString() {
+        return "Board{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", statuses=" + statuses +
+                ", types=" + types +
+                ", items=" + items +
+                '}';
     }
 }

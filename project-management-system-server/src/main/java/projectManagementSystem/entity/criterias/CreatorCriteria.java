@@ -3,21 +3,22 @@ package projectManagementSystem.entity.criterias;
 import projectManagementSystem.entity.Item;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CreatorCriteria implements Criteria {
-    private int creatorId;
+    private Long[] creatorsId;
 
-    public CreatorCriteria(int creatorId) {
-        this.creatorId = creatorId;
+    public CreatorCriteria(Long[] creatorId) {
+        this.creatorsId = creatorId;
     }
 
     @Override
     public List<Item> meetCriteria(List<Item> items) {
-        List<Item> filteredItems = new ArrayList<Item>();
+        List<Item> filteredItems = new ArrayList<>();
 
         for (Item item : items) {
-            if (item.getCreatorId() == creatorId) {
+            if (Arrays.asList(creatorsId).contains(item.getCreatorId())) {
                 filteredItems.add(item);
             }
         }

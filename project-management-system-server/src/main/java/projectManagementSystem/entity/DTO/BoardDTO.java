@@ -46,11 +46,27 @@ public class BoardDTO {
         return items;
     }
 
+    public void setItems(Map<String, List<Item>> items) {
+        this.items = items;
+    }
+
     public List<NotificationResponse> getNotifications() {
         return notifications;
     }
 
     public void setNotifications(List<NotificationResponse> notifications) {
         this.notifications = notifications;
+    }
+
+    @Override
+    public String toString() {
+        return "BoardDTO{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", statuses=" + statuses +
+                ", types=" + types +
+                ", items=" + items +
+                ", notifications=" + notifications +
+                '}';
     }
 }
