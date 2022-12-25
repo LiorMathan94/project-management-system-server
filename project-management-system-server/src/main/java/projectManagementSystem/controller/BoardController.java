@@ -14,8 +14,9 @@ import projectManagementSystem.controller.response.Response;
 import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.DTO.BoardDTO;
 import projectManagementSystem.entity.Role;
-import projectManagementSystem.entity.UserInBoard;
+import projectManagementSystem.entity.AuthorizedUser;
 import projectManagementSystem.service.BoardService;
+import projectManagementSystem.service.ItemService;
 import projectManagementSystem.service.NotificationService;
 import projectManagementSystem.service.UserRoleService;
 import projectManagementSystem.utils.InputValidation;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/board")
 public class BoardController {
     private final BoardService boardService;
+    private final ItemService itemService;
     private final UserRoleService userRoleService;
     private final NotificationService notificationService;
     private final SocketUtil socketUtil;
@@ -35,9 +37,10 @@ public class BoardController {
     private static final Logger logger = LogManager.getLogger(BoardController.class.getName());
 
     @Autowired
-    public BoardController(BoardService boardService, UserRoleService userRoleService,
+    public BoardController(BoardService boardService, UserRoleService userRoleService, ItemService itemService,
                            NotificationService notificationService, SocketUtil socketUtil) {
         this.boardService = boardService;
+        this.itemService = itemService;
         this.notificationService = notificationService;
         this.userRoleService = userRoleService;
         this.socketUtil = socketUtil;
@@ -67,7 +70,6 @@ public class BoardController {
         try {
             BoardDTO board = boardService.setTitle(boardId, value);
             board.setNotifications(notifyBoardUsers(board.getId(), BoardAction.SET_TITLE));
-
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
@@ -142,7 +144,8 @@ public class BoardController {
         try {
             itemRequest.setBoardId(boardId);
             validateItemRequest(itemRequest);
-            BoardDTO board = boardService.addItem(itemRequest);
+
+            BoardDTO board = boardService.addItem(itemService.createItem(itemRequest));
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
@@ -155,7 +158,8 @@ public class BoardController {
         logger.info("in BoardController.removeItem()");
 
         try {
-            BoardDTO board = boardService.removeItem(boardId, itemId);
+            itemService.deleteItem(itemId);
+            BoardDTO board = boardService.getBoardById(boardId);
             board.setNotifications(notifyBoardUsers(boardId, BoardAction.DELETE_ITEM));
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
@@ -174,11 +178,12 @@ public class BoardController {
             itemRequest.setBoardAction(action);
             validateItemRequest(itemRequest);
 
-            BoardDTO board = boardService.updateItem(itemRequest);
+            itemService.updateItem(itemRequest);
 
+            BoardDTO board = boardService.getBoardById(itemRequest.getBoardId());
             board.setNotifications(notifyBoardUsers(boardId, action));
-            socketUtil.updateBoard(board);
 
+            socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
@@ -190,8 +195,8 @@ public class BoardController {
         logger.info("in BoardController.addItemComment()");
 
         try {
-            BoardDTO board = boardService.addComment(boardId, commentRequest.getUserId(),
-                    commentRequest.getItemId(), commentRequest.getContent());
+            itemService.addComment(commentRequest.getItemId(), commentRequest.getUserId(), commentRequest.getContent());
+            BoardDTO board = boardService.getBoardById(boardId);
             board.setNotifications(notifyBoardUsers(boardId, BoardAction.ADD_COMMENT));
             socketUtil.updateBoard(board);
 
@@ -206,7 +211,7 @@ public class BoardController {
         logger.info("in BoardController.grantUserRole()");
 
         try {
-            BoardDTO board = new BoardDTO(userRoleService.addByEmail(boardId, roleRequest.getEmail(), roleRequest.getRole()).getBoard());
+            BoardDTO board = userRoleService.addByEmail(boardId, roleRequest.getEmail(), roleRequest.getRole());
             board.setNotifications(notifyBoardUsers(boardId, BoardAction.GRANT_USER_ROLE));
             socketUtil.updateBoard(board);
 
@@ -232,7 +237,6 @@ public class BoardController {
         logger.info("in BoardController.deleteBoard()");
 
         try {
-            userRoleService.deleteByBoard(boardId);
             boardService.delete(boardId);
             return ResponseEntity.ok(Response.success(null));
         } catch (Exception e) {
@@ -255,6 +259,6 @@ public class BoardController {
 
     private List<NotificationResponse> notifyBoardUsers(long boardId, BoardAction action) {
         return notificationService.notifyAll(userRoleService.getByBoard(boardId)
-                .stream().map(UserInBoard::getUser).collect(Collectors.toList()), boardId, action);
+                .stream().map(AuthorizedUser::getUser).collect(Collectors.toList()), boardId, action);
     }
 }
