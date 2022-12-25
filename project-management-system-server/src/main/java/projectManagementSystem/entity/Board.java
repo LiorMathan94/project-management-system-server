@@ -1,7 +1,5 @@
 package projectManagementSystem.entity;
 
-import projectManagementSystem.utils.InputValidation;
-
 import javax.persistence.*;
 import java.util.*;
 
@@ -18,8 +16,10 @@ public class Board {
     private Set<String> statuses;
     @ElementCollection
     private Set<String> types;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Item> items;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AuthorizedUser> authorizedUsers;
 
     public Board() {
     }
@@ -28,7 +28,8 @@ public class Board {
         this.title = title;
         this.statuses = statuses;
         this.types = types;
-        this.items = new ArrayList<Item>();
+        this.items = new ArrayList<>();
+        this.authorizedUsers = new ArrayList<>();
     }
 
     public long getId() {
@@ -60,6 +61,12 @@ public class Board {
     }
 
     public void removeStatus(String status) {
+        for (int i = 0; i < this.items.size(); i++) {
+            if (items.get(i).getStatus().equals(status)) {
+                this.items.remove(items.get(i));
+            }
+        }
+
         this.statuses.remove(status);
     }
 
@@ -68,6 +75,12 @@ public class Board {
     }
 
     public void removeType(String type) {
+        for (Item item : this.items) {
+            if (item.getType().equals(type)) {
+                item.setType(null);
+            }
+        }
+
         this.types.remove(type);
     }
 
@@ -100,6 +113,44 @@ public class Board {
         }
 
         return itemsByStatus;
+    }
+
+    public List<AuthorizedUser> getAuthorizedUsers() {
+        return authorizedUsers;
+    }
+
+    public Map<Role, List<AuthorizedUser>> getAuthorizedUsersByRole() {
+        Map<Role, List<AuthorizedUser>> authorizedUsersByRole = this.authorizedUsers.stream().collect(groupingBy(AuthorizedUser::getRole));
+
+        for (Role role : Role.values()) {
+            authorizedUsersByRole.computeIfAbsent(role, k -> new ArrayList<>());
+        }
+
+        return authorizedUsersByRole;
+    }
+
+    public void assignUser(User user, Role role) {
+        Optional<AuthorizedUser> authorized = getAuthorizedById(user.getId());
+
+        if (authorized.isPresent()) {
+            authorized.get().setRole(role);
+        } else {
+            this.authorizedUsers.add(new AuthorizedUser(user, role));
+        }
+    }
+
+    public Optional<AuthorizedUser> getAuthorizedById(long userId) {
+        for (AuthorizedUser user : this.authorizedUsers) {
+            if (user.getUser().getId() == userId) {
+                return Optional.of(user);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    public void removeAuthorizedUser(AuthorizedUser authorizedUser) {
+        this.authorizedUsers.remove(authorizedUser);
     }
 
     private Item findItemById(long requiredId) {

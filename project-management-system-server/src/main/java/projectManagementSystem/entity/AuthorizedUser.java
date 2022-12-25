@@ -3,28 +3,22 @@ package projectManagementSystem.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "user_in_board")
-public class UserInBoard {
+public class AuthorizedUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "board_id", referencedColumnName = "id")
-    private Board board;
-
-    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Role role;
 
-    public UserInBoard() {
+    public AuthorizedUser() {
     }
 
-    public UserInBoard(Board board, User user, Role role) {
-        this.board = board;
+    public AuthorizedUser(User user, Role role) {
         this.user = user;
         this.role = role;
     }
@@ -33,20 +27,12 @@ public class UserInBoard {
         return id;
     }
 
-    public Board getBoard() {
-        return board;
-    }
-
     public User getUser() {
         return user;
     }
 
     public Role getRole() {
         return role;
-    }
-
-    public void setBoard(Board board) {
-        this.board = board;
     }
 
     public void setUser(User user) {
