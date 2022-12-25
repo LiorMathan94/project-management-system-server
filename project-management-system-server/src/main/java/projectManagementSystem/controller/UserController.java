@@ -104,7 +104,6 @@ public class UserController {
     @RequestMapping(method = RequestMethod.DELETE, path = "/delete")
     public ResponseEntity<Response<Void>> delete(@RequestParam long userId) {
         try {
-            this.userRoleService.deleteByUser(userId);
             userService.delete(userId);
             return ResponseEntity.ok(Response.success(null));
         } catch (Exception e) {

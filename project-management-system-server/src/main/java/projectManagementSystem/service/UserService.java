@@ -6,8 +6,6 @@ import projectManagementSystem.controller.request.NotificationRequest;
 import projectManagementSystem.entity.DTO.UserDTO;
 import projectManagementSystem.entity.User;
 import projectManagementSystem.entity.notifications.NotificationPreference;
-import projectManagementSystem.repository.BoardRepository;
-import projectManagementSystem.repository.UserInBoardRepository;
 import projectManagementSystem.repository.UserRepository;
 import projectManagementSystem.utils.AuthenticationUtils;
 
@@ -18,10 +16,6 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private UserInBoardRepository userInBoardRepository;
-    @Autowired
-    private BoardRepository boardRepository;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
