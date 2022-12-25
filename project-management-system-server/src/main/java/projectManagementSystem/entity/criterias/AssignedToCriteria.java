@@ -1,15 +1,14 @@
 package projectManagementSystem.entity.criterias;
 
 import projectManagementSystem.entity.Item;
-import projectManagementSystem.entity.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AssignedToCriteria implements Criteria {
-    private int assignedToId;
+    private List<Long> assignedToId;
 
-    public AssignedToCriteria(int assignedToId) {
+    public AssignedToCriteria(List<Long> assignedToId) {
         this.assignedToId = assignedToId;
     }
 
@@ -18,7 +17,7 @@ public class AssignedToCriteria implements Criteria {
         List<Item> filteredItems = new ArrayList<Item>();
 
         for (Item item : items) {
-            if (item.getAssignedToId() == assignedToId) {
+            if (assignedToId.contains(item.getAssignedToId())) {
                 filteredItems.add(item);
             }
         }

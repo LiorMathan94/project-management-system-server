@@ -57,6 +57,10 @@ public class BoardDTO {
         return items;
     }
 
+    public void setItems(Map<String, List<Item>> items) {
+        this.items = items;
+    }
+
     public List<NotificationResponse> getNotifications() {
         return notifications;
     }
@@ -69,4 +73,16 @@ public class BoardDTO {
         return authorizedUsers;
     }
 
+    @Override
+    public String toString() {
+        return "BoardDTO{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", statuses=" + statuses +
+                ", types=" + types +
+                ", items=" + items +
+                ", notifications=" + notifications +
+                ", authorizedUsers=" + authorizedUsers +
+                '}';
+    }
 }

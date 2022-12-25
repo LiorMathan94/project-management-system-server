@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TypeCriteria implements Criteria {
-    private String type;
+    private List<String> type;
 
-    public TypeCriteria(String type) {
+    public TypeCriteria(List<String> type) {
         this.type = type;
     }
 
@@ -17,7 +17,7 @@ public class TypeCriteria implements Criteria {
         List<Item> filteredItems = new ArrayList<Item>();
 
         for (Item item : items) {
-            if (item.getType().equalsIgnoreCase(type)) {
+            if (type.contains(item.getType())) {
                 filteredItems.add(item);
             }
         }

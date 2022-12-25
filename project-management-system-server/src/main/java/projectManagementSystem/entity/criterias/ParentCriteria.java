@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ParentCriteria implements Criteria {
-    private Item parent;
+    private List<Long> parent;
 
-    public ParentCriteria(Item parent) {
+    public ParentCriteria(List<Long> parent) {
         this.parent = parent;
     }
 
@@ -17,7 +17,7 @@ public class ParentCriteria implements Criteria {
         List<Item> filteredItems = new ArrayList<Item>();
 
         for (Item item : items) {
-            if (item.getParent() == parent) {
+            if (parent.contains(item.getParent().getId())) {
                 filteredItems.add(item);
             }
         }

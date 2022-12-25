@@ -7,18 +7,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImportanceCriteria implements Criteria {
-    private Importance importance;
+    private List<Importance> importance;
 
-    public ImportanceCriteria(Importance importance) {
+    public ImportanceCriteria(List<Importance> importance) {
         this.importance = importance;
     }
 
     @Override
     public List<Item> meetCriteria(List<Item> items) {
-        List<Item> filteredItems = new ArrayList<Item>();
+        List<Item> filteredItems = new ArrayList<>();
 
         for (Item item : items) {
-            if (item.getImportance() == importance) {
+            if (importance.contains(item.getImportance())) {
                 filteredItems.add(item);
             }
         }

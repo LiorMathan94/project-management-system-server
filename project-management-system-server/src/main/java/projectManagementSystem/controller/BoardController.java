@@ -5,15 +5,13 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import projectManagementSystem.controller.request.BoardRequest;
-import projectManagementSystem.controller.request.CommentRequest;
-import projectManagementSystem.controller.request.ItemRequest;
-import projectManagementSystem.controller.request.RoleRequest;
+import projectManagementSystem.controller.request.*;
 import projectManagementSystem.controller.response.NotificationResponse;
 import projectManagementSystem.controller.response.Response;
 import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.DTO.BoardDTO;
 import projectManagementSystem.entity.Role;
+import projectManagementSystem.service.*;
 import projectManagementSystem.entity.AuthorizedUser;
 import projectManagementSystem.service.BoardService;
 import projectManagementSystem.service.ItemService;
@@ -32,17 +30,19 @@ public class BoardController {
     private final ItemService itemService;
     private final UserRoleService userRoleService;
     private final NotificationService notificationService;
+    private final FilterCriteriaService filterCriteriaService;
     private final SocketUtil socketUtil;
 
     private static final Logger logger = LogManager.getLogger(BoardController.class.getName());
 
     @Autowired
     public BoardController(BoardService boardService, UserRoleService userRoleService, ItemService itemService,
-                           NotificationService notificationService, SocketUtil socketUtil) {
+                           NotificationService notificationService, SocketUtil socketUtil,FilterCriteriaService filterCriteriaService) {
         this.boardService = boardService;
         this.itemService = itemService;
         this.notificationService = notificationService;
         this.userRoleService = userRoleService;
+        this.filterCriteriaService = filterCriteriaService;
         this.socketUtil = socketUtil;
     }
 
@@ -244,6 +244,16 @@ public class BoardController {
         }
     }
 
+    @RequestMapping(method = RequestMethod.POST, path = "/filter")
+    public ResponseEntity<Response<BoardDTO>> filterByProperty(@RequestHeader long boardId, @RequestBody FilterRequest filterRequest) {
+        logger.info("in BoardController.filterByProperty()");
+        try {
+            BoardDTO board = filterCriteriaService.filterByProperty(boardId,filterRequest);
+            return ResponseEntity.ok(Response.success(board));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        }
+    }
     private void validateItemRequest(ItemRequest itemRequest) {
         if (itemRequest.getStatus() != null &&
                 !boardService.hasStatus(itemRequest.getBoardId(), itemRequest.getStatus())) {
