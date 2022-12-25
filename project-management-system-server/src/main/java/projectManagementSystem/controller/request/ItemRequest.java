@@ -4,6 +4,7 @@ import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.Importance;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class ItemRequest {
     private long itemId;
@@ -93,5 +94,9 @@ public class ItemRequest {
 
     public void setBoardAction(BoardAction boardAction) {
         this.boardAction = boardAction;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
