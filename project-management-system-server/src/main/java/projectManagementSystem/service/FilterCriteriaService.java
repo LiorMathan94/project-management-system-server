@@ -1,21 +1,18 @@
 package projectManagementSystem.service;
 
-import java.lang.reflect.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import projectManagementSystem.controller.request.FilterRequest;
 import projectManagementSystem.entity.Board;
 import projectManagementSystem.entity.DTO.BoardDTO;
-import projectManagementSystem.entity.Importance;
 import projectManagementSystem.entity.Item;
 import projectManagementSystem.entity.criterias.*;
 import projectManagementSystem.repository.BoardRepository;
 
-import java.time.LocalDate;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 @Service
@@ -29,25 +26,69 @@ public class FilterCriteriaService {
     public BoardDTO filterByProperty(Long boardId, FilterRequest filterRequest) {
 
         Board board = boardRepository.findById(boardId).orElse(null);
-        if (board == null){
+        if (board == null) {
             throw new IllegalArgumentException("Could not find board ID: " + boardId);
         }
 
         Field[] fields = filterRequest.getClass().getDeclaredFields();
-        System.out.println(new BoardDTO(board));
 
         List<Item> filteredItems = new ArrayList<>(board.getItems());
+        System.out.println(filteredItems);
 
-        for (Field field: fields) {
+            for (Field field : fields) {
 
-            switch (field.getName()) {
-                case "creatorId":
-                    CreatorCriteria creatorCriteria = new CreatorCriteria(filterRequest.getCreatorId());
-                    filteredItems = (creatorCriteria.meetCriteria(filteredItems));
-                    break;
-            }
-            System.out.println(field.getName());
-        }
+                    switch (field.getName()) {
+                        case "creatorId":
+                            if (filterRequest.getCreatorId().size() > 0) {
+                                CreatorCriteria creatorCriteria = new CreatorCriteria(filterRequest.getCreatorId());
+                                filteredItems = (creatorCriteria.meetCriteria(filteredItems));
+                            }
+                            break;
+
+                        case "assignedToId":
+                            if (filterRequest.getAssignedToId().size() > 0) {
+                                AssignedToCriteria assignedToCriteria = new AssignedToCriteria(filterRequest.getAssignedToId());
+                                filteredItems = (assignedToCriteria.meetCriteria(filteredItems));
+                            }
+                            break;
+                        case "dueDate":
+                        if (filterRequest.getDueDate().size() > 0) {
+                            DueDateCriteria dueDateCriteria = new DueDateCriteria(filterRequest.getDueDate());
+                            filteredItems = (dueDateCriteria.meetCriteria(filteredItems));
+                        }
+                        break;
+
+                        case "parentId":
+                            if (filterRequest.getParentId().size() > 0) {
+                                    ParentCriteria parentCriteria = new ParentCriteria(filterRequest.getParentId());
+                                    filteredItems = (parentCriteria.meetCriteria(filteredItems));
+                                }
+                            break;
+                        case "status":
+                            if (filterRequest.getStatus().size() > 0) {
+                                StatusCriteria statusCriteria = new StatusCriteria(filterRequest.getStatus());
+                                filteredItems = (statusCriteria.meetCriteria(filteredItems));
+                            }
+                            break;
+                        case "type":
+                            if (filterRequest.getType().size() > 0) {
+                                TypeCriteria typeCriteria = new TypeCriteria(filterRequest.getType());
+                                filteredItems = (typeCriteria.meetCriteria(filteredItems));
+                            }
+                            break;
+                        case "importance":
+                            if (filterRequest.getImportance().size() > 0) {
+                                ImportanceCriteria importanceCriteria = new ImportanceCriteria(filterRequest.getImportance());
+                                filteredItems = (importanceCriteria.meetCriteria(filteredItems));
+                            }
+                            break;
+
+
+                    }
+                    System.out.println(field.getName());
+                }
+
+
         System.out.println(filteredItems);
 //        for (Map.Entry<CriteriaName, Object> entry : map.entrySet()) {
 //
@@ -82,11 +123,10 @@ public class FilterCriteriaService {
 //                    break;
 //            }
 //        }
-//        board.setItems(filteredItems);
-//        BoardDTO updatedBoard = new BoardDTO(board);
-//        updatedBoard.setItems(board.getItemsByStatus());
-//        return updatedBoard;
-        return null;
+        board.setItems(filteredItems);
+        BoardDTO updatedBoard = new BoardDTO(board);
+        updatedBoard.setItems(board.getItemsByStatus());
+        return updatedBoard;
     }
 
 }

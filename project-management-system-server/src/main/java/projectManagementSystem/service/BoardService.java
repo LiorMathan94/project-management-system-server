@@ -2,11 +2,11 @@ package projectManagementSystem.service;
 
 import org.springframework.stereotype.Service;
 import projectManagementSystem.controller.request.BoardRequest;
-import projectManagementSystem.entity.*;
+import projectManagementSystem.entity.Board;
 import projectManagementSystem.entity.DTO.BoardDTO;
+import projectManagementSystem.entity.Item;
+import projectManagementSystem.entity.User;
 import projectManagementSystem.repository.BoardRepository;
-import projectManagementSystem.repository.ItemRepository;
-import projectManagementSystem.repository.UserInBoardRepository;
 import projectManagementSystem.repository.UserRepository;
 
 import java.util.List;
@@ -16,16 +16,22 @@ import java.util.stream.Collectors;
 @Service
 public class BoardService {
     private BoardRepository boardRepository;
-    private ItemRepository itemRepository;
-    private UserInBoardRepository userInBoardRepository;
+//    private UserInBoardRepository userInBoardRepository;
     private UserRepository userRepository;
 
-    public BoardService(BoardRepository boardRepository, ItemRepository itemRepository,
-                        UserInBoardRepository userInBoardRepository, UserRepository userRepository) {
+    public BoardService(BoardRepository boardRepository, UserRepository userRepository) {
         this.boardRepository = boardRepository;
-        this.itemRepository = itemRepository;
-        this.userInBoardRepository = userInBoardRepository;
+//        this.userInBoardRepository = userInBoardRepository;
         this.userRepository = userRepository;
+    }
+
+    public BoardDTO getBoardById(long boardId) {
+        Optional<Board> board = boardRepository.findById(boardId);
+        if (!board.isPresent()) {
+            throw new IllegalArgumentException("Could not find board ID: " + boardId);
+        }
+
+        return new BoardDTO(board.get());
     }
 
     public BoardDTO createBoard(BoardRequest boardRequest) {
@@ -64,8 +70,6 @@ public class BoardService {
             throw new IllegalArgumentException("Could not find board ID: " + boardId);
         }
 
-        deleteStatusItems(board.get(), status);
-
         board.get().removeStatus(status);
         return new BoardDTO(boardRepository.save(board.get()));
     }
@@ -92,53 +96,30 @@ public class BoardService {
         return new BoardDTO(boardRepository.save(board.get()));
     }
 
-    public BoardDTO addItem(long boardId, Item item) {
-        Optional<Board> board = boardRepository.findById(boardId);
-
+    public BoardDTO addItem(Item item) {
+        Optional<Board> board = boardRepository.findById(item.getBoardId());
         if (!board.isPresent()) {
-            throw new IllegalArgumentException("Could not find board ID: " + boardId);
+            throw new IllegalArgumentException("Could not find board ID: " + item.getBoardId());
         }
 
         board.get().addItem(item);
         return new BoardDTO(boardRepository.save(board.get()));
     }
 
-    public BoardDTO updateItem(long boardId, Item item) {
-        Optional<Board> board = boardRepository.findById(boardId);
-
-        if (!board.isPresent()) {
-            throw new IllegalArgumentException("Could not find board ID: " + boardId);
-        }
-
-        board.get().updateItem(item);
-        return new BoardDTO(boardRepository.save(board.get()));
-    }
-
-    public BoardDTO addComment(long boardId, long userId, long itemId, String content) {
-        Optional<Board> board = boardRepository.findById(boardId);
-        if (!board.isPresent()) {
-            throw new IllegalArgumentException("Could not find board ID: " + boardId);
-        }
-
-        Optional<Item> item = board.get().getItemById(itemId);
-        if (!item.isPresent()) {
-            throw new IllegalArgumentException("Could not find item ID: " + itemId);
-        }
-
-        item.get().addComment(new Comment(userId, content));
-        return new BoardDTO(boardRepository.save(board.get()));
-    }
-
-    public BoardDTO removeItem(long boardId, Item item) {
-        Optional<Board> board = boardRepository.findById(boardId);
-
-        if (!board.isPresent()) {
-            throw new IllegalArgumentException("Could not find board ID: " + boardId);
-        }
-
-        board.get().removeItem(item);
-        return new BoardDTO(boardRepository.save(board.get()));
-    }
+//    public BoardDTO removeItem(long boardId, long itemId) {
+//        Optional<Board> board = boardRepository.findById(boardId);
+//        if (!board.isPresent()) {
+//            throw new IllegalArgumentException("Could not find board ID: " + boardId);
+//        }
+//
+//        Optional<Item> item = board.get().getItemById(itemId);
+//        if (!item.isPresent()) {
+//            throw new IllegalArgumentException("Could not find item ID: " + itemId);
+//        }
+//
+//        board.get().removeItem(item.get());
+//        return new BoardDTO(boardRepository.save(board.get()));
+//    }
 
     public boolean hasStatus(long boardId, String status) {
         Optional<Board> board = boardRepository.findById(boardId);
@@ -161,17 +142,7 @@ public class BoardService {
     }
 
     public void delete(long boardId) {
-        Optional<Board> board = boardRepository.findById(boardId);
-
-        if (!board.isPresent()) {
-            throw new IllegalArgumentException("Could not find board ID: " + boardId);
-        }
-
-        for (Item item : board.get().getItems()) {
-            this.itemRepository.delete(item);
-        }
-
-        this.boardRepository.delete(board.get());
+        boardRepository.deleteById(boardId);
     }
 
     public List<BoardDTO> getBoardsByUserId(long userId) {
@@ -180,24 +151,7 @@ public class BoardService {
             throw new IllegalArgumentException("User ID: "+ userId +" does not exist");
         }
 
-        return userInBoardRepository.findByUserId(user).stream()
-                .map(userInBoard -> new BoardDTO(userInBoard.getBoard())).collect(Collectors.toList());
-    }
-
-    private void deleteStatusItems(Board board, String status) {
-        for (Item item : board.getItemsByStatus().get(status)) {
-            board.removeItem(item);
-            this.itemRepository.delete(item);
-        }
-    }
-
-       public BoardDTO join(long boardId) {
-        Optional<Board> board = boardRepository.findById(boardId);
-
-        if (!board.isPresent()) {
-            throw new IllegalArgumentException("Could not find board ID: " + boardId);
-        }
-
-        return new BoardDTO(board.get());
+        List<Board> boards = boardRepository.getBoardsByUser(userId);
+        return boards.stream().map(BoardDTO::new).collect(Collectors.toList());
     }
 }

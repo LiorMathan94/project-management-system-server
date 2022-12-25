@@ -1,9 +1,10 @@
 package projectManagementSystem.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import projectManagementSystem.entity.*;
+import projectManagementSystem.entity.DTO.BoardDTO;
 import projectManagementSystem.repository.BoardRepository;
-import projectManagementSystem.repository.UserInBoardRepository;
 import projectManagementSystem.repository.UserRepository;
 
 import java.util.List;
@@ -11,35 +12,28 @@ import java.util.Optional;
 
 @Service
 public class UserRoleService {
-    private UserInBoardRepository userInBoardRepository;
     private BoardRepository boardRepository;
     private UserRepository userRepository;
 
 
-    public UserRoleService(UserInBoardRepository userInBoardRepository, BoardRepository boardRepository,
-                           UserRepository userRepository) {
-        this.userInBoardRepository = userInBoardRepository;
+    public UserRoleService(BoardRepository boardRepository, UserRepository userRepository) {
         this.boardRepository = boardRepository;
         this.userRepository = userRepository;
     }
 
+    @Transactional
     public boolean isAuthorized(long boardId, long userId, BoardAction action) {
         Optional<Board> board = boardRepository.findById(boardId);
         if (!board.isPresent()) {
             throw new IllegalArgumentException("Could not find board ID: " + boardId);
         }
 
-        Optional<User> user = userRepository.findById(userId);
-        if (!user.isPresent()) {
-            throw new IllegalArgumentException("Could not find user ID: " + userId);
-        }
+        Optional<AuthorizedUser> authorized = board.get().getAuthorizedById(userId);
 
-        List<UserInBoard> userInBoard = userInBoardRepository.findByBoardAndUser(board.get(), user.get());
-
-        return (!userInBoard.isEmpty() && userInBoard.get(0).getRole().ordinal() <= action.getRole().ordinal());
+        return (authorized.isPresent() && authorized.get().getRole().ordinal() <= action.getRole().ordinal());
     }
 
-    public UserInBoard addByEmail(long boardId, String email, Role role) {
+    public BoardDTO addByEmail(long boardId, String email, Role role) {
         Optional<User> user = userRepository.findByEmail(email);
         if (!user.isPresent()) {
             throw new IllegalArgumentException("Could not find user with email: " + email);
@@ -48,7 +42,7 @@ public class UserRoleService {
         return add(boardId, user.get().getId(), role);
     }
 
-    public UserInBoard add(long boardId, long userId, Role role) {
+    public BoardDTO add(long boardId, long userId, Role role) {
         Optional<Board> board = boardRepository.findById(boardId);
         if (!board.isPresent()) {
             throw new IllegalArgumentException("Could not find board ID: " + boardId);
@@ -59,51 +53,16 @@ public class UserRoleService {
             throw new IllegalArgumentException("Could not find user ID: " + userId);
         }
 
-        List<UserInBoard> existingRoles = userInBoardRepository.findByBoardAndUser(board.get(), user.get());
-        UserInBoard userRole = existingRoles.isEmpty() ? null : existingRoles.get(0);
-        if (userRole != null) {
-            updateExisting(userRole, role);
-        } else {
-            userRole = new UserInBoard(board.get(), user.get(), role);
-        }
-
-        return this.userInBoardRepository.save(userRole);
+        board.get().assignUser(user.get(), role);
+        return new BoardDTO(this.boardRepository.save(board.get()));
     }
 
-    public List<UserInBoard> getByBoard(long boardId) {
+    public List<AuthorizedUser> getByBoard(long boardId) {
         Optional<Board> board = this.boardRepository.findById(boardId);
         if (!board.isPresent()) {
             throw new IllegalArgumentException("Could not find board ID: " + boardId);
         }
 
-        return this.userInBoardRepository.findByBoard(board.get());
+        return board.get().getAuthorizedUsers();
     }
-
-    public void deleteByBoard(long boardId) {
-        Optional<Board> board = this.boardRepository.findById(boardId);
-        if (!board.isPresent()) {
-            throw new IllegalArgumentException("Could not find board ID: " + boardId);
-        }
-
-        this.userInBoardRepository.deleteByBoard(board.get());
-    }
-
-    public void deleteByUser(long userId) {
-        Optional<User> user = this.userRepository.findById(userId);
-        if (!user.isPresent()) {
-            throw new IllegalArgumentException("Could not find user ID: " + userId);
-        }
-
-        this.userInBoardRepository.deleteByUser(user.get());
-    }
-
-    private void updateExisting(UserInBoard userInBoard, Role role) {
-        if (userInBoard.getRole() == Role.ADMIN && role != Role.ADMIN) {
-            throw new IllegalArgumentException("Cannot change admin role!");
-        }
-
-        userInBoard.setRole(role);
-    }
-
-
 }

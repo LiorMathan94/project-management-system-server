@@ -4,76 +4,85 @@ import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.Importance;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FilterRequest {
 
-    private Long[] creatorId;
-    private Long[] assignedToId;
-    private LocalDate[] dueDate;
-    private Long[] parentId;
-    private String[] status;
-    private String[] type;
-    private Importance[] importance;
+    private List<Long> creatorId;
+    private List<Long> assignedToId;
+    private List<LocalDate> dueDate;
+    private List<Long> parentId;
+    private List<String> status;
+    private List<String> type;
+    private List<Importance> importance;
 
-    public FilterRequest(Long[] creatorId, Long[] assignedToId, LocalDate[] dueDate, Long[] parentId, String[] status, String[] type, Importance[] importance) {
-        this.creatorId = creatorId;
-        this.assignedToId = assignedToId;
-        this.dueDate = dueDate;
-        this.parentId = parentId;
-        this.status = status;
-        this.type = type;
-        this.importance = importance;
+    public FilterRequest(){
+        creatorId = new ArrayList<>();
+        assignedToId = new ArrayList<>();
+        dueDate = new ArrayList<>();
+        parentId = new ArrayList<>();
+        status = new ArrayList<>();
+        type = new ArrayList<>();
+        importance = new ArrayList<>();
     }
 
-    public Long[] getCreatorId() {
+
+    public List<Long> getCreatorId() {
         return creatorId;
     }
 
-    public void setCreatorId(Long[] creatorId) {
+    public void setCreatorId(List<Long> creatorId) {
         this.creatorId = creatorId;
     }
 
-    public Long[] getAssignedToId() {
+    public List<Long> getAssignedToId() {
         return assignedToId;
     }
 
-    public void setAssignedToId(Long[] assignedToId) {
+    public void setAssignedToId(List<Long> assignedToId) {
         this.assignedToId = assignedToId;
     }
 
-    public LocalDate[] getDueDate() {
+    public List<LocalDate> getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(LocalDate[] dueDate) {
+    public void setDueDate(List<LocalDate> dueDate) {
         this.dueDate = dueDate;
     }
 
-    public Long[] getParentId() {
+    public List<Long> getParentId() {
         return parentId;
     }
 
-    public void setParentId(Long[] parentId) {
+    public void setParentId(List<Long> parentId) {
         this.parentId = parentId;
     }
 
-    public String[] getStatus() {
+    public List<String> getStatus() {
         return status;
     }
 
-    public void setStatus(String[] status) {
+    public void setStatus(List<String> status) {
         this.status = status;
     }
 
-    public Importance[] getImportance() {
+    public List<String> getType() {
+        return type;
+    }
+
+    public void setType(List<String> type) {
+        this.type = type;
+    }
+
+    public List<Importance> getImportance() {
         return importance;
     }
 
-    public void setImportance(Importance[] importance) {
+    public void setImportance(List<Importance> importance) {
         this.importance = importance;
     }
-
-
 }
 
 

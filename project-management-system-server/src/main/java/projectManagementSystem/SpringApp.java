@@ -21,18 +21,5 @@ public class SpringApp {
 
     @EventListener(ApplicationReadyEvent.class)
     void filterBoard(){
-
-//        public FilterRequest(Long[] creatorId, Long[] assignedToId, LocalDate[] dueDate, Long[] parentId, String[] status, String[] type, Importance[] importance) {
-//        this.creatorId = creatorId;
-//        this.assignedToId = assignedToId;
-//        this.dueDate = dueDate;
-//        this.parentId = parentId;
-//        this.status = status;
-//        this.type = type;
-//        this.importance = importance;
-//    }
-
-        String[] statuses = new String[]{"temp-new"};
-        filterCriteriaService.filterByProperty(2L,new FilterRequest(null,null,null,null,statuses,null,null));
     }
 }

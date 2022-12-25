@@ -11,8 +11,8 @@ public class ItemDTO {
     private String status;
     private String type;
     private long parentId;
-    private Long creatorId;
-    private Long assignedToId;
+    private long creatorId;
+    private long assignedToId;
     private LocalDate dueDate;
     private Importance importance;
     private String title;
@@ -23,7 +23,7 @@ public class ItemDTO {
         this.boardId = item.getBoardId();
         this.status = item.getStatus();
         this.type = item.getType();
-        this.parentId = item.getParent().getId();
+        this.parentId = item.getParent() == null ? 0 : item.getParent().getId();
         this.creatorId = item.getCreatorId();
         this.assignedToId = item.getAssignedToId();
         this.dueDate = item.getDueDate();
@@ -52,11 +52,11 @@ public class ItemDTO {
         return parentId;
     }
 
-    public Long getCreatorId() {
+    public long getCreatorId() {
         return creatorId;
     }
 
-    public Long getAssignedToId() {
+    public long getAssignedToId() {
         return assignedToId;
     }
 
