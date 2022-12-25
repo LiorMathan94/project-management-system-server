@@ -1,6 +1,7 @@
 package projectManagementSystem.entity.DTO;
 
 import projectManagementSystem.controller.response.NotificationResponse;
+import projectManagementSystem.entity.AuthorizedUser;
 import projectManagementSystem.entity.Board;
 import projectManagementSystem.entity.Item;
 
@@ -16,6 +17,7 @@ public class BoardDTO {
     private Set<String> types;
     private Map<String, List<Item>> items;
     private List<NotificationResponse> notifications;
+    private List<AuthorizedUserDTO> authorizedUsers;
 
     public BoardDTO(Board board) {
         this.id = board.getId();
@@ -24,6 +26,15 @@ public class BoardDTO {
         this.types = board.getTypes();
         this.items = board.getItemsByStatus();
         this.notifications = new ArrayList<>();
+        this.authorizedUsers = initDtoAuthorizedUsers(board.getAuthorizedUsers());
+    }
+
+    private List<AuthorizedUserDTO> initDtoAuthorizedUsers(List<AuthorizedUser> authorizedUsers) {
+        List<AuthorizedUserDTO> authUsersDto = new ArrayList<>();
+        for (AuthorizedUser authUser : authorizedUsers) {
+            authUsersDto.add(new AuthorizedUserDTO(authUser));
+        }
+        return authUsersDto;
     }
 
     public long getId() {
@@ -53,4 +64,9 @@ public class BoardDTO {
     public void setNotifications(List<NotificationResponse> notifications) {
         this.notifications = notifications;
     }
+
+    public List<AuthorizedUserDTO> getAuthorizedUsers() {
+        return authorizedUsers;
+    }
+
 }

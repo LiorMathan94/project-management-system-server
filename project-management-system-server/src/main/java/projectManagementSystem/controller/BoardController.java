@@ -244,17 +244,6 @@ public class BoardController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/getUserEmailsByBoardId")
-    public ResponseEntity<Response<List<String>>> getUserEmailsByBoardId(@RequestHeader long boardId) {
-        logger.info("in BoardController.getUserEmailsByBoardId");
-        try {
-            List<String> emails = boardService.getUserEmailsByBoardId(boardId);
-            return ResponseEntity.ok(Response.success(emails));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
-        }
-    }
-
     private void validateItemRequest(ItemRequest itemRequest) {
         if (itemRequest.getStatus() != null &&
                 !boardService.hasStatus(itemRequest.getBoardId(), itemRequest.getStatus())) {
