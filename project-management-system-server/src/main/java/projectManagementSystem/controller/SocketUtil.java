@@ -13,7 +13,14 @@ public class SocketUtil {
     }
 
     public BoardDTO updateBoard(BoardDTO board) {
-        template.convertAndSend("/topic/updates", board);
+        String destination = "/topic/updates-" + board.getId();
+        template.convertAndSend(destination, board);
+        notify(board);
         return board;
+    }
+
+    private void notify(BoardDTO board) {
+        String destination = "/topic/notifications-" + board.getId();
+        template.convertAndSend(destination, board.getNotifications());
     }
 }
