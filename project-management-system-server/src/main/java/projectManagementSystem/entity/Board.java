@@ -24,6 +24,12 @@ public class Board {
     public Board() {
     }
 
+    /**
+     * Constructor for Board class.
+     * @param title
+     * @param statuses
+     * @param types
+     */
     public Board(String title, Set<String> statuses, Set<String> types) {
         this.title = title;
         this.statuses = statuses;
@@ -32,48 +38,69 @@ public class Board {
         this.authorizedUsers = new ArrayList<>();
     }
 
-    public Board(Board board) {
-        this.id = board.getId();
-        this.title = board.getTitle();
-        this.statuses = board.getStatuses();
-        this.types = board.getTypes();
-        this.items = board.getItems();
-    }
-
-
-
+    /**
+     * @return board's ID
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * @return board's title
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * @return board's statuses
+     */
     public Set<String> getStatuses() {
         return statuses;
     }
 
+    /**
+     * @return board's types
+     */
     public Set<String> getTypes() {
         return types;
     }
 
+    /**
+     * @return board's items
+     */
     public List<Item> getItems() {
         return items;
     }
 
+    /**
+     * Sets board's title
+     * @param title
+     */
     public void setTitle(String title) {
         this.title = title;
     }
 
+    /**
+     * Sets board's items
+     * @param items
+     */
     public void setItems(List<Item> items) {
         this.items = items;
     }
 
+    /**
+     * Adds status to board's statuses
+     * @param status
+     */
     public void addStatus(String status) {
         this.statuses.add(status);
     }
 
+    /**
+     * Removes status from board's statuses
+     * @param status
+     */
     public void removeStatus(String status) {
         for (int i = 0; i < this.items.size(); i++) {
             if (items.get(i).getStatus().equals(status)) {
@@ -84,10 +111,18 @@ public class Board {
         this.statuses.remove(status);
     }
 
+    /**
+     * Adds type to board's types
+     * @param type
+     */
     public void addType(String type) {
         this.types.add(type);
     }
 
+    /**
+     * Removes type from board's types
+     * @param type
+     */
     public void removeType(String type) {
         for (Item item : this.items) {
             if (item.getType().equals(type)) {
@@ -98,10 +133,18 @@ public class Board {
         this.types.remove(type);
     }
 
+    /**
+     * Adds item to board's items
+     * @param item
+     */
     public void addItem(Item item) {
         this.items.add(item);
     }
 
+    /**
+     * Updates item if already exists in board's items
+     * @param item
+     */
     public void updateItem(Item item) {
         Item existingItem = findItemById(item.getId());
 
@@ -111,10 +154,18 @@ public class Board {
         }
     }
 
+    /**
+     * Removes item from board's items
+     * @param item
+     */
     public void removeItem(Item item) {
         this.items.remove(item);
     }
 
+    /**
+     * @param itemId
+     * @return Optional of Item corresponds to itemId if it exists in board's items
+     */
     public Optional<Item> getItemById(long itemId) {
         return this.items.stream().filter(item -> item.getId() == itemId).findAny();
     }
@@ -129,10 +180,16 @@ public class Board {
         return itemsByStatus;
     }
 
+    /**
+     * @return board's authorized users
+     */
     public List<AuthorizedUser> getAuthorizedUsers() {
         return authorizedUsers;
     }
 
+    /**
+     * @return all board's authorized users, grouped by their role
+     */
     public Map<Role, List<AuthorizedUser>> getAuthorizedUsersByRole() {
         Map<Role, List<AuthorizedUser>> authorizedUsersByRole = this.authorizedUsers.stream().collect(groupingBy(AuthorizedUser::getRole));
 
@@ -143,6 +200,11 @@ public class Board {
         return authorizedUsersByRole;
     }
 
+    /**
+     * Adds user to board's authorized users with the given role
+     * @param user
+     * @param role
+     */
     public void assignUser(User user, Role role) {
         Optional<AuthorizedUser> authorized = getAuthorizedById(user.getId());
 
@@ -153,6 +215,10 @@ public class Board {
         }
     }
 
+    /**
+     * @param userId
+     * @return Optional of AuthorizedUser corresponds to userId.
+     */
     public Optional<AuthorizedUser> getAuthorizedById(long userId) {
         for (AuthorizedUser user : this.authorizedUsers) {
             if (user.getUser().getId() == userId) {
@@ -163,10 +229,18 @@ public class Board {
         return Optional.empty();
     }
 
+    /**
+     * Removes authorizedUser from board's authorized users
+     * @param authorizedUser
+     */
     public void removeAuthorizedUser(AuthorizedUser authorizedUser) {
         this.authorizedUsers.remove(authorizedUser);
     }
 
+    /**
+     * @param requiredId
+     * @return board's item corresponds to requiredId
+     */
     private Item findItemById(long requiredId) {
         return this.items.stream().filter(item -> item.getId() == (requiredId)).findFirst().orElse(null);
     }

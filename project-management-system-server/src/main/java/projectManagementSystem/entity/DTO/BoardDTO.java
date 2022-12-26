@@ -19,6 +19,10 @@ public class BoardDTO {
     private List<NotificationResponse> notifications;
     private List<AuthorizedUserDTO> authorizedUsers;
 
+    /**
+     * Constructor for BoardDTO
+     * @param board
+     */
     public BoardDTO(Board board) {
         this.id = board.getId();
         this.title = board.getTitle();
@@ -26,49 +30,84 @@ public class BoardDTO {
         this.types = board.getTypes();
         this.items = board.getItemsByStatus();
         this.notifications = new ArrayList<>();
-        this.authorizedUsers = initDtoAuthorizedUsers(board.getAuthorizedUsers());
+        this.authorizedUsers = initDTOAuthorizedUsers(board.getAuthorizedUsers());
     }
 
-    private List<AuthorizedUserDTO> initDtoAuthorizedUsers(List<AuthorizedUser> authorizedUsers) {
-        List<AuthorizedUserDTO> authUsersDto = new ArrayList<>();
+    /**
+     * Initialize authorizedUsers data member.
+     * @param authorizedUsers
+     * @return List of AuthorizedUserDTO
+     */
+    private List<AuthorizedUserDTO> initDTOAuthorizedUsers(List<AuthorizedUser> authorizedUsers) {
+        List<AuthorizedUserDTO> authUsersDTO = new ArrayList<>();
         for (AuthorizedUser authUser : authorizedUsers) {
-            authUsersDto.add(new AuthorizedUserDTO(authUser));
+            authUsersDTO.add(new AuthorizedUserDTO(authUser));
         }
-        return authUsersDto;
+
+        return authUsersDTO;
     }
 
+    /**
+     * @return board's ID
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * @return board's title
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * @return board's statuses
+     */
     public Set<String> getStatuses() {
         return statuses;
     }
 
+    /**
+     * @return board's types
+     */
     public Set<String> getTypes() {
         return types;
     }
 
+    /**
+     * @return board's items, grouped by their status
+     */
     public Map<String, List<Item>> getItems() {
         return items;
     }
 
+    /**
+     * Sets board's items.
+     * @param items
+     */
     public void setItems(Map<String, List<Item>> items) {
         this.items = items;
     }
 
+    /**
+     * @return board's notifications
+     */
     public List<NotificationResponse> getNotifications() {
         return notifications;
     }
 
+    /**
+     * Sets board's notifications.
+     * @param notifications
+     */
     public void setNotifications(List<NotificationResponse> notifications) {
         this.notifications = notifications;
     }
 
+    /**
+     * @return board's authorized users
+     */
     public List<AuthorizedUserDTO> getAuthorizedUsers() {
         return authorizedUsers;
     }

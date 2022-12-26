@@ -40,6 +40,11 @@ public class UserService {
         return new UserDTO(userRepository.save(user));
     }
 
+    /**
+     * Sets user's notifications preferences.
+     * @param notificationRequest
+     * @return the user's DTO version
+     */
     public UserDTO setNotificationPreferences(NotificationRequest notificationRequest) {
         Optional<User> user = userRepository.findById(notificationRequest.getUserId());
 
