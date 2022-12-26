@@ -22,7 +22,6 @@ public class FilterCriteriaService {
     BoardRepository boardRepository;
 
 
-    @Transactional
     public BoardDTO filterByProperty(Long boardId, FilterRequest filterRequest) {
 
         Board board = boardRepository.findById(boardId).orElse(null);
@@ -33,18 +32,10 @@ public class FilterCriteriaService {
         Field[] fields = filterRequest.getClass().getDeclaredFields();
 
         List<Item> filteredItems = new ArrayList<>(board.getItems());
-        System.out.println(filteredItems);
 
             for (Field field : fields) {
 
                     switch (field.getName()) {
-                        case "creatorId":
-                            if (filterRequest.getCreatorId().size() > 0) {
-                                CreatorCriteria creatorCriteria = new CreatorCriteria(filterRequest.getCreatorId());
-                                filteredItems = (creatorCriteria.meetCriteria(filteredItems));
-                            }
-                            break;
-
                         case "assignedToId":
                             if (filterRequest.getAssignedToId().size() > 0) {
                                 AssignedToCriteria assignedToCriteria = new AssignedToCriteria(filterRequest.getAssignedToId());
@@ -52,18 +43,11 @@ public class FilterCriteriaService {
                             }
                             break;
                         case "dueDate":
-                        if (filterRequest.getDueDate().size() > 0) {
+                        if (filterRequest.getDueDate() != null){
                             DueDateCriteria dueDateCriteria = new DueDateCriteria(filterRequest.getDueDate());
                             filteredItems = (dueDateCriteria.meetCriteria(filteredItems));
                         }
                         break;
-
-                        case "parentId":
-                            if (filterRequest.getParentId().size() > 0) {
-                                    ParentCriteria parentCriteria = new ParentCriteria(filterRequest.getParentId());
-                                    filteredItems = (parentCriteria.meetCriteria(filteredItems));
-                                }
-                            break;
                         case "status":
                             if (filterRequest.getStatus().size() > 0) {
                                 StatusCriteria statusCriteria = new StatusCriteria(filterRequest.getStatus());
@@ -85,48 +69,10 @@ public class FilterCriteriaService {
 
 
                     }
-                    System.out.println(field.getName());
                 }
 
-
-        System.out.println(filteredItems);
-//        for (Map.Entry<CriteriaName, Object> entry : map.entrySet()) {
-//
-//            switch (entry.getKey()) {
-//                case CREATOR:
-//                    CreatorCriteria creatorCriteria = new CreatorCriteria((Integer) entry.getValue());
-//                    filteredItems = (creatorCriteria.meetCriteria(filteredItems));
-//                    break;
-//                case ASSIGN_TO:
-//                    AssignedToCriteria assignedToCriteria = new AssignedToCriteria((Integer) entry.getValue());
-//                    filteredItems = (assignedToCriteria.meetCriteria(filteredItems));
-//                    break;
-//                case DUE_TO:
-//                    DueDateCriteria dueDateCriteria = new DueDateCriteria((LocalDate) entry.getValue());
-//                    filteredItems = (dueDateCriteria.meetCriteria(filteredItems));
-//                    break;
-//                case PARENT:
-//                    ParentCriteria parentCriteria = new ParentCriteria((Item) entry.getValue());
-//                    filteredItems = (parentCriteria.meetCriteria(filteredItems));
-//                    break;
-//                case STATUS:
-//                    StatusCriteria statusCriteria = new StatusCriteria((String) entry.getValue());
-//                    filteredItems = (statusCriteria.meetCriteria(filteredItems));
-//                    break;
-//                case TYPE:
-//                    TypeCriteria typeCriteria = new TypeCriteria((String) entry.getValue());
-//                    filteredItems = (typeCriteria.meetCriteria(filteredItems));
-//                    break;
-//                case IMPORTANCE:
-//                    ImportanceCriteria importanceCriteria = new ImportanceCriteria((Importance) entry.getValue());
-//                    filteredItems = (importanceCriteria.meetCriteria(filteredItems));
-//                    break;
-//            }
-//        }
         board.setItems(filteredItems);
-        BoardDTO updatedBoard = new BoardDTO(board);
-        updatedBoard.setItems(board.getItemsByStatus());
-        return updatedBoard;
+        return new BoardDTO(board);
     }
 
 }

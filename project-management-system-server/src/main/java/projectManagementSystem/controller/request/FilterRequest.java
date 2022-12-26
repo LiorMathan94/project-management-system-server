@@ -9,32 +9,20 @@ import java.util.List;
 
 public class FilterRequest {
 
-    private List<Long> creatorId;
     private List<Long> assignedToId;
-    private List<LocalDate> dueDate;
-    private List<Long> parentId;
+    private LocalDate dueDate;
     private List<String> status;
     private List<String> type;
     private List<Importance> importance;
 
     public FilterRequest(){
-        creatorId = new ArrayList<>();
         assignedToId = new ArrayList<>();
-        dueDate = new ArrayList<>();
-        parentId = new ArrayList<>();
         status = new ArrayList<>();
         type = new ArrayList<>();
         importance = new ArrayList<>();
     }
 
 
-    public List<Long> getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(List<Long> creatorId) {
-        this.creatorId = creatorId;
-    }
 
     public List<Long> getAssignedToId() {
         return assignedToId;
@@ -44,20 +32,12 @@ public class FilterRequest {
         this.assignedToId = assignedToId;
     }
 
-    public List<LocalDate> getDueDate() {
+    public LocalDate getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(List<LocalDate> dueDate) {
+    public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
-    }
-
-    public List<Long> getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(List<Long> parentId) {
-        this.parentId = parentId;
     }
 
     public List<String> getStatus() {
