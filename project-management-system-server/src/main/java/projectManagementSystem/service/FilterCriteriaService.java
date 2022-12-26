@@ -38,13 +38,6 @@ public class FilterCriteriaService {
             for (Field field : fields) {
 
                     switch (field.getName()) {
-                        case "creatorId":
-                            if (filterRequest.getCreatorId().size() > 0) {
-                                CreatorCriteria creatorCriteria = new CreatorCriteria(filterRequest.getCreatorId());
-                                filteredItems = (creatorCriteria.meetCriteria(filteredItems));
-                            }
-                            break;
-
                         case "assignedToId":
                             if (filterRequest.getAssignedToId().size() > 0) {
                                 AssignedToCriteria assignedToCriteria = new AssignedToCriteria(filterRequest.getAssignedToId());
@@ -52,18 +45,11 @@ public class FilterCriteriaService {
                             }
                             break;
                         case "dueDate":
-                        if (filterRequest.getDueDate().size() > 0) {
+                        if (filterRequest.getDueDate().equals("") ){
                             DueDateCriteria dueDateCriteria = new DueDateCriteria(filterRequest.getDueDate());
                             filteredItems = (dueDateCriteria.meetCriteria(filteredItems));
                         }
                         break;
-
-                        case "parentId":
-                            if (filterRequest.getParentId().size() > 0) {
-                                    ParentCriteria parentCriteria = new ParentCriteria(filterRequest.getParentId());
-                                    filteredItems = (parentCriteria.meetCriteria(filteredItems));
-                                }
-                            break;
                         case "status":
                             if (filterRequest.getStatus().size() > 0) {
                                 StatusCriteria statusCriteria = new StatusCriteria(filterRequest.getStatus());
