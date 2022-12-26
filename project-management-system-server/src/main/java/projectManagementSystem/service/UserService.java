@@ -1,7 +1,10 @@
 package projectManagementSystem.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import projectManagementSystem.controller.UserController;
 import projectManagementSystem.controller.request.NotificationRequest;
 import projectManagementSystem.entity.DTO.UserDTO;
 import projectManagementSystem.entity.User;
@@ -16,6 +19,7 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    private static final Logger logger = LogManager.getLogger(UserService.class.getName());
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -30,6 +34,7 @@ public class UserService {
      * @throws IllegalArgumentException - if User with the given email already exists in the database.
      */
     public UserDTO create(String email, String password) {
+        logger.info("in UserService.create()");
         if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("User with email " + email + " already exists.");
         }
@@ -42,10 +47,12 @@ public class UserService {
 
     /**
      * Sets user's notifications preferences.
+     *
      * @param notificationRequest
      * @return the user's DTO version
      */
     public UserDTO setNotificationPreferences(NotificationRequest notificationRequest) {
+        logger.info("in UserService.setNotificationPreferences()");
         Optional<User> user = userRepository.findById(notificationRequest.getUserId());
 
         if (!user.isPresent()) {
@@ -67,6 +74,7 @@ public class UserService {
      * @param userId
      */
     public void delete(long userId) {
+        logger.info("in UserService.delete()");
         this.userRepository.deleteById(userId);
     }
 }
