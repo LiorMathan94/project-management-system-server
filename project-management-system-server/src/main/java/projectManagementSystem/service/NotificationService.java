@@ -22,10 +22,21 @@ public class NotificationService {
     private EmailUtil emailUtil;
     private UserRepository userRepository;
 
+    /**
+     * Constructor for NotificationService.
+     * @param userRepository
+     */
     public NotificationService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Notifies all users regarding an action the occurred in the board, according to their notifications preferences.
+     * @param users
+     * @param boardId
+     * @param action
+     * @return NotificationResponse
+     */
     public List<NotificationResponse> notifyAll(List<User> users, long boardId, BoardAction action) {
         List<NotificationResponse> responses = new ArrayList<>();
 
@@ -36,6 +47,13 @@ public class NotificationService {
         return responses;
     }
 
+    /**
+     * Notifies all users regarding an action the occurred in the board, according to their notifications preferences.
+     * @param user
+     * @param boardId
+     * @param action
+     * @return NotificationResponse
+     */
     public NotificationResponse notify(User user, long boardId, BoardAction action) {
         NotificationResponse notificationResponse = null;
 
@@ -60,11 +78,20 @@ public class NotificationService {
         return notificationResponse;
     }
 
+    /**
+     * @param boardId
+     * @param action
+     * @return the notification message
+     */
     private String buildNotificationMessage(long boardId, BoardAction action) {
         return String.format("We would like to inform you that the following action has been taken on " +
                 "board #%d: %s", boardId, action.getDescription());
     }
 
+    /**
+     * @param boardId
+     * @return the notification subject
+     */
     private String buildNotificationSubject(long boardId) {
         return "Notification From the Best Project Management System in the World: Update on board" + boardId;
     }

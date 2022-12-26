@@ -16,11 +16,23 @@ public class UserRoleService {
     private UserRepository userRepository;
 
 
+    /**
+     * Constructor for UserRoleService
+     * @param boardRepository
+     * @param userRepository
+     */
     public UserRoleService(BoardRepository boardRepository, UserRepository userRepository) {
         this.boardRepository = boardRepository;
         this.userRepository = userRepository;
     }
 
+    /**
+     * Checks if user corresponds to userId is authorized to perform action in board corresponds to boardId.
+     * @param boardId
+     * @param userId
+     * @param action
+     * @return true if user is authorized, otherwise - false.
+     */
     @Transactional
     public boolean isAuthorized(long boardId, long userId, BoardAction action) {
         Optional<Board> board = boardRepository.findById(boardId);
@@ -33,6 +45,13 @@ public class UserRoleService {
         return (authorized.isPresent() && authorized.get().getRole().ordinal() <= action.getRole().ordinal());
     }
 
+    /**
+     * Adds the user with the given email as an authorized user of the board.
+     * @param boardId
+     * @param email
+     * @param role
+     * @return the board's DTO version
+     */
     public BoardDTO addByEmail(long boardId, String email, Role role) {
         Optional<User> user = userRepository.findByEmail(email);
         if (!user.isPresent()) {
@@ -42,6 +61,13 @@ public class UserRoleService {
         return add(boardId, user.get().getId(), role);
     }
 
+    /**
+     * Adds the user corresponds to userId as an authorized user of the board.
+     * @param boardId
+     * @param userId
+     * @param role
+     * @return the board's DTO version
+     */
     public BoardDTO add(long boardId, long userId, Role role) {
         Optional<Board> board = boardRepository.findById(boardId);
         if (!board.isPresent()) {
@@ -57,6 +83,10 @@ public class UserRoleService {
         return new BoardDTO(this.boardRepository.save(board.get()));
     }
 
+    /**
+     * @param boardId
+     * @return all authorized users of the board that corresponds to boardId.
+     */
     public List<AuthorizedUser> getByBoard(long boardId) {
         Optional<Board> board = this.boardRepository.findById(boardId);
         if (!board.isPresent()) {

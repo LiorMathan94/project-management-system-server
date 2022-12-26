@@ -18,11 +18,20 @@ public class BoardService {
     private BoardRepository boardRepository;
     private UserRepository userRepository;
 
+    /**
+     * Constructor for BoardService.
+     * @param boardRepository
+     * @param userRepository
+     */
     public BoardService(BoardRepository boardRepository, UserRepository userRepository) {
         this.boardRepository = boardRepository;
         this.userRepository = userRepository;
     }
 
+    /**
+     * @param boardId
+     * @return the board's DTO version
+     */
     public BoardDTO getBoardById(long boardId) {
         Optional<Board> board = boardRepository.findById(boardId);
         if (!board.isPresent()) {
@@ -32,6 +41,11 @@ public class BoardService {
         return new BoardDTO(board.get());
     }
 
+    /**
+     * Creates a new board and stores it in the database.
+     * @param boardRequest
+     * @return the new board's DTO version
+     */
     public BoardDTO createBoard(BoardRequest boardRequest) {
         Board board = new Board(boardRequest.getTitle(), boardRequest.getStatuses(), boardRequest.getTypes());
         Board savedBoard = boardRepository.save(board);
@@ -39,6 +53,12 @@ public class BoardService {
         return new BoardDTO(savedBoard);
     }
 
+    /**
+     * Sets board's title
+     * @param boardId
+     * @param title
+     * @return the updated board's DTO version
+     */
     public BoardDTO setTitle(long boardId, String title) {
         Optional<Board> board = boardRepository.findById(boardId);
 
@@ -50,6 +70,12 @@ public class BoardService {
         return new BoardDTO(boardRepository.save(board.get()));
     }
 
+    /**
+     * Adds status to board's statuses.
+     * @param boardId
+     * @param status
+     * @return the updated board's DTO version
+     */
     public BoardDTO addStatus(long boardId, String status) {
         Optional<Board> board = boardRepository.findById(boardId);
 
@@ -61,6 +87,12 @@ public class BoardService {
         return new BoardDTO(boardRepository.save(board.get()));
     }
 
+    /**
+     * Removes status from board's statuses.
+     * @param boardId
+     * @param status
+     * @return the updated board's DTO version
+     */
     public BoardDTO removeStatus(long boardId, String status) {
         Optional<Board> board = boardRepository.findById(boardId);
 
@@ -72,6 +104,12 @@ public class BoardService {
         return new BoardDTO(boardRepository.save(board.get()));
     }
 
+    /**
+     * Adds type to board's types
+     * @param boardId
+     * @param type
+     * @return the updated board's DTO version
+     */
     public BoardDTO addType(long boardId, String type) {
         Optional<Board> board = boardRepository.findById(boardId);
 
@@ -83,6 +121,12 @@ public class BoardService {
         return new BoardDTO(boardRepository.save(board.get()));
     }
 
+    /**
+     * Removes type from board's types
+     * @param boardId
+     * @param type
+     * @return the updated board's DTO version
+     */
     public BoardDTO removeType(long boardId, String type) {
         Optional<Board> board = boardRepository.findById(boardId);
 
@@ -94,6 +138,11 @@ public class BoardService {
         return new BoardDTO(boardRepository.save(board.get()));
     }
 
+    /**
+     * Adds a new item to a board.
+     * @param item
+     * @return the updated board's DTO version
+     */
     public BoardDTO addItem(Item item) {
         Optional<Board> board = boardRepository.findById(item.getBoardId());
         if (!board.isPresent()) {
@@ -104,6 +153,12 @@ public class BoardService {
         return new BoardDTO(boardRepository.save(board.get()));
     }
 
+    /**
+     * Deletes an item from the board.
+     * @param boardId
+     * @param itemId
+     * @return the updated board's DTO version
+     */
     public BoardDTO deleteItem(long boardId, long itemId) {
         Optional<Board> board = boardRepository.findById(boardId);
         if (!board.isPresent()) {
@@ -119,6 +174,11 @@ public class BoardService {
         return new BoardDTO(boardRepository.save(board.get()));
     }
 
+    /**
+     * @param boardId
+     * @param status
+     * @return true if the board's statuses contain status, otherwise - false
+     */
     public boolean hasStatus(long boardId, String status) {
         Optional<Board> board = boardRepository.findById(boardId);
 
@@ -129,6 +189,11 @@ public class BoardService {
         return board.get().getStatuses().contains(status);
     }
 
+    /**
+     * @param boardId
+     * @param type
+     * @return true if the board's types contain type, otherwise - false
+     */
     public boolean hasType(long boardId, String type) {
         Optional<Board> board = boardRepository.findById(boardId);
 
@@ -139,10 +204,18 @@ public class BoardService {
         return board.get().getTypes().contains(type);
     }
 
+    /**
+     * Deletes a board.
+     * @param boardId
+     */
     public void delete(long boardId) {
         boardRepository.deleteById(boardId);
     }
 
+    /**
+     * @param userId
+     * @return all user's boards
+     */
     public List<BoardDTO> getBoardsByUserId(long userId) {
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {

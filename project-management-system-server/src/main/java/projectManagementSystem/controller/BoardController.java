@@ -35,6 +35,15 @@ public class BoardController {
 
     private static final Logger logger = LogManager.getLogger(BoardController.class.getName());
 
+    /**
+     * Constructor for BoardController
+     * @param boardService
+     * @param userRoleService
+     * @param itemService
+     * @param notificationService
+     * @param socketUtil
+     * @param filterCriteriaService
+     */
     @Autowired
     public BoardController(BoardService boardService, UserRoleService userRoleService, ItemService itemService,
                            NotificationService notificationService, SocketUtil socketUtil,FilterCriteriaService filterCriteriaService) {
@@ -46,6 +55,12 @@ public class BoardController {
         this.socketUtil = socketUtil;
     }
 
+    /**
+     * Creates a new board and stores it in the database.
+     * @param userId
+     * @param boardRequest
+     * @return the new board's DTO version
+     */
     @RequestMapping(method = RequestMethod.POST, path = "/create")
     public ResponseEntity<Response<BoardDTO>> create(@RequestAttribute long userId, @RequestBody BoardRequest boardRequest) {
         logger.info("in BoardController.create()");
@@ -59,6 +74,12 @@ public class BoardController {
         }
     }
 
+    /**
+     * Updates board's title with the given value.
+     * @param boardId
+     * @param value
+     * @return the updated board's DTO version
+     */
     @RequestMapping(method = RequestMethod.PATCH, path = "/title")
     public ResponseEntity<Response<BoardDTO>> setTitle(@RequestHeader long boardId, @RequestParam String value) {
         logger.info("in BoardController.setTitle()");
@@ -77,6 +98,12 @@ public class BoardController {
         }
     }
 
+    /**
+     * Adds status with the given value to the board's statuses.
+     * @param boardId
+     * @param value
+     * @return the updated board's DTO version
+     */
     @RequestMapping(method = RequestMethod.PATCH, path = "/addStatus")
     public ResponseEntity<Response<BoardDTO>> addStatus(@RequestHeader long boardId, @RequestParam String value) {
         logger.info("in BoardController.addStatus()");
@@ -94,6 +121,13 @@ public class BoardController {
         }
     }
 
+    /**
+     * Removes status from board's statuses.
+     * Deletes all board's items from the given status.
+     * @param boardId
+     * @param status
+     * @return the updated board's DTO version
+     */
     @RequestMapping(method = RequestMethod.DELETE, path = "/removeStatus")
     public ResponseEntity<Response<BoardDTO>> removeStatus(@RequestHeader long boardId, @RequestParam String status) {
         logger.info("in BoardController.removeStatus()");
@@ -107,6 +141,12 @@ public class BoardController {
         }
     }
 
+    /**
+     * Adds type with the given value to the board's types.
+     * @param boardId
+     * @param value
+     * @return the updated board's DTO version
+     */
     @RequestMapping(method = RequestMethod.PATCH, path = "/addType")
     public ResponseEntity<Response<BoardDTO>> addType(@RequestHeader long boardId, @RequestParam String value) {
         logger.info("in BoardController.addType()");
@@ -124,6 +164,12 @@ public class BoardController {
         }
     }
 
+    /**
+     * Removes type with the given value from board's types.
+     * @param boardId
+     * @param value
+     * @return the updated board's DTO version
+     */
     @RequestMapping(method = RequestMethod.PATCH, path = "/removeType")
     public ResponseEntity<Response<BoardDTO>> removeType(@RequestHeader long boardId, @RequestParam String value) {
         logger.info("in BoardController.removeType()");
@@ -137,6 +183,12 @@ public class BoardController {
         }
     }
 
+    /**
+     * Adds a new item to the board corresponds to boardId.
+     * @param boardId
+     * @param itemRequest
+     * @return the updated board's DTO version
+     */
     @RequestMapping(method = RequestMethod.POST, path = "/addItem")
     public ResponseEntity<Response<BoardDTO>> addItem(@RequestHeader long boardId, @RequestBody ItemRequest itemRequest) {
         logger.info("in BoardController.addItem()");
@@ -153,6 +205,12 @@ public class BoardController {
         }
     }
 
+    /**
+     * Deletes an item from the board corresponds to boardId.
+     * @param boardId
+     * @param itemId
+     * @return the updated board's DTO version
+     */
     @RequestMapping(method = RequestMethod.DELETE, path = "/removeItem")
     public ResponseEntity<Response<BoardDTO>> removeItem(@RequestHeader long boardId, @RequestParam long itemId) {
         logger.info("in BoardController.removeItem()");
@@ -168,6 +226,13 @@ public class BoardController {
         }
     }
 
+    /**
+     * Updates an existing item of the board corresponds to boardId.
+     * @param boardId
+     * @param action
+     * @param itemRequest
+     * @return the updated board's DTO version
+     */
     @RequestMapping(method = RequestMethod.PATCH, path = "/updateItem")
     public ResponseEntity<Response<BoardDTO>> updateItem(@RequestHeader long boardId, @RequestHeader BoardAction action,
                                                          @RequestBody ItemRequest itemRequest) {
@@ -190,6 +255,13 @@ public class BoardController {
         }
     }
 
+    /**
+     * Adds a new comment to the board that corresponds to boardId.
+     * @param boardId
+     * @param commentRequest
+     * @param userId
+     * @return the updated board's DTO version
+     */
     @RequestMapping(method = RequestMethod.PATCH, path = "/addItemComment")
     public ResponseEntity<Response<BoardDTO>> addItemComment(@RequestHeader long boardId, @RequestBody CommentRequest commentRequest,
                                                              @RequestAttribute long userId) {
@@ -207,6 +279,12 @@ public class BoardController {
         }
     }
 
+    /**
+     * Grants permission to a user for the board that corresponds to boardId.
+     * @param boardId
+     * @param roleRequest
+     * @return the updated board's DTO version
+     */
     @RequestMapping(method = RequestMethod.PATCH, path = "/grantUserRole")
     public ResponseEntity<Response<BoardDTO>> grantUserRole(@RequestHeader long boardId, @RequestBody RoleRequest roleRequest) {
         logger.info("in BoardController.grantUserRole()");
@@ -222,6 +300,10 @@ public class BoardController {
         }
     }
 
+    /**
+     * @param userId
+     * @return a DTO version of all user's boards
+     */
     @RequestMapping(method = RequestMethod.GET, path = "/getBoardsByUserId")
     public ResponseEntity<Response<List<BoardDTO>>> getBoardsByUserId(@RequestAttribute long userId) {
         logger.info("in BoardController.getBoardsByUserId()");
@@ -233,6 +315,11 @@ public class BoardController {
         }
     }
 
+    /**
+     * Deletes the board that corresponds to boardId
+     * @param boardId
+     * @return void
+     */
     @RequestMapping(method = RequestMethod.DELETE, path = "/delete")
     public ResponseEntity<Response<Void>> delete(@RequestHeader long boardId) {
         logger.info("in BoardController.deleteBoard()");
@@ -245,6 +332,11 @@ public class BoardController {
         }
     }
 
+    /**
+     * @param boardId
+     * @param filterRequest
+     * @return all board's items that meet filter criteria
+     */
     @RequestMapping(method = RequestMethod.POST, path = "/filter")
     public ResponseEntity<Response<BoardDTO>> filterByProperty(@RequestHeader long boardId, @RequestBody FilterRequest filterRequest) {
         logger.info("in BoardController.filterByProperty()");
@@ -255,6 +347,12 @@ public class BoardController {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
         }
     }
+
+    /**
+     * Validates ItemRequest.
+     * if request is not valid - throws IllegalArgumentException.
+     * @param itemRequest
+     */
     private void validateItemRequest(ItemRequest itemRequest) {
         if (itemRequest.getStatus() != null &&
                 !boardService.hasStatus(itemRequest.getBoardId(), itemRequest.getStatus())) {
@@ -271,6 +369,12 @@ public class BoardController {
         }
     }
 
+    /**
+     * Sets NotificationResponse and notifies by email if requested by users.
+     * @param boardId
+     * @param action
+     * @return NotificationResponse
+     */
     private List<NotificationResponse> notifyBoardUsers(long boardId, BoardAction action) {
         return notificationService.notifyAll(userRoleService.getByBoard(boardId)
                 .stream().map(AuthorizedUser::getUser).collect(Collectors.toList()), boardId, action);

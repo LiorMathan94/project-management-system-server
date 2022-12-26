@@ -29,24 +29,43 @@ public enum BoardAction {
     private String route;
     private String description;
 
+    /**
+     * Constructor for BoardAction
+     * @param role
+     * @param route
+     * @param description
+     */
     BoardAction(Role role, String route, String description) {
         this.role = role;
         this.route = route;
         this.description = description;
     }
 
+    /**
+     * @return instance's role
+     */
     public Role getRole() {
         return role;
     }
 
+    /**
+     * @return instance's route
+     */
     public String getRoute() {
         return route;
     }
 
+    /**
+     * @return instance's description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * @param route
+     * @return board action that matches the route
+     */
     public static BoardAction getByRoute(String route) {
         for (BoardAction action : values()) {
             if (action.getRoute() != null && route.contains(action.getRoute())) {

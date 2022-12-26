@@ -13,15 +13,29 @@ import java.util.Optional;
 public class ItemService {
     private ItemRepository itemRepository;
 
+    /**
+     * Constructor for ItemService
+     * @param itemRepository
+     */
     public ItemService(ItemRepository itemRepository) {
         this.itemRepository = itemRepository;
     }
 
+    /**
+     * Creates a new item and stores it in the database.
+     * @param itemRequest
+     * @return the new item
+     */
     public Item createItem(ItemRequest itemRequest) {
         Item item = create(itemRequest);
         return itemRepository.save(item);
     }
 
+    /**
+     * Creates a new item and stores it in the database.
+     * @param itemRequest
+     * @return the new item
+     */
     private Item create(ItemRequest itemRequest) {
         Item parent = extractParentFromItemRequest(itemRequest);
 
@@ -38,6 +52,11 @@ public class ItemService {
         return newItem;
     }
 
+    /**
+     * Extracts parent item from itemRequest.
+     * @param itemRequest
+     * @return the parent item
+     */
     private Item extractParentFromItemRequest(ItemRequest itemRequest) {
         Item parent = null;
 
@@ -49,6 +68,11 @@ public class ItemService {
         return parent;
     }
 
+    /**
+     * Updates an existing item.
+     * @param itemRequest
+     * @return the updated item's DTO version
+     */
     public ItemDTO updateItem(ItemRequest itemRequest) {
         Optional<Item> item = itemRepository.findById(itemRequest.getItemId());
         if (!item.isPresent()) {
@@ -59,6 +83,11 @@ public class ItemService {
         return new ItemDTO(itemRepository.save(item.get()));
     }
 
+    /**
+     * Updates an existing item.
+     * @param item
+     * @param itemRequest
+     */
     private void updateBoardItem(Item item, ItemRequest itemRequest) {
         switch (itemRequest.getBoardAction()) {
             case ASSIGN_ITEM:
@@ -90,6 +119,13 @@ public class ItemService {
         }
     }
 
+    /**
+     * Adds a comment to an item.
+     * @param itemId
+     * @param userId
+     * @param content
+     * @return the updated item's DTO version
+     */
     public ItemDTO addComment(long itemId, long userId, String content) {
         Optional<Item> item = itemRepository.findById(itemId);
         if (!item.isPresent()) {
@@ -100,10 +136,19 @@ public class ItemService {
         return new ItemDTO(itemRepository.save(item.get()));
     }
 
+    /**
+     * Deletes an item.
+     * @param itemId
+     */
     public void deleteItem(long itemId) {
         itemRepository.deleteById(itemId);
     }
 
+    /**
+     * Sets a parent item to an item.
+     * @param item
+     * @param itemRequest
+     */
     private void setParent(Item item, ItemRequest itemRequest) {
         Item parent = extractParentFromItemRequest(itemRequest);
         item.setParent(parent);
@@ -116,6 +161,11 @@ public class ItemService {
         }
     }
 
+    /**
+     * Validates item does not have any self reference loop caused by the parent item reference.
+     * If such loop is found - throws an IllegalArgumentException.
+     * @param item
+     */
     private void validateNoSelfReferenceLoop(Item item) {
         Item fastPointer = item;
         Item slowPointer = item;
