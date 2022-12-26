@@ -45,7 +45,7 @@ public class PermissionFilter implements Filter {
         MutableHttpServletRequest req = new MutableHttpServletRequest((HttpServletRequest) servletRequest);
         HttpServletResponse res = (HttpServletResponse) servletResponse;
         String url = ((HttpServletRequest) servletRequest).getRequestURL().toString();
-
+        boolean isAuthorized = true;
 
         if (url.contains("board") && !url.contains("create") && !url.contains("getBoardsByUserId")) {
             BoardAction action = url.contains("updateItem") ?
@@ -56,10 +56,13 @@ public class PermissionFilter implements Filter {
 
             if (!userRoleService.isAuthorized(boardId, userId, action)) {
                 returnBadResponse(res);
+                isAuthorized = false;
             }
         }
 
-        filterChain.doFilter(req, res);
+        if (isAuthorized) {
+            filterChain.doFilter(req, res);
+        }
     }
 
 
