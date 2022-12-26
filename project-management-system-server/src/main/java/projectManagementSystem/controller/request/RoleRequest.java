@@ -14,23 +14,41 @@ public class RoleRequest {
     public RoleRequest() {
     }
 
+    /**
+     * Constuctor for RoleRequest
+     * @param email
+     * @param role
+     */
     public RoleRequest(String email, Role role) {
         this.email = email;
         this.role = role;
     }
 
+    /**
+     * @return board's ID
+     */
     public long getBoardId() {
         return boardId;
     }
 
+    /**
+     * @return user's email
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * @return requested role
+     */
     public Role getRole() {
         return role;
     }
 
+    /**
+     * Sets boardId
+     * @param boardId
+     */
     public void setBoardId(long boardId) {
         this.boardId = boardId;
     }
