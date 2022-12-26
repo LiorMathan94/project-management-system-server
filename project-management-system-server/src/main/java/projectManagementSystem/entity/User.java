@@ -55,4 +55,8 @@ public class User {
     public void setNotificationPreferences(NotificationPreference notificationPreferences) {
         this.notificationPreferences = notificationPreferences;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 }
