@@ -4,7 +4,6 @@ import projectManagementSystem.entity.User;
 
 public class UserDTO {
     private String email;
-
     public UserDTO(User user) {
         this.email = user.getEmail();
     }

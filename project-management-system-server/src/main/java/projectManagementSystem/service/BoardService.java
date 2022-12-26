@@ -148,7 +148,7 @@ public class BoardService {
     public List<BoardDTO> getBoardsByUserId(long userId) {
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
-            throw new IllegalArgumentException("User ID: "+ userId +" does not exist");
+            throw new IllegalArgumentException("User ID: " + userId + " does not exist");
         }
 
         List<Board> boards = boardRepository.getBoardsByUser(userId);
