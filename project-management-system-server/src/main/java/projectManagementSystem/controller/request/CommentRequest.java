@@ -5,6 +5,9 @@ public class CommentRequest {
     private long itemId;
     private String content;
 
+    public CommentRequest() {
+    }
+
     public CommentRequest(long userId, long itemId, String content) {
         this.userId = userId;
         this.itemId = itemId;
@@ -21,5 +24,9 @@ public class CommentRequest {
 
     public String getContent() {
         return content;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 }

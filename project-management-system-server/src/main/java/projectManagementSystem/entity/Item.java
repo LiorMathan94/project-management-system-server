@@ -26,7 +26,7 @@ public class Item {
     private Importance importance;
     private String title;
     private String description;
-    @ElementCollection
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "comments")
     private List<Comment> commentList;
 

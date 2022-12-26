@@ -153,12 +153,12 @@ public class BoardController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, path = "/removeItem")
+    @RequestMapping(method = RequestMethod.DELETE, path = "/removeItem")
     public ResponseEntity<Response<BoardDTO>> removeItem(@RequestHeader long boardId, @RequestParam long itemId) {
         logger.info("in BoardController.removeItem()");
 
         try {
-            itemService.deleteItem(itemId);
+            boardService.deleteItem(boardId, itemId);
             BoardDTO board = boardService.getBoardById(boardId);
             board.setNotifications(notifyBoardUsers(boardId, BoardAction.DELETE_ITEM));
             socketUtil.updateBoard(board);
@@ -191,11 +191,12 @@ public class BoardController {
     }
 
     @RequestMapping(method = RequestMethod.PATCH, path = "/addItemComment")
-    public ResponseEntity<Response<BoardDTO>> addItemComment(@RequestHeader long boardId, @RequestBody CommentRequest commentRequest) {
+    public ResponseEntity<Response<BoardDTO>> addItemComment(@RequestHeader long boardId, @RequestBody CommentRequest commentRequest,
+                                                             @RequestAttribute long userId) {
         logger.info("in BoardController.addItemComment()");
 
         try {
-            itemService.addComment(commentRequest.getItemId(), commentRequest.getUserId(), commentRequest.getContent());
+            itemService.addComment(commentRequest.getItemId(), userId, commentRequest.getContent());
             BoardDTO board = boardService.getBoardById(boardId);
             board.setNotifications(notifyBoardUsers(boardId, BoardAction.ADD_COMMENT));
             socketUtil.updateBoard(board);
