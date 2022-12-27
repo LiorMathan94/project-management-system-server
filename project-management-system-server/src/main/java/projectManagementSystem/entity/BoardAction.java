@@ -23,8 +23,9 @@ public enum BoardAction {
     DELETE_BOARD(Role.ADMIN, "delete", "Board was deleted"),
 
     FILTER(Role.USER, "filter", "Board's items were filtered"),
-    UNKNOWN(Role.ADMIN, null, null),
-    GET_BOARD(Role.USER, "getBoard", "Get board by board ID");
+
+    GET_BOARD(Role.USER, "getBoardById", "Board was returned to a user"),
+    UNKNOWN(Role.ADMIN, null, null);
 
     private Role role;
     private String route;

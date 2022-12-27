@@ -57,13 +57,25 @@ public class BoardController {
     public ResponseEntity<Response<BoardDTO>> create(@RequestAttribute long userId, @RequestBody BoardRequest boardRequest) {
         logger.info("in BoardController.create()");
 
-        if (!InputValidation.isValidLabel(boardRequest.getTitle())) {
-            return ResponseEntity.badRequest().body(Response.failure("Invalid title: " + boardRequest.getTitle()));
-        }
-
         try {
+            if (!InputValidation.isValidLabel(boardRequest.getTitle())) {
+                return ResponseEntity.badRequest().body(Response.failure("Invalid title: " + boardRequest.getTitle()));
+            }
+
             BoardDTO board = boardService.createBoard(boardRequest);
             this.userRoleService.add(board.getId(), userId, Role.ADMIN);
+            return ResponseEntity.ok(Response.success(board));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/getBoardById")
+    public ResponseEntity<Response<BoardDTO>> getBoardById(@RequestHeader long boardId) {
+        logger.info("in BoardController.getBoardById()");
+
+        try {
+            BoardDTO board = boardService.getBoardById(boardId);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
@@ -257,7 +269,7 @@ public class BoardController {
     public ResponseEntity<Response<BoardDTO>> filterByProperty(@RequestHeader long boardId, @RequestBody FilterRequest filterRequest) {
         logger.info("in BoardController.filterByProperty()");
         try {
-            BoardDTO board = filterCriteriaService.filterByProperty(boardId, filterRequest);
+            BoardDTO board = filterCriteriaService.getFilteredBoard(boardId, filterRequest);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));

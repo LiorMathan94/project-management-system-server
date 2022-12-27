@@ -102,12 +102,7 @@ public class Board {
      * @param status
      */
     public void removeStatus(String status) {
-        for (int i = 0; i < this.items.size(); i++) {
-            if (items.get(i).getStatus().equals(status)) {
-                this.items.remove(items.get(i));
-            }
-        }
-
+        this.items.removeIf(item -> item.getStatus().equals(status));
         this.statuses.remove(status);
     }
 
