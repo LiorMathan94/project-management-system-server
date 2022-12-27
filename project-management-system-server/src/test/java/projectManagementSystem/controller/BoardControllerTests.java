@@ -10,9 +10,12 @@ import projectManagementSystem.controller.request.BoardRequest;
 import projectManagementSystem.controller.request.FilterRequest;
 import projectManagementSystem.entity.Board;
 import projectManagementSystem.entity.DTO.BoardDTO;
+import projectManagementSystem.entity.Importance;
 import projectManagementSystem.service.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -134,7 +137,14 @@ public class BoardControllerTests {
     }
 
     @Test
-    void filterByProperty_NotExistBoard_ResponseEntityBadRequest() {
-        assertEquals(400, boardController.filterByProperty(-1, new FilterRequest()).getStatusCodeValue(), "Could not find board ID: -1");
+    void filterByProperty_emptyFilterRequest_ResponseEntityOK() {
+        FilterRequest filterRequest = new FilterRequest();
+
+        List<Importance> importanceList = new ArrayList<>();
+        importanceList.add(Importance.LEVEL1);
+        filterRequest.setImportance(importanceList);
+
+        given(filterCriteriaService.filterByProperty(boardDTOSuccess.getId(), filterRequest)).willReturn(boardDTOSuccess);
+        assertEquals(200, boardController.filterByProperty(boardDTOSuccess.getId(), filterRequest).getStatusCodeValue(), "filterByProperty() with valid type should return ResponseEntity status 200 (OK)");
     }
 }
