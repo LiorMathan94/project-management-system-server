@@ -57,6 +57,10 @@ public class BoardController {
     public ResponseEntity<Response<BoardDTO>> create(@RequestAttribute long userId, @RequestBody BoardRequest boardRequest) {
         logger.info("in BoardController.create()");
 
+        if (!InputValidation.isValidLabel(boardRequest.getTitle())) {
+            return ResponseEntity.badRequest().body(Response.failure("Invalid title: " + boardRequest.getTitle()));
+        }
+
         try {
             BoardDTO board = boardService.createBoard(boardRequest);
             this.userRoleService.add(board.getId(), userId, Role.ADMIN);
