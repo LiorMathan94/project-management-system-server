@@ -55,6 +55,14 @@ public class BoardDTO {
     }
 
     /**
+     * Sets board's ID
+     * @param id
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    /**
      * @return board's title
      */
     public String getTitle() {
@@ -103,6 +111,14 @@ public class BoardDTO {
      */
     public void setNotifications(List<NotificationResponse> notifications) {
         this.notifications = notifications;
+    }
+
+    /**
+     * Add a notification to notifications list.
+     * @param notification
+     */
+    public void addNotification(NotificationResponse notification) {
+        this.notifications.add(notification);
     }
 
     /**
