@@ -2,9 +2,12 @@ package projectManagementSystem.service;
 
 import org.springframework.stereotype.Service;
 import projectManagementSystem.controller.request.ItemRequest;
+import projectManagementSystem.entity.Board;
 import projectManagementSystem.entity.Comment;
+import projectManagementSystem.entity.DTO.BoardDTO;
 import projectManagementSystem.entity.DTO.ItemDTO;
 import projectManagementSystem.entity.Item;
+import projectManagementSystem.repository.BoardRepository;
 import projectManagementSystem.repository.ItemRepository;
 
 import java.util.Optional;
@@ -12,17 +15,21 @@ import java.util.Optional;
 @Service
 public class ItemService {
     private ItemRepository itemRepository;
+    private BoardRepository boardRepository;
 
     /**
      * Constructor for ItemService
+     *
      * @param itemRepository
      */
-    public ItemService(ItemRepository itemRepository) {
+    public ItemService(ItemRepository itemRepository, BoardRepository boardRepository) {
         this.itemRepository = itemRepository;
+        this.boardRepository = boardRepository;
     }
 
     /**
      * Creates a new item and stores it in the database.
+     *
      * @param itemRequest
      * @return the new item
      */
@@ -33,6 +40,7 @@ public class ItemService {
 
     /**
      * Creates a new item and stores it in the database.
+     *
      * @param itemRequest
      * @return the new item
      */
@@ -54,6 +62,7 @@ public class ItemService {
 
     /**
      * Extracts parent item from itemRequest.
+     *
      * @param itemRequest
      * @return the parent item
      */
@@ -70,6 +79,7 @@ public class ItemService {
 
     /**
      * Updates an existing item.
+     *
      * @param itemRequest
      * @return the updated item's DTO version
      */
@@ -85,6 +95,7 @@ public class ItemService {
 
     /**
      * Updates an existing item.
+     *
      * @param item
      * @param itemRequest
      */
@@ -121,6 +132,7 @@ public class ItemService {
 
     /**
      * Adds a comment to an item.
+     *
      * @param itemId
      * @param userId
      * @param content
@@ -138,14 +150,36 @@ public class ItemService {
 
     /**
      * Deletes an item.
+     *
      * @param itemId
+     * @return the updated board's DTO version
      */
-    public void deleteItem(long itemId) {
-        itemRepository.deleteById(itemId);
+    public BoardDTO delete(long itemId) {
+        Optional<Item> item = itemRepository.findById(itemId);
+        if (!item.isPresent()) {
+            throw new IllegalArgumentException("Could not find item ID: " + itemId);
+        }
+
+        Optional<Board> board = boardRepository.findById(item.get().getBoardId());
+        if (!board.isPresent()) {
+            throw new IllegalArgumentException("Could not find board ID: " + item.get().getBoardId());
+        }
+
+        preRemove(item.get());
+        board.get().removeItem(item.get());
+        return new BoardDTO(boardRepository.save(board.get()));
+    }
+
+    private void preRemove(Item item) {
+        for (Item subItem : itemRepository.getItemsByParent(item)) {
+            subItem.setParent(null);
+            itemRepository.save(subItem);
+        }
     }
 
     /**
      * Sets a parent item to an item.
+     *
      * @param item
      * @param itemRequest
      */
@@ -164,6 +198,7 @@ public class ItemService {
     /**
      * Validates item does not have any self reference loop caused by the parent item reference.
      * If such loop is found - throws an IllegalArgumentException.
+     *
      * @param item
      */
     private void validateNoSelfReferenceLoop(Item item) {

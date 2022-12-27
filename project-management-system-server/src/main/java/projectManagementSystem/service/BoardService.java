@@ -154,27 +154,6 @@ public class BoardService {
     }
 
     /**
-     * Deletes an item from the board.
-     * @param boardId
-     * @param itemId
-     * @return the updated board's DTO version
-     */
-    public BoardDTO deleteItem(long boardId, long itemId) {
-        Optional<Board> board = boardRepository.findById(boardId);
-        if (!board.isPresent()) {
-            throw new IllegalArgumentException("Could not find board ID: " + boardId);
-        }
-
-        Optional<Item> item = board.get().getItemById(itemId);
-        if (!item.isPresent()) {
-            throw new IllegalArgumentException("Could not find item ID: " + itemId);
-        }
-
-        board.get().removeItem(item.get());
-        return new BoardDTO(boardRepository.save(board.get()));
-    }
-
-    /**
      * @param boardId
      * @param status
      * @return true if the board's statuses contain status, otherwise - false

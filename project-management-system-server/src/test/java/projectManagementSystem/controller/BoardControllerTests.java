@@ -132,16 +132,9 @@ public class BoardControllerTests {
         given(boardService.removeType(boardDTOSuccess.getId(), validType)).willReturn(boardDTOSuccess);
         assertEquals(200, boardController.removeType(boardDTOSuccess.getId(), validType).getStatusCodeValue(), "removeType() with valid type should return ResponseEntity status 200 (OK)");
     }
+
     @Test
     void filterByProperty_NotExistBoard_ResponseEntityBadRequest() {
         assertEquals(400, boardController.filterByProperty(-1, new FilterRequest()).getStatusCodeValue(), "Could not find board ID: -1");
     }
-
-
-
-
-
-
 }
-
-
