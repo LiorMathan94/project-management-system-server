@@ -1,5 +1,8 @@
 package projectManagementSystem.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +18,7 @@ public class Item {
     private String type;
     @ManyToOne
     @JoinColumn(name = "parent_id", referencedColumnName = "id")
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private Item parent;
     @Column(name = "creator_id")
     private Long creatorId;
@@ -206,7 +210,6 @@ public class Item {
     public void addComment(Comment comment) {
         this.commentList.add(comment);
     }
-
 
     public static class ItemBuilder {
         private long boardId;
