@@ -7,6 +7,7 @@ import projectManagementSystem.entity.DTO.BoardDTO;
 import projectManagementSystem.entity.Item;
 import projectManagementSystem.entity.User;
 import projectManagementSystem.repository.BoardRepository;
+import projectManagementSystem.repository.ItemRepository;
 import projectManagementSystem.repository.UserRepository;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class BoardService {
     private BoardRepository boardRepository;
+    private ItemRepository itemRepository;
     private UserRepository userRepository;
 
     /**
@@ -23,8 +25,9 @@ public class BoardService {
      * @param boardRepository
      * @param userRepository
      */
-    public BoardService(BoardRepository boardRepository, UserRepository userRepository) {
+    public BoardService(BoardRepository boardRepository, ItemRepository itemRepository, UserRepository userRepository) {
         this.boardRepository = boardRepository;
+        this.itemRepository = itemRepository;
         this.userRepository = userRepository;
     }
 
@@ -98,6 +101,14 @@ public class BoardService {
 
         if (!board.isPresent()) {
             throw new IllegalArgumentException("Could not find board ID: " + boardId);
+        }
+
+        for (Item item : board.get().getItemsByStatus().get(status)) {
+            List<Item> subItems = itemRepository.getItemsByParent(item);
+            for (int i = 0; i < subItems.size(); i++) {
+                subItems.get(i).setParent(null);
+                itemRepository.save(subItems.get(i));
+            }
         }
 
         board.get().removeStatus(status);
@@ -204,4 +215,5 @@ public class BoardService {
         List<Board> boards = boardRepository.getBoardsByUser(userId);
         return boards.stream().map(BoardDTO::new).collect(Collectors.toList());
     }
+
 }

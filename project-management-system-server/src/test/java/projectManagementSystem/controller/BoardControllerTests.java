@@ -7,11 +7,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projectManagementSystem.controller.request.BoardRequest;
+import projectManagementSystem.controller.request.RoleRequest;
+import projectManagementSystem.controller.request.FilterRequest;
 import projectManagementSystem.entity.Board;
 import projectManagementSystem.entity.DTO.BoardDTO;
+import projectManagementSystem.entity.Role;
+import projectManagementSystem.entity.Importance;
 import projectManagementSystem.service.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -130,5 +136,24 @@ public class BoardControllerTests {
         String validType = "task";
         given(boardService.removeType(boardDTOSuccess.getId(), validType)).willReturn(boardDTOSuccess);
         assertEquals(200, boardController.removeType(boardDTOSuccess.getId(), validType).getStatusCodeValue(), "removeType() with valid type should return ResponseEntity status 200 (OK)");
+    }
+
+    @Test
+    void filterByProperty_emptyFilterRequest_ResponseEntityOK() {
+        FilterRequest filterRequest = new FilterRequest();
+
+        List<Importance> importanceList = new ArrayList<>();
+        importanceList.add(Importance.LEVEL1);
+        filterRequest.setImportance(importanceList);
+
+        given(filterCriteriaService.getFilteredBoard(boardDTOSuccess.getId(), filterRequest)).willReturn(boardDTOSuccess);
+        assertEquals(200, boardController.filterByProperty(boardDTOSuccess.getId(), filterRequest).getStatusCodeValue(), "filterByProperty() with valid type should return ResponseEntity status 200 (OK)");
+    }
+
+    @Test
+    void grantUserRole_validRoleRequest_ResponseEntityOk() {
+        RoleRequest roleRequest = new RoleRequest("lior.mathan@gmail.com", Role.USER);
+        given(userRoleService.addByEmail(boardDTOSuccess.getId(), roleRequest.getEmail(), roleRequest.getRole())).willReturn(boardDTOSuccess);
+        assertEquals(200, boardController.grantUserRole(boardDTOSuccess.getId(), roleRequest).getStatusCodeValue(), "grantUserRole() with valid RoleRequest should return ResponseEntity status 200 (OK)");
     }
 }

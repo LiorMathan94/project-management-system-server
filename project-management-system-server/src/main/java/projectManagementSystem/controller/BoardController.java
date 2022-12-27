@@ -57,13 +57,25 @@ public class BoardController {
     public ResponseEntity<Response<BoardDTO>> create(@RequestAttribute long userId, @RequestBody BoardRequest boardRequest) {
         logger.info("in BoardController.create()");
 
-        if (!InputValidation.isValidLabel(boardRequest.getTitle())) {
-            return ResponseEntity.badRequest().body(Response.failure("Invalid title: " + boardRequest.getTitle()));
-        }
-
         try {
+            if (!InputValidation.isValidLabel(boardRequest.getTitle())) {
+                return ResponseEntity.badRequest().body(Response.failure("Invalid title: " + boardRequest.getTitle()));
+            }
+
             BoardDTO board = boardService.createBoard(boardRequest);
             this.userRoleService.add(board.getId(), userId, Role.ADMIN);
+            return ResponseEntity.ok(Response.success(board));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/getBoardById")
+    public ResponseEntity<Response<BoardDTO>> getBoardById(@RequestHeader long boardId) {
+        logger.info("in BoardController.getBoardById()");
+
+        try {
+            BoardDTO board = boardService.getBoardById(boardId);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
@@ -217,6 +229,21 @@ public class BoardController {
     }
 
     /**
+     * @param boardId
+     * @return a DTO version of all user's boards
+     */
+    @RequestMapping(method = RequestMethod.GET, path = "/getBoardsByBoardId")
+    public ResponseEntity<Response<BoardDTO>> getBoardsByBoardId(@RequestHeader long boardId) {
+        logger.info("in BoardController.getBoardsByBoardId()");
+        try {
+            BoardDTO boards = boardService.getBoardById(boardId);
+            return ResponseEntity.ok(Response.success(boards));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        }
+    }
+
+    /**
      * Deletes the board that corresponds to boardId
      * @param boardId
      * @return void
@@ -242,7 +269,7 @@ public class BoardController {
     public ResponseEntity<Response<BoardDTO>> filterByProperty(@RequestHeader long boardId, @RequestBody FilterRequest filterRequest) {
         logger.info("in BoardController.filterByProperty()");
         try {
-            BoardDTO board = filterCriteriaService.filterByProperty(boardId, filterRequest);
+            BoardDTO board = filterCriteriaService.getFilteredBoard(boardId, filterRequest);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));

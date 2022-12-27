@@ -4,6 +4,7 @@ import projectManagementSystem.entity.Item;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DueDateCriteria implements Criteria {
@@ -15,10 +16,10 @@ public class DueDateCriteria implements Criteria {
 
     @Override
     public List<Item> meetCriteria(List<Item> items) {
-        List<Item> filteredItems = new ArrayList<Item>();
+        List<Item> filteredItems = new ArrayList<>();
 
         for (Item item : items) {
-            if (dueDate.equals(item.getDueDate())) {
+            if (item.getDueDate() != null && dueDate.isAfter(item.getDueDate())) {
                 filteredItems.add(item);
             }
         }
