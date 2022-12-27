@@ -40,8 +40,8 @@ public class ItemController {
      * @return the updated board's DTO version
      */
     @RequestMapping(method = RequestMethod.POST, path = "/addItem")
-    public ResponseEntity<Response<BoardDTO>> addItem(@RequestHeader long boardId, @RequestBody ItemRequest itemRequest) {
-        logger.info("in ItemController.addItem()");
+    public ResponseEntity<Response<BoardDTO>> create(@RequestHeader long boardId, @RequestBody ItemRequest itemRequest) {
+        logger.info("in ItemController.create()");
 
         try {
             itemRequest.setBoardId(boardId);
@@ -62,7 +62,7 @@ public class ItemController {
      * @return the updated board's DTO version
      */
     @RequestMapping(method = RequestMethod.DELETE, path = "/removeItem")
-    public ResponseEntity<Response<BoardDTO>> removeItem(@RequestParam long itemId) {
+    public ResponseEntity<Response<BoardDTO>> delete(@RequestParam long itemId) {
         logger.info("in ItemController.removeItem()");
 
         try {
@@ -84,7 +84,7 @@ public class ItemController {
      * @return the updated board's DTO version
      */
     @RequestMapping(method = RequestMethod.PATCH, path = "/updateItem")
-    public ResponseEntity<Response<BoardDTO>> updateItem(@RequestHeader long boardId, @RequestHeader BoardAction action,
+    public ResponseEntity<Response<BoardDTO>> update(@RequestHeader long boardId, @RequestHeader BoardAction action,
                                                          @RequestBody ItemRequest itemRequest) {
         logger.info("in ItemController.updateItem()");
 
@@ -114,7 +114,7 @@ public class ItemController {
      * @return the updated board's DTO version
      */
     @RequestMapping(method = RequestMethod.PATCH, path = "/addItemComment")
-    public ResponseEntity<Response<BoardDTO>> addItemComment(@RequestHeader long boardId, @RequestBody CommentRequest commentRequest,
+    public ResponseEntity<Response<BoardDTO>> addComment(@RequestHeader long boardId, @RequestBody CommentRequest commentRequest,
                                                              @RequestAttribute long userId) {
         logger.info("in ItemController.addItemComment()");
 

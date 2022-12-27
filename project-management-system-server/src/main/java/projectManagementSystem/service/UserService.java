@@ -41,8 +41,9 @@ public class UserService {
 
         String encryptedPassword = AuthenticationUtils.encryptPassword(password);
         User user = User.createUser(email, encryptedPassword);
+        User savedUser = userRepository.save(user);
 
-        return new UserDTO(userRepository.save(user));
+        return new UserDTO(savedUser);
     }
 
     /**

@@ -22,7 +22,9 @@ public enum BoardAction {
     GRANT_USER_ROLE(Role.ADMIN, "grantUserRole", "User permission was granted"),
     DELETE_BOARD(Role.ADMIN, "delete", "Board was deleted"),
 
-    FILTER(Role.USER, "filter", "board's items were filtered"),
+    FILTER(Role.USER, "filter", "Board's items were filtered"),
+
+    GET_BOARD(Role.USER, "getBoardById", "Board was returned to a user"),
     UNKNOWN(Role.ADMIN, null, null);
 
     private Role role;

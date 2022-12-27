@@ -18,7 +18,7 @@ public class FilterCriteriaService {
     @Autowired
     BoardRepository boardRepository;
 
-    public BoardDTO filterByProperty(Long boardId, FilterRequest filterRequest) {
+    public BoardDTO getFilteredBoard(Long boardId, FilterRequest filterRequest) {
         Board board = boardRepository.findById(boardId).orElse(null);
         if (board == null) {
             throw new IllegalArgumentException("Could not find board ID: " + boardId);
@@ -30,19 +30,19 @@ public class FilterCriteriaService {
         for (Field field : fields) {
             switch (field.getName()) {
                 case "assignedToId":
-                    filterByAssignedUsers(filterRequest, filteredItems);
+                    filteredItems = filterByAssignedUsers(filterRequest, filteredItems);
                     break;
                 case "dueDate":
-                    filterByDueDate(filterRequest, filteredItems);
+                    filteredItems = filterByDueDate(filterRequest, filteredItems);
                     break;
                 case "status":
-                    filterByStatus(filterRequest, filteredItems);
+                    filteredItems = filterByStatus(filterRequest, filteredItems);
                     break;
                 case "type":
-                    filterByType(filterRequest, filteredItems);
+                    filteredItems = filterByType(filterRequest, filteredItems);
                     break;
                 case "importance":
-                    filterByImportance(filterRequest, filteredItems);
+                    filteredItems = filterByImportance(filterRequest, filteredItems);
                     break;
             }
         }
@@ -51,38 +51,48 @@ public class FilterCriteriaService {
         return new BoardDTO(board);
     }
 
-    private void filterByAssignedUsers(FilterRequest filterRequest, List<Item> filteredItems) {
+    private List<Item> filterByAssignedUsers(FilterRequest filterRequest, List<Item> filteredItems) {
         if (filterRequest.getAssignedToId().size() > 0) {
             AssignedToCriteria assignedToCriteria = new AssignedToCriteria(filterRequest.getAssignedToId());
             filteredItems = (assignedToCriteria.meetCriteria(filteredItems));
         }
+
+        return filteredItems;
     }
 
-    private void filterByDueDate(FilterRequest filterRequest, List<Item> filteredItems) {
+    private List<Item> filterByDueDate(FilterRequest filterRequest, List<Item> filteredItems) {
         if (filterRequest.getDueDate() != null) {
             DueDateCriteria dueDateCriteria = new DueDateCriteria(filterRequest.getDueDate());
             filteredItems = (dueDateCriteria.meetCriteria(filteredItems));
         }
+
+        return filteredItems;
     }
 
-    private void filterByStatus(FilterRequest filterRequest, List<Item> filteredItems) {
+    private List<Item> filterByStatus(FilterRequest filterRequest, List<Item> filteredItems) {
         if (filterRequest.getStatus().size() > 0) {
             StatusCriteria statusCriteria = new StatusCriteria(filterRequest.getStatus());
             filteredItems = (statusCriteria.meetCriteria(filteredItems));
         }
+
+        return filteredItems;
     }
 
-    private void filterByType(FilterRequest filterRequest, List<Item> filteredItems) {
+    private List<Item> filterByType(FilterRequest filterRequest, List<Item> filteredItems) {
         if (filterRequest.getType().size() > 0) {
             TypeCriteria typeCriteria = new TypeCriteria(filterRequest.getType());
             filteredItems = (typeCriteria.meetCriteria(filteredItems));
         }
+
+        return filteredItems;
     }
 
-    private void filterByImportance(FilterRequest filterRequest, List<Item> filteredItems) {
+    private List<Item> filterByImportance(FilterRequest filterRequest, List<Item> filteredItems) {
         if (filterRequest.getImportance().size() > 0) {
             ImportanceCriteria importanceCriteria = new ImportanceCriteria(filterRequest.getImportance());
             filteredItems = (importanceCriteria.meetCriteria(filteredItems));
         }
+
+        return filteredItems;
     }
 }
