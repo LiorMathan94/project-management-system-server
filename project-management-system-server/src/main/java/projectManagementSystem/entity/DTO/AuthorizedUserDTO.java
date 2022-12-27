@@ -14,6 +14,8 @@ public class AuthorizedUserDTO {
         this.role = authorizedUser.getRole();
     }
 
+
+
     public long getId() {
         return id;
     }

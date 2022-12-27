@@ -1,91 +1,147 @@
-//package projectManagementSystem.controller;
-//
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.mockito.Mock;
-//import org.mockito.Mockito;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-//import org.springframework.boot.test.mock.mockito.MockBean;
-//import org.springframework.http.MediaType;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.test.web.servlet.MockMvc;
-//import projectManagementSystem.controller.request.BoardRequest;
-//import projectManagementSystem.controller.response.Response;
-//import projectManagementSystem.entity.Board;
-//import projectManagementSystem.entity.DTO.BoardDTO;
-//import projectManagementSystem.entity.Role;
-//import projectManagementSystem.service.BoardService;
-//import projectManagementSystem.service.ItemService;
-//import projectManagementSystem.service.UserRoleService;
-//
-//import java.util.HashSet;
-//import java.util.Set;
-//
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-//
-//@WebMvcTest(controllers = BoardController.class)
-//public class BoardControllerTests {
-//    @MockBean
-//    private BoardService boardService;
-//    @MockBean
-//    private ItemService itemService;
-//    @MockBean
-//    private UserRoleService userRoleService;
-//    @MockBean
-//    private BoardController boardController;
-//    @Autowired
-//    private MockMvc mockMvc;
-//
-//
-////    @Test
-////    @DisplayName("create() returns a valid board DTO response when BoardRequest is valid")
-////    void create_ValidBoardRequest_ReturnsValidBoardDTO() throws Exception {
-////        BoardRequest boardRequest = createValidBoardRequest();
-////        BoardDTO boardDTO = new BoardDTO(createBoard());
-////        long randomUserId = 1;
-////
-////        Mockito.when(boardService.createBoard(boardRequest)).thenReturn(boardDTO);
-////        Mockito.when(userRoleService.add(boardDTO.getId(), randomUserId, Role.ADMIN)).thenReturn(null);
-////
-////
-////        ResponseEntity response = boardController.create(randomUserId, boardRequest);
-////        mockMvc.perform(post("/board/create")
-////                        .contentType(MediaType.APPLICATION_JSON)
-////                        .content(randomUserId, boardRequest))
-////                .andExpect(status().isCreated());
-////        assertEquals(ResponseEntity.ok(Response.success(boardDTO)), response,
-////                "BoardController should return a valid BoardDTO response when receiving a valid request");
-////    }
-//
-//    @Test
-//    void create_InvalidBoardRequest_Fails() throws Exception {
-//        mockMvc.perform(post("/board/create")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("{}"))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    private Board createBoard() {
-//        BoardRequest boardRequest = createValidBoardRequest();
-//        Board board = new Board(boardRequest.getTitle(), boardRequest.getStatuses(), boardRequest.getTypes());
-//
-//        return board;
-//    }
-//
-//    private BoardRequest createValidBoardRequest() {
-//        Set<String> statuses = new HashSet<>();
-//        statuses.add("To Do");
-//        statuses.add("Done");
-//
-//        Set<String> types = new HashSet<>();
-//        types.add("Task");
-//        types.add("Bug");
-//
-//        return new BoardRequest("Test", statuses, types);
-//    }
-//}
+package projectManagementSystem.controller;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import projectManagementSystem.controller.request.BoardRequest;
+import projectManagementSystem.controller.request.FilterRequest;
+import projectManagementSystem.entity.Board;
+import projectManagementSystem.entity.DTO.BoardDTO;
+import projectManagementSystem.service.*;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.BDDMockito.given;
+
+@ExtendWith(MockitoExtension.class)
+public class BoardControllerTests {
+    @Mock
+    private BoardService boardService;
+    @Mock
+    private ItemService itemService;
+    @Mock
+    private UserRoleService userRoleService;
+    @Mock
+    private NotificationService notificationService;
+    @Mock
+    private FilterCriteriaService filterCriteriaService;
+    @Mock
+    private SocketUtil socketUtil;
+    @InjectMocks
+    private BoardController boardController;
+    private BoardRequest validBoardRequest;
+    private BoardDTO boardDTOSuccess;
+
+    @BeforeEach
+    void beforeEach() {
+        String title = "board title";
+
+        Set<String> statuses = new HashSet<>();
+        statuses.add("to do");
+        statuses.add("done");
+
+        Set<String> types = new HashSet<>();
+        types.add("task");
+        types.add("bug");
+
+        validBoardRequest = new BoardRequest(title, statuses, types);
+        boardDTOSuccess = new BoardDTO(new Board(title, statuses, types));
+    }
+
+    @Test
+    void create_validBoardRequest_ResponseEntityOk() {
+        long userId = 1L;
+
+        given(boardService.createBoard(validBoardRequest)).willReturn(boardDTOSuccess);
+        assertEquals(200, boardController.create(userId, validBoardRequest).getStatusCodeValue(), "Create with valid userId and valid BoardRequest did not return ResponseEntity status 200 (OK)");
+    }
+
+    @Test
+    void create_BadRequest_ResponseEntityBadRequest() {
+        assertEquals(400, boardController.create(1, null).getStatusCodeValue(), "create() with invalid BoardRequest should return ResponseEntity status 400 (Bad Request)");
+    }
+
+    @Test
+    void setTitle_validTitle_ResponseEntityOk() {
+        given(boardService.setTitle(boardDTOSuccess.getId(), boardDTOSuccess.getTitle())).willReturn(boardDTOSuccess);
+        assertEquals(200, boardController.setTitle(boardDTOSuccess.getId(), boardDTOSuccess.getTitle()).getStatusCodeValue(), "setTitle() with valid title should return ResponseEntity status 200 (OK)");
+    }
+
+    @Test
+    void setTitle_EmptyTitle_ResponseEntityBadRequest() {
+        assertEquals(400, boardController.setTitle(boardDTOSuccess.getId(), "").getStatusCodeValue(), "setTitle() with empty title should return ResponseEntity status 400 (Bad Request)");
+    }
+
+    @Test
+    void setTitle_LongTitle_ResponseEntityBadRequest() {
+        String tooLongTitle = "tiiiiiiiiiiiiiitleeeeeeeeeeeeeeeeee";
+        assertEquals(400, boardController.setTitle(boardDTOSuccess.getId(), tooLongTitle).getStatusCodeValue(), "setTitle() with title of size > 20 characters should return ResponseEntity status 400 (Bad Request)");
+    }
+
+    @Test
+    void addStatus_validStatus_ResponseEntityOk() {
+        String validStatus = "new valid status";
+        given(boardService.addStatus(boardDTOSuccess.getId(), validStatus)).willReturn(boardDTOSuccess);
+        assertEquals(200, boardController.addStatus(boardDTOSuccess.getId(), validStatus).getStatusCodeValue(), "addStatus() with valid status should return ResponseEntity status 200 (OK)");
+    }
+
+    @Test
+    void addStatus_EmptyStatus_ResponseEntityBadRequest() {
+        assertEquals(400, boardController.addStatus(boardDTOSuccess.getId(), "").getStatusCodeValue(), "addStatus() with empty status should return ResponseEntity status 400 (Bad Request)");
+    }
+
+    @Test
+    void addStatus_LongTitle_ResponseEntityBadRequest() {
+        String tooLongStatus = "staaaaaaaaaaaaatuuuuuuuusssssss";
+        assertEquals(400, boardController.addStatus(boardDTOSuccess.getId(), tooLongStatus).getStatusCodeValue(), "addStatus() with status of size > 20 characters should return ResponseEntity status 400 (Bad Request)");
+    }
+
+    @Test
+    void removeStatus_validStatus_ResponseEntityOk() {
+        String validStatus = "to do";
+        given(boardService.removeStatus(boardDTOSuccess.getId(), validStatus)).willReturn(boardDTOSuccess);
+        assertEquals(200, boardController.removeStatus(boardDTOSuccess.getId(), validStatus).getStatusCodeValue(), "removeStatus() with valid status should return ResponseEntity status 200 (OK)");
+    }
+
+    @Test
+    void addType_validType_ResponseEntityOk() {
+        String validType = "new valid type";
+        given(boardService.addType(boardDTOSuccess.getId(), validType)).willReturn(boardDTOSuccess);
+        assertEquals(200, boardController.addType(boardDTOSuccess.getId(), validType).getStatusCodeValue(), "addType() with valid type should return ResponseEntity status 200 (OK)");
+    }
+
+    @Test
+    void addType_EmptyType_ResponseEntityBadRequest() {
+        assertEquals(400, boardController.addType(boardDTOSuccess.getId(), "").getStatusCodeValue(), "addType() with empty type should return ResponseEntity status 400 (Bad Request)");
+    }
+
+    @Test
+    void addType_LongType_ResponseEntityBadRequest() {
+        String tooLongType = "tyyyyyyyyyyyyyyypeeeeeeeeee";
+        assertEquals(400, boardController.addType(boardDTOSuccess.getId(), tooLongType).getStatusCodeValue(), "addType() with type of size > 20 characters should return ResponseEntity status 400 (Bad Request)");
+    }
+
+    @Test
+    void removeType_validType_ResponseEntityOk() {
+        String validType = "task";
+        given(boardService.removeType(boardDTOSuccess.getId(), validType)).willReturn(boardDTOSuccess);
+        assertEquals(200, boardController.removeType(boardDTOSuccess.getId(), validType).getStatusCodeValue(), "removeType() with valid type should return ResponseEntity status 200 (OK)");
+    }
+    @Test
+    void filterByProperty_NotExistBoard_ResponseEntityBadRequest() {
+        assertEquals(400, boardController.filterByProperty(-1, new FilterRequest()).getStatusCodeValue(), "Could not find board ID: -1");
+    }
+
+
+
+
+
+
+}
+
+

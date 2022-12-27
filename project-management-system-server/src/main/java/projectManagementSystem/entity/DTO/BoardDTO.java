@@ -4,6 +4,7 @@ import projectManagementSystem.controller.response.NotificationResponse;
 import projectManagementSystem.entity.AuthorizedUser;
 import projectManagementSystem.entity.Board;
 import projectManagementSystem.entity.Item;
+import projectManagementSystem.entity.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,14 @@ public class BoardDTO {
         return authUsersDTO;
     }
 
+    public boolean findUserInAuthorizedUsers(User user){
+        for (int i = 0; i < this.authorizedUsers.size(); i++) {
+            if (authorizedUsers.get(i).getEmail() == user.getEmail()){
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * @return board's ID
      */
