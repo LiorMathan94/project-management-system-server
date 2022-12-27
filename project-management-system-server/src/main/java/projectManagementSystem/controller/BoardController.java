@@ -22,7 +22,6 @@ import java.util.List;
 @RequestMapping("/board")
 public class BoardController {
     private final BoardService boardService;
-    private final ItemService itemService;
     private final UserRoleService userRoleService;
     private final NotificationService notificationService;
     private final FilterCriteriaService filterCriteriaService;
@@ -34,16 +33,14 @@ public class BoardController {
      * Constructor for BoardController
      * @param boardService
      * @param userRoleService
-     * @param itemService
      * @param notificationService
      * @param socketUtil
      * @param filterCriteriaService
      */
     @Autowired
-    public BoardController(BoardService boardService, UserRoleService userRoleService, ItemService itemService,
-                           NotificationService notificationService, SocketUtil socketUtil,FilterCriteriaService filterCriteriaService) {
+    public BoardController(BoardService boardService, UserRoleService userRoleService, NotificationService notificationService,
+                           SocketUtil socketUtil,FilterCriteriaService filterCriteriaService) {
         this.boardService = boardService;
-        this.itemService = itemService;
         this.notificationService = notificationService;
         this.userRoleService = userRoleService;
         this.filterCriteriaService = filterCriteriaService;

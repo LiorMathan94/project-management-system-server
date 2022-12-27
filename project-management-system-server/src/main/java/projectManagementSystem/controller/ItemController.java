@@ -58,17 +58,15 @@ public class ItemController {
     /**
      * Deletes an item from the board corresponds to boardId.
      *
-     * @param boardId
      * @param itemId
      * @return the updated board's DTO version
      */
     @RequestMapping(method = RequestMethod.DELETE, path = "/removeItem")
-    public ResponseEntity<Response<BoardDTO>> removeItem(@RequestHeader long boardId, @RequestParam long itemId) {
+    public ResponseEntity<Response<BoardDTO>> removeItem(@RequestParam long itemId) {
         logger.info("in ItemController.removeItem()");
 
         try {
-            boardService.deleteItem(boardId, itemId);
-            BoardDTO board = boardService.getBoardById(boardId);
+            BoardDTO board = itemService.delete(itemId);
             notificationService.notifyAll(board, BoardAction.DELETE_ITEM);
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
