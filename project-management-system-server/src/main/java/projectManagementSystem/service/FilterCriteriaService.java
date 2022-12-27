@@ -29,7 +29,7 @@ public class FilterCriteriaService {
 
         for (Field field : fields) {
             switch (field.getName()) {
-                case "assignedToId":
+                case "assignedToUser":
                     filteredItems = filterByAssignedUsers(filterRequest, filteredItems);
                     break;
                 case "dueDate":
@@ -52,8 +52,8 @@ public class FilterCriteriaService {
     }
 
     private List<Item> filterByAssignedUsers(FilterRequest filterRequest, List<Item> filteredItems) {
-        if (filterRequest.getAssignedToId().size() > 0) {
-            AssignedToCriteria assignedToCriteria = new AssignedToCriteria(filterRequest.getAssignedToId());
+        if (filterRequest.getassignedToUser().size() > 0) {
+            AssignedToCriteria assignedToCriteria = new AssignedToCriteria(filterRequest.getassignedToUser());
             filteredItems = (assignedToCriteria.meetCriteria(filteredItems));
         }
 

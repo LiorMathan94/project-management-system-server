@@ -215,4 +215,5 @@ public class BoardService {
         List<Board> boards = boardRepository.getBoardsByUser(userId);
         return boards.stream().map(BoardDTO::new).collect(Collectors.toList());
     }
+
 }

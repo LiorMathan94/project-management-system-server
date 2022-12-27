@@ -17,6 +17,8 @@ public class AuthorizedUserDTO {
         this.notificationPreference = authorizedUser.getUser().getNotificationPreferences();
     }
 
+
+
     public long getId() {
         return id;
     }

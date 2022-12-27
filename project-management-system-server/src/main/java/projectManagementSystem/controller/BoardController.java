@@ -229,6 +229,21 @@ public class BoardController {
     }
 
     /**
+     * @param boardId
+     * @return a DTO version of all user's boards
+     */
+    @RequestMapping(method = RequestMethod.GET, path = "/getBoardsByBoardId")
+    public ResponseEntity<Response<BoardDTO>> getBoardsByBoardId(@RequestHeader long boardId) {
+        logger.info("in BoardController.getBoardsByBoardId()");
+        try {
+            BoardDTO boards = boardService.getBoardById(boardId);
+            return ResponseEntity.ok(Response.success(boards));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        }
+    }
+
+    /**
      * Deletes the board that corresponds to boardId
      * @param boardId
      * @return void
