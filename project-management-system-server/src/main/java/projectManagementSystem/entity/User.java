@@ -14,7 +14,6 @@ public class User {
     private String email;
     @Column(nullable = false)
     private String password;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "preference_id", referencedColumnName = "id")
     private NotificationPreference notificationPreferences;

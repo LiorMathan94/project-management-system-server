@@ -47,7 +47,10 @@ public class PermissionFilter implements Filter {
         String url = ((HttpServletRequest) servletRequest).getRequestURL().toString();
         boolean isAuthorized = true;
 
-        if (url.contains("board") && !url.contains("create") && !url.contains("getBoardsByUserId")) {
+        boolean isAuthorizedBoardAction = url.contains("board") && !url.contains("create") && !url.contains("getBoardsByUserId");
+        boolean isAuthorizedItemAction = url.contains("item");
+
+        if (isAuthorizedBoardAction || isAuthorizedItemAction) {
             BoardAction action = url.contains("updateItem") ?
                     BoardAction.valueOf(req.getHeader("action")) : BoardAction.getByRoute(url);
 

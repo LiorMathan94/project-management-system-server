@@ -5,22 +5,17 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import projectManagementSystem.controller.request.*;
-import projectManagementSystem.controller.response.NotificationResponse;
+import projectManagementSystem.controller.request.BoardRequest;
+import projectManagementSystem.controller.request.FilterRequest;
+import projectManagementSystem.controller.request.RoleRequest;
 import projectManagementSystem.controller.response.Response;
 import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.DTO.BoardDTO;
 import projectManagementSystem.entity.Role;
 import projectManagementSystem.service.*;
-import projectManagementSystem.entity.AuthorizedUser;
-import projectManagementSystem.service.BoardService;
-import projectManagementSystem.service.ItemService;
-import projectManagementSystem.service.NotificationService;
-import projectManagementSystem.service.UserRoleService;
 import projectManagementSystem.utils.InputValidation;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -90,7 +85,7 @@ public class BoardController {
 
         try {
             BoardDTO board = boardService.setTitle(boardId, value);
-            board.setNotifications(notifyBoardUsers(board.getId(), BoardAction.SET_TITLE));
+            notificationService.notifyAll(board, BoardAction.SET_TITLE);
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
@@ -183,101 +178,6 @@ public class BoardController {
         }
     }
 
-    /**
-     * Adds a new item to the board corresponds to boardId.
-     * @param boardId
-     * @param itemRequest
-     * @return the updated board's DTO version
-     */
-    @RequestMapping(method = RequestMethod.POST, path = "/addItem")
-    public ResponseEntity<Response<BoardDTO>> addItem(@RequestHeader long boardId, @RequestBody ItemRequest itemRequest) {
-        logger.info("in BoardController.addItem()");
-
-        try {
-            itemRequest.setBoardId(boardId);
-            validateItemRequest(itemRequest);
-
-            BoardDTO board = boardService.addItem(itemService.createItem(itemRequest));
-            socketUtil.updateBoard(board);
-            return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
-        }
-    }
-
-    /**
-     * Deletes an item from the board corresponds to boardId.
-     * @param boardId
-     * @param itemId
-     * @return the updated board's DTO version
-     */
-    @RequestMapping(method = RequestMethod.DELETE, path = "/removeItem")
-    public ResponseEntity<Response<BoardDTO>> removeItem(@RequestHeader long boardId, @RequestParam long itemId) {
-        logger.info("in BoardController.removeItem()");
-
-        try {
-            boardService.deleteItem(boardId, itemId);
-            BoardDTO board = boardService.getBoardById(boardId);
-            board.setNotifications(notifyBoardUsers(boardId, BoardAction.DELETE_ITEM));
-            socketUtil.updateBoard(board);
-            return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
-        }
-    }
-
-    /**
-     * Updates an existing item of the board corresponds to boardId.
-     * @param boardId
-     * @param action
-     * @param itemRequest
-     * @return the updated board's DTO version
-     */
-    @RequestMapping(method = RequestMethod.PATCH, path = "/updateItem")
-    public ResponseEntity<Response<BoardDTO>> updateItem(@RequestHeader long boardId, @RequestHeader BoardAction action,
-                                                         @RequestBody ItemRequest itemRequest) {
-        logger.info("in BoardController.updateItem()");
-
-        try {
-            itemRequest.setBoardId(boardId);
-            itemRequest.setBoardAction(action);
-            validateItemRequest(itemRequest);
-
-            itemService.updateItem(itemRequest);
-
-            BoardDTO board = boardService.getBoardById(itemRequest.getBoardId());
-            board.setNotifications(notifyBoardUsers(boardId, action));
-
-            socketUtil.updateBoard(board);
-            return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
-        }
-    }
-
-    /**
-     * Adds a new comment to the board that corresponds to boardId.
-     * @param boardId
-     * @param commentRequest
-     * @param userId
-     * @return the updated board's DTO version
-     */
-    @RequestMapping(method = RequestMethod.PATCH, path = "/addItemComment")
-    public ResponseEntity<Response<BoardDTO>> addItemComment(@RequestHeader long boardId, @RequestBody CommentRequest commentRequest,
-                                                             @RequestAttribute long userId) {
-        logger.info("in BoardController.addItemComment()");
-
-        try {
-            itemService.addComment(commentRequest.getItemId(), userId, commentRequest.getContent());
-            BoardDTO board = boardService.getBoardById(boardId);
-            board.setNotifications(notifyBoardUsers(boardId, BoardAction.ADD_COMMENT));
-            socketUtil.updateBoard(board);
-
-            return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
-        }
-    }
 
     /**
      * Grants permission to a user for the board that corresponds to boardId.
@@ -291,7 +191,7 @@ public class BoardController {
 
         try {
             BoardDTO board = userRoleService.addByEmail(boardId, roleRequest.getEmail(), roleRequest.getRole());
-            board.setNotifications(notifyBoardUsers(boardId, BoardAction.GRANT_USER_ROLE));
+            notificationService.notifyAll(board, BoardAction.GRANT_USER_ROLE);
             socketUtil.updateBoard(board);
 
             return ResponseEntity.ok(Response.success(board));
@@ -341,42 +241,10 @@ public class BoardController {
     public ResponseEntity<Response<BoardDTO>> filterByProperty(@RequestHeader long boardId, @RequestBody FilterRequest filterRequest) {
         logger.info("in BoardController.filterByProperty()");
         try {
-            BoardDTO board = filterCriteriaService.filterByProperty(boardId,filterRequest);
+            BoardDTO board = filterCriteriaService.filterByProperty(boardId, filterRequest);
             return ResponseEntity.ok(Response.success(board));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
         }
-    }
-
-    /**
-     * Validates ItemRequest.
-     * if request is not valid - throws IllegalArgumentException.
-     * @param itemRequest
-     */
-    private void validateItemRequest(ItemRequest itemRequest) {
-        if (itemRequest.getStatus() != null &&
-                !boardService.hasStatus(itemRequest.getBoardId(), itemRequest.getStatus())) {
-            throw new IllegalArgumentException(String.format("Item's status %s does not exists in board #%d",
-                    itemRequest.getStatus(), itemRequest.getBoardId()));
-        }
-
-        String type = (itemRequest.getType() != null && itemRequest.getType().equals("")) ? null : itemRequest.getType();
-        itemRequest.setType(type);
-        if (itemRequest.getType() != null &&
-                !boardService.hasType(itemRequest.getBoardId(), itemRequest.getType())) {
-            throw new IllegalArgumentException(String.format("Item's type %s does not exists in board #%d",
-                    itemRequest.getType(), itemRequest.getBoardId()));
-        }
-    }
-
-    /**
-     * Sets NotificationResponse and notifies by email if requested by users.
-     * @param boardId
-     * @param action
-     * @return NotificationResponse
-     */
-    private List<NotificationResponse> notifyBoardUsers(long boardId, BoardAction action) {
-        return notificationService.notifyAll(userRoleService.getByBoard(boardId)
-                .stream().map(AuthorizedUser::getUser).collect(Collectors.toList()), boardId, action);
     }
 }
