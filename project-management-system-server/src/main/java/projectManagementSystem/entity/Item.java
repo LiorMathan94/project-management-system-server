@@ -43,12 +43,12 @@ public class Item {
         this.status = builder.status;
         this.type = builder.type;
         this.dueDate = builder.dueDate;
-        this.parent = builder.parent;
         this.commentList = builder.commentList;
         this.assignedToId = builder.assignedToId;
         this.creatorId = builder.creatorId;
         this.description = builder.description;
         this.importance = builder.importance;
+        this.parent = builder.parent;
     }
 
     /**

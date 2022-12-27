@@ -1,6 +1,5 @@
 package projectManagementSystem.controller.request;
 
-import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.Importance;
 
 import java.time.LocalDate;
@@ -8,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FilterRequest {
-
     private List<Long> assignedToId;
     private LocalDate dueDate;
     private List<String> status;
@@ -21,8 +19,6 @@ public class FilterRequest {
         type = new ArrayList<>();
         importance = new ArrayList<>();
     }
-
-
 
     public List<Long> getAssignedToId() {
         return assignedToId;

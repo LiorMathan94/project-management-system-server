@@ -4,7 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import projectManagementSystem.controller.response.NotificationResponse;
+import projectManagementSystem.entity.AuthorizedUser;
 import projectManagementSystem.entity.BoardAction;
+import projectManagementSystem.entity.DTO.AuthorizedUserDTO;
+import projectManagementSystem.entity.DTO.BoardDTO;
 import projectManagementSystem.entity.User;
 import projectManagementSystem.entity.notifications.NotificationPreference;
 import projectManagementSystem.entity.notifications.NotificationVia;
@@ -32,50 +35,37 @@ public class NotificationService {
 
     /**
      * Notifies all users regarding an action the occurred in the board, according to their notifications preferences.
-     * @param users
-     * @param boardId
+     * @param board
      * @param action
-     * @return NotificationResponse
      */
-    public List<NotificationResponse> notifyAll(List<User> users, long boardId, BoardAction action) {
-        List<NotificationResponse> responses = new ArrayList<>();
-
-        for (User user : users) {
-            responses.add(notify(user, boardId, action));
+    public void notifyAll(BoardDTO board, BoardAction action) {
+        for (AuthorizedUserDTO user : board.getAuthorizedUsers()) {
+            notify(user, board, action);
         }
-
-        return responses;
     }
 
     /**
      * Notifies all users regarding an action the occurred in the board, according to their notifications preferences.
      * @param user
-     * @param boardId
+     * @param board
      * @param action
-     * @return NotificationResponse
      */
-    public NotificationResponse notify(User user, long boardId, BoardAction action) {
-        NotificationResponse notificationResponse = null;
+    public void notify(AuthorizedUserDTO user, BoardDTO board, BoardAction action) {
+        if (shouldNotifyUser(user, action)) {
+            String message = buildNotificationMessage(board.getId(), action);
 
-        NotificationPreference preference = user.getNotificationPreferences();
-        if (preference != null && preference.getNotifyOnEvents().contains(action)) {
-            String message = buildNotificationMessage(boardId, action);
-
-            if (preference.getNotificationViaList().contains(NotificationVia.EMAIL)) {
-                Optional<SimpleMailMessage> mailMessage = emailUtil.sendEmail(user.getEmail(),
-                        buildNotificationSubject(boardId), message);
+            if (shouldNotifyBy(user, NotificationVia.EMAIL)) {
+                Optional<SimpleMailMessage> mailMessage = emailUtil.sendEmail(user.getEmail(), buildNotificationSubject(board.getId()), message);
                 if (!mailMessage.isPresent()) {
                     throw new IllegalArgumentException("Error sending notification on action: " + action +
-                            "at board id: " + boardId + ". Recipient email must be valid, email subject and body can't be null.");
+                            "at board id: " + board.getId() + ". Recipient email must be valid, email subject and body can't be null.");
                 }
             }
 
-            if (preference.getNotificationViaList().contains(NotificationVia.POP_UP)) {
-                notificationResponse = new NotificationResponse(user.getId(), message);
+            if (shouldNotifyBy(user, NotificationVia.POP_UP)) {
+                board.addNotification(new NotificationResponse(user.getId(), message));
             }
         }
-
-        return notificationResponse;
     }
 
     /**
@@ -94,5 +84,15 @@ public class NotificationService {
      */
     private String buildNotificationSubject(long boardId) {
         return "Notification From the Best Project Management System in the World: Update on board" + boardId;
+    }
+
+    private boolean shouldNotifyUser(AuthorizedUserDTO user, BoardAction action) {
+        NotificationPreference preference = user.getNotificationPreference();
+        return (preference != null && preference.getNotifyOnEvents().contains(action));
+    }
+
+    private boolean shouldNotifyBy(AuthorizedUserDTO user, NotificationVia via) {
+        NotificationPreference preference = user.getNotificationPreference();
+        return (preference != null && preference.getNotificationViaList().contains(via));
     }
 }
