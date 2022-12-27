@@ -24,7 +24,7 @@ public class UserController {
     private AuthenticationService authService;
     @Autowired
     private UserRoleService userRoleService;
-    private static final Logger logger = LogManager.getLogger(BoardController.class.getName());
+    private static final Logger logger = LogManager.getLogger(UserController.class.getName());
 
 
     /**
@@ -35,6 +35,7 @@ public class UserController {
      */
     @RequestMapping(method = RequestMethod.POST, path = "/register")
     public ResponseEntity<Response<UserDTO>> register(@RequestBody UserRequest userRequest) {
+        logger.info("in UserController.register()");
         if (userRequest == null) {
             return ResponseEntity.badRequest().body(Response.failure("Error during user registration. Reason: User register request can't be null."));
         }
@@ -49,6 +50,7 @@ public class UserController {
             UserDTO user = userService.create(userRequest.getEmail(), userRequest.getPassword());
             return ResponseEntity.ok(Response.success(user));
         } catch (Exception e) {
+            logger.error("Error occurred during user registration: " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during user registration: " + e.getMessage()));
         }
     }
@@ -61,6 +63,7 @@ public class UserController {
      */
     @RequestMapping(method = RequestMethod.POST, path = "/login")
     public ResponseEntity<Response<String>> login(@RequestBody UserRequest userRequest) {
+        logger.info("in UserController.login()");
         if (userRequest == null) {
             return ResponseEntity.badRequest().body(Response.failure("User login credentials cannot be null."));
         }
@@ -75,12 +78,21 @@ public class UserController {
             String token = authService.userLogin(userRequest.getEmail(), userRequest.getPassword());
             return ResponseEntity.ok(Response.success(token));
         } catch (Exception e) {
+            logger.error("Error occurred during user login: " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during user login: " + e.getMessage()));
         }
     }
 
+    /**
+     * Sets the notification preferences for the user with the given id.
+     *
+     * @param userId              - id of the user that the notifications are set for.
+     * @param notificationRequest - NotificationRequest Object, contains user chosen notification of board action events and notification types (email or/and pop up)
+     * @return ResponseEntity<Response < UserDTO>> object - contains UserDTO if action was successful, otherwise - contains failure response.
+     */
     @RequestMapping(method = RequestMethod.PATCH, path = "/setNotificationPreferences")
     public ResponseEntity<Response<UserDTO>> setNotificationPreferences(@RequestAttribute long userId, @RequestBody NotificationRequest notificationRequest) {
+        logger.info("in UserController.setNotificationPreferences()");
         if (notificationRequest == null) {
             return ResponseEntity.badRequest().body(Response.failure("Notification request cannot be null"));
         }
@@ -91,6 +103,7 @@ public class UserController {
             UserDTO user = userService.setNotificationPreferences(notificationRequest);
             return ResponseEntity.ok(Response.success(user));
         } catch (Exception e) {
+            logger.error("Error occurred during setting notification preferences for user: " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during setting the notifications preferences: " + e.getMessage()));
         }
     }
@@ -103,10 +116,12 @@ public class UserController {
      */
     @RequestMapping(method = RequestMethod.DELETE, path = "/delete")
     public ResponseEntity<Response<Void>> delete(@RequestParam long userId) {
+        logger.info("in UserController.delete()");
         try {
             userService.delete(userId);
             return ResponseEntity.ok(Response.success(null));
         } catch (Exception e) {
+            logger.error("Error occurred during user delete: " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure("Error occurred while trying to delete user #"
                     + userId + ": " + e.getMessage()));
         }
