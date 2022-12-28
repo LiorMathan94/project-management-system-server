@@ -40,7 +40,8 @@ public class UserController {
         if (!InputValidation.isValidEmail(userRequest.getEmail())) {
             return ResponseEntity.badRequest().body(Response.failure("Email format is invalid!"));
         }
-        if (!InputValidation.isValidPassword(userRequest.getPassword())) {
+        if (userRequest.getLoginMethod() == LoginMethod.PASSWORD_BASED &&
+                !InputValidation.isValidPassword(userRequest.getPassword())) {
             return ResponseEntity.badRequest().body(Response.failure("Password format is invalid! " + InputValidation.passwordConstraints()));
         }
 
