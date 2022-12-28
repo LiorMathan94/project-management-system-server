@@ -12,7 +12,7 @@ public class User {
     private long id;
     @Column(unique = true)
     private String email;
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String password;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "preference_id", referencedColumnName = "id")
@@ -65,6 +65,7 @@ public class User {
     public String getPassword() {
         return password;
     }
+
 
     /**
      * Sets user's email.

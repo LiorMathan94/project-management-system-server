@@ -33,17 +33,11 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, path = "/register")
     public ResponseEntity<Response<UserDTO>> register(@RequestBody UserRequest userRequest) {
         logger.info("in UserController.register()");
-        if (userRequest == null) {
-            return ResponseEntity.badRequest().body(Response.failure("Error during user registration. Reason: User register request can't be null."));
-        }
-        if (!InputValidation.isValidEmail(userRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(Response.failure("Email format is invalid!"));
-        }
-        if (userRequest.getLoginMethod() == LoginMethod.PASSWORD_BASED &&
-                !InputValidation.isValidPassword(userRequest.getPassword())) {
-            return ResponseEntity.badRequest().body(Response.failure("Password format is invalid! " + InputValidation.passwordConstraints()));
-        }
 
+        String messageValidRequest = validUserRequest(userRequest);
+        if (!messageValidRequest.equals("OK")){
+            return ResponseEntity.badRequest().body(Response.failure(messageValidRequest));
+        }
         try {
             UserDTO user = userService.create(userRequest.getEmail(), userRequest.getPassword(), userRequest.getLoginMethod());
             return ResponseEntity.ok(Response.success(user));
@@ -53,6 +47,41 @@ public class UserController {
         } catch (Exception e) {
             logger.error("Internal Server Error occurred during user registration: " + e.getMessage());
             return ResponseEntity.internalServerError().body(Response.failure("Error occurred during user registration: " + e.getMessage()));
+        }
+    }
+
+    private String validUserRequest (UserRequest userRequest){
+        if (userRequest == null) {
+            return "Error during user registration. Reason: User register request can't be null.";
+        }
+        if (!InputValidation.isValidEmail(userRequest.getEmail())) {
+            return "Email format is invalid!";
+        }
+        if (userRequest.getLoginMethod() == LoginMethod.PASSWORD_BASED &&
+                !InputValidation.isValidPassword(userRequest.getPassword())) {
+            return "Password format is invalid! " + InputValidation.passwordConstraints();
+        }
+        return "OK";
+    }
+    /**
+     * @param code
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.POST, path = "/registerViaGitHub")
+    public ResponseEntity<Response<String>> registerViaGitHub(@RequestParam String code) {
+        logger.info("in UserController.registerViaGit()");
+        try {
+            String userEmail = authService.registerViaGit(code);
+            if (!InputValidation.isValidEmail(userEmail)) {
+                return ResponseEntity.badRequest().body(Response.failure("Email of primary user from git authentication is invalid!"));
+            }
+                UserDTO userDTO = userService.create(userEmail, null, LoginMethod.GITHUB);
+                String token = authService.userLogin(userDTO.getEmail(), null);
+                return ResponseEntity.ok(Response.success(token));
+
+        } catch (Exception e) {
+            logger.error("Error occurred during user login: " + e.getMessage());
+            return ResponseEntity.badRequest().body(Response.failure("Error occurred during user registration via GitHub: " + e.getMessage()));
         }
     }
 
