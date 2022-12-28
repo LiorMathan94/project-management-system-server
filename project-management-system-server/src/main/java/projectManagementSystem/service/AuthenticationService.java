@@ -1,17 +1,23 @@
 package projectManagementSystem.service;
 
+import com.mysql.cj.conf.ConnectionUrlParser;
 import net.bytebuddy.utility.RandomString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.util.Pair;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import projectManagementSystem.entity.GitUser;
+import projectManagementSystem.entity.LoginMethod;
 import projectManagementSystem.entity.User;
 import projectManagementSystem.repository.UserRepository;
 import projectManagementSystem.utils.AuthenticationUtils;
 
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class AuthenticationService {
@@ -34,15 +40,15 @@ public class AuthenticationService {
      */
     public String userLogin(String email, String password) {
         logger.info("in AuthenticationService.userLogin()");
-        Optional<User> user = userRepository.findByEmail(email);
-        if (!userRepository.findByEmail(email).isPresent()) {
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
             throw new IllegalArgumentException("No registered user with email " + email + " exists.");
         }
-        if (!AuthenticationUtils.isPasswordCorrect(user.get().getPassword(), password)) {
+        if (user.getLoginMethod() == LoginMethod.PASSWORD_BASED && !AuthenticationUtils.isPasswordCorrect(user.getPassword(), password)) {
             throw new IllegalArgumentException("Password is incorrect!");
         }
 
-        long id = user.get().getId();
+        long id = user.getId();
         String token = createToken(id);
         tokensMap.put(id, token);
 
@@ -91,4 +97,74 @@ public class AuthenticationService {
             return -1;
         }
     }
+
+    public String registerViaGit(String code) {
+
+        logger.debug("Got request for login through github - " + code);
+        if (code.equals("undefined")) {
+            throw new IllegalArgumentException("Registration via gitHub was failed");
+
+        }
+        RestTemplate rest = new RestTemplate();
+
+        String token = getTokenFromGit(rest,code);
+
+        return (getPrimaryEmailOfUser(rest,token));
+    }
+
+    private String getTokenFromGit(RestTemplate rest, String code) {
+        String clientSecret = "ba43bf521585a06eb2cab9f837f3612be8da589b";
+        String clientId = "71c2e93a422a96bbf6e4";
+
+        String postUrl = "https://github.com/login/oauth/access_token?code=" + code + "&client_id=" + clientId + "&client_secret=" + clientSecret + "&scope=user:email";
+
+        ResponseEntity<String> res = rest.postForEntity(postUrl, null, String.class);
+        return (Objects.requireNonNull(res.getBody()).split("&")[0].split("=")[1]);
+
+    }
+
+    private ResponseEntity<GitUser[]> getAuthenticatedUser(RestTemplate rest, String token){
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        ResponseEntity<GitUser> exchange = rest.exchange("https://api.github.com/user", HttpMethod.GET, entity, GitUser.class);
+
+        GitUser githubUser = exchange.getBody();
+
+        if (githubUser == null) {
+            throw new IllegalArgumentException("User doesn't have a GitHub account");
+        }
+
+        return rest.exchange("https://api.github.com/user/emails", HttpMethod.GET, entity, GitUser[].class);
+
+    }
+
+    private String getPrimaryEmailOfUser(RestTemplate rest, String token){
+
+        GitUser[] githubUserMail = getAuthenticatedUser(rest,token).getBody();
+
+        if (githubUserMail == null) {
+            throw new IllegalArgumentException("User doesn't have a GitHub account");
+        }
+         String primaryEmail = getPrimaryEmail(githubUserMail);
+        if (primaryEmail == null){
+            throw new IllegalArgumentException("Extracting User primary email was failed");
+        }
+        return primaryEmail;
+    }
+
+
+    private String getPrimaryEmail(GitUser[] githubUserMail){
+
+        for (GitUser gitUser : githubUserMail) {
+            if (gitUser.isPrimary()) {
+                return gitUser.getEmail();
+            }
+        }
+        return null;
+    }
+
+
+
 }
