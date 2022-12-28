@@ -81,7 +81,7 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             logger.error("Error occurred during user login: " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during user login: " + e.getMessage()));
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error("Internal Server Error occurred during user login: " + e.getMessage());
             return ResponseEntity.internalServerError().body(Response.failure("Error occurred during user login: " + e.getMessage()));
         }
@@ -109,7 +109,7 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             logger.error("Error occurred during setting notification preferences for user: " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during setting the notifications preferences: " + e.getMessage()));
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error("Internal Server Error occurred during setting notification preferences for user: " + e.getMessage());
             return ResponseEntity.internalServerError().body(Response.failure("Error occurred during setting the notifications preferences: " + e.getMessage()));
         }
