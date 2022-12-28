@@ -4,6 +4,7 @@ import projectManagementSystem.entity.User;
 
 public class UserDTO {
     private String email;
+
     public UserDTO(User user) {
         this.email = user.getEmail();
     }
@@ -15,4 +16,5 @@ public class UserDTO {
     public void setEmail(String email) {
         this.email = email;
     }
+
 }

@@ -20,8 +20,13 @@ public class SocketUtil {
      * Sends board to all subscribers using socket.
      * @param board
      * @return board
+     *
+     * @Throws NullPointerException if board is null
      */
     public BoardDTO updateBoard(BoardDTO board) {
+        if(board==null){
+            throw new NullPointerException("updateBoard() method in SocketUtil received BoardDTO null");
+        }
         String destination = "/topic/updates-" + board.getId();
         template.convertAndSend(destination, board);
         notify(board);

@@ -88,18 +88,18 @@ public class InputValidationTests {
 
     @Test
     @DisplayName("isValidPassword() returns false when password is invalid")
-    void isValidPassword_InvalidName_ReturnsFalse() {
-        String invalidPassword = "A123456!";
+    void isValidPassword_InvalidPassword_ReturnsFalse() {
+        String invalidPassword = null;
         boolean isValid = InputValidation.isValidPassword(invalidPassword);
         assertEquals(false, isValid,
                 String.format("isValidPassword should return false for input: %s", invalidPassword));
 
-        invalidPassword = "L1234";
+        invalidPassword = "L12";
         isValid = InputValidation.isValidPassword(invalidPassword);
         assertEquals(false, isValid,
                 String.format("isValidPassword should return false for input: %s", invalidPassword));
 
-        invalidPassword = "123456789";
+        invalidPassword = "";
         isValid = InputValidation.isValidPassword(invalidPassword);
         assertEquals(false, isValid,
                 String.format("isValidPassword should return false for input: %s", invalidPassword));

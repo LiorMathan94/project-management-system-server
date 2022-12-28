@@ -126,7 +126,7 @@ public class AuthenticationService {
         }
 
             RestTemplate rest = new RestTemplate();
-            ResponseEntity<String> res = rest.postForEntity("https://github.com/login/oauth/access_token?code=" + code + "&client_id=2298388bcf5985aa7bcb" + "&client_secret=c50b29b012b0b535aa7d2f20627b8ebf790b390a" + "&scope=user:email", null, String.class);
+            ResponseEntity<String> res = rest.postForEntity("https://github.com/login/oauth/access_token?code=" + code + "&client_id="+clientId + "&client_secret="+clientSecret + "&scope=user:email", null, String.class);
             HttpHeaders headers = new HttpHeaders();
             String token = res.getBody().split("&")[0].split("=")[1];
 
@@ -138,7 +138,6 @@ public class AuthenticationService {
             if (githubUser == null) {
                 throw new IllegalArgumentException("User doesn't have a GitHub account");
             }
-//            githubUser.setAccessToken(token);
 
             ResponseEntity<User[]> exchange2 = rest.exchange("https://api.github.com/user/emails", HttpMethod.GET, entity, User[].class);
             User[] githubUserMail = exchange2.getBody();
@@ -146,7 +145,7 @@ public class AuthenticationService {
                 throw new IllegalArgumentException("User doesn't have a GitHub account");
             }
 
-            return (githubUserMail[githubUserMail.length - 1].getEmail()); //TODO: add LoginMethod
+            return (githubUserMail[0].getEmail());
     }
 
 

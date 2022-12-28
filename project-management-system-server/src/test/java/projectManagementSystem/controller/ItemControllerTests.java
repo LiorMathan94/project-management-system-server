@@ -6,9 +6,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import projectManagementSystem.controller.request.CommentRequest;
 import projectManagementSystem.controller.request.ItemRequest;
 import projectManagementSystem.entity.Board;
+import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.DTO.BoardDTO;
+import projectManagementSystem.entity.DTO.ItemDTO;
 import projectManagementSystem.entity.Importance;
 import projectManagementSystem.entity.Item;
 import projectManagementSystem.service.BoardService;
@@ -20,7 +23,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ItemControllerTests {
@@ -54,14 +59,61 @@ public class ItemControllerTests {
         types.add("bug");
 
         boardDTOSuccess = new BoardDTO(new Board(title, statuses, types));
+
+        reset(itemService);
+        reset(boardService);
+        reset(notificationService);
+        reset(socketUtil);
     }
 
     @Test
-    void create_validItemRequest_ResponseEntityOk() {
-        given(itemService.createItem(validItemRequest)).willReturn(validItem);
-        given(boardService.addItem(validItem)).willReturn(boardDTOSuccess);
+    void create_ValidItemRequest_ResponseEntityOk() {
+        given(itemService.createItem(any(validItemRequest.getClass()))).willReturn(validItem);
+        given(boardService.addItem(any(validItem.getClass()))).willReturn(boardDTOSuccess);
         given(boardService.hasStatus(0L, validItemRequest.getStatus())).willReturn(true);
         given(boardService.hasType(0L, validItemRequest.getType())).willReturn(true);
         assertEquals(200, itemController.create(boardDTOSuccess.getId(), validItemRequest).getStatusCodeValue(), "Create with valid ItemRequest should return ResponseEntity status 200 (OK)");
+    }
+
+    @Test
+    void create_NullRequest_ResponseEntityBadRequest() {
+        assertEquals(400, itemController.create(boardDTOSuccess.getId(), null).getStatusCodeValue(), "create() with invalid ItemRequest should return ResponseEntity status 400 (Bad Request)");
+    }
+
+    @Test
+    void update_validItemRequest_ResponseEntityOk() {
+        given(itemService.updateItem(any(validItemRequest.getClass()))).willReturn(null);
+        given(boardService.getBoardById(anyLong())).willReturn(boardDTOSuccess);
+        given(boardService.hasStatus(0L, validItemRequest.getStatus())).willReturn(true);
+        given(boardService.hasType(0L, validItemRequest.getType())).willReturn(true);
+        assertEquals(200, itemController.update(boardDTOSuccess.getId(), BoardAction.UNKNOWN, validItemRequest).getStatusCodeValue(), "update() with valid ItemRequest should return ResponseEntity status 200 (OK)");
+    }
+
+    @Test
+    public void addComment_ValidCommentRequest_ResponseEntityOk() {
+        CommentRequest commentRequest = new CommentRequest(1L, 1L, "test comment");
+        given(itemService.addComment(1L, 1L, commentRequest.getContent())).willReturn(new ItemDTO(validItem));
+        given(boardService.getBoardById(any(Long.class))).willReturn(boardDTOSuccess);
+
+        assertEquals(200, itemController.addComment(1, commentRequest, 1).getStatusCodeValue());
+    }
+
+    @Test
+    public void delete_ValidRequest_ResponseEntityOk() {
+        doReturn(boardDTOSuccess).when(itemService).delete(1);
+        doNothing().when(notificationService).notifyAll(any(), any());
+
+        assertEquals(200, itemController.delete(1).getStatusCodeValue());
+        verify(itemService).delete(1);
+        verify(notificationService).notifyAll(any(), any());
+        verify(socketUtil).updateBoard(any());
+    }
+
+    @Test
+    public void delete_InvalidRequest_ResponseEntityBadRequest() {
+        doThrow(new IllegalArgumentException("Invalid item id")).when(itemService).delete(1);
+
+        assertEquals(400, itemController.delete(1).getStatusCodeValue());
+        verify(itemService).delete(1);
     }
 }

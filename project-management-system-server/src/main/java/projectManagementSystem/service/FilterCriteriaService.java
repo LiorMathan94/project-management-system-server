@@ -6,17 +6,22 @@ import projectManagementSystem.controller.request.FilterRequest;
 import projectManagementSystem.entity.Board;
 import projectManagementSystem.entity.DTO.BoardDTO;
 import projectManagementSystem.entity.Item;
+import projectManagementSystem.entity.User;
 import projectManagementSystem.entity.criterias.*;
 import projectManagementSystem.repository.BoardRepository;
+import projectManagementSystem.repository.UserRepository;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FilterCriteriaService {
     @Autowired
     BoardRepository boardRepository;
+    @Autowired
+    UserRepository userRepository;
 
     public BoardDTO getFilteredBoard(Long boardId, FilterRequest filterRequest) {
         Board board = boardRepository.findById(boardId).orElse(null);
@@ -52,12 +57,23 @@ public class FilterCriteriaService {
     }
 
     private List<Item> filterByAssignedUsers(FilterRequest filterRequest, List<Item> filteredItems) {
-        if (filterRequest.getassignedToUser().size() > 0) {
-            AssignedToCriteria assignedToCriteria = new AssignedToCriteria(filterRequest.getassignedToUser());
+        extractAssignedUsersId(filterRequest);
+
+        if (filterRequest.getAssignedToUserId().size() > 0) {
+            AssignedToCriteria assignedToCriteria = new AssignedToCriteria(filterRequest.getAssignedToUserId());
             filteredItems = (assignedToCriteria.meetCriteria(filteredItems));
         }
 
         return filteredItems;
+    }
+
+    private void extractAssignedUsersId(FilterRequest filterRequest) {
+        for (String email : filterRequest.getAssignedToUser()) {
+            Optional<User> user = userRepository.findByEmail(email);
+            if (user.isPresent()) {
+                filterRequest.addToAssignedToUserId(user.get().getId());
+            }
+        }
     }
 
     private List<Item> filterByDueDate(FilterRequest filterRequest, List<Item> filteredItems) {

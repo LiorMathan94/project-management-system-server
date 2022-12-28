@@ -9,8 +9,8 @@ import projectManagementSystem.controller.request.NotificationRequest;
 import projectManagementSystem.controller.request.UserRequest;
 import projectManagementSystem.controller.response.Response;
 import projectManagementSystem.entity.DTO.UserDTO;
+import projectManagementSystem.entity.LoginMethod;
 import projectManagementSystem.service.AuthenticationService;
-import projectManagementSystem.service.UserRoleService;
 import projectManagementSystem.service.UserService;
 import projectManagementSystem.utils.InputValidation;
 
@@ -22,8 +22,6 @@ public class UserController {
     private UserService userService;
     @Autowired
     private AuthenticationService authService;
-    @Autowired
-    private UserRoleService userRoleService;
     private static final Logger logger = LogManager.getLogger(UserController.class.getName());
 
 
@@ -47,7 +45,7 @@ public class UserController {
         }
 
         try {
-            UserDTO user = userService.create(userRequest.getEmail(), userRequest.getPassword());
+            UserDTO user = userService.create(userRequest.getEmail(), userRequest.getPassword(), userRequest.getLoginMethod());
             return ResponseEntity.ok(Response.success(user));
         } catch (Exception e) {
             logger.error("Error occurred during user registration: " + e.getMessage());
@@ -64,7 +62,8 @@ public class UserController {
         logger.info("in UserController.registerViaGit()");
         try {
             String userEmail = authService.registerViaGit(code);
-            userService.create(userEmail, null); //TODO: send also LoginMethod
+            if (InputValidation.isValidEmail(userEmail))
+            userService.create(userEmail, null, LoginMethod.GITHUB);
 
 
             String token = authService.userLogin(userEmail, null);
@@ -129,25 +128,5 @@ public class UserController {
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during setting the notifications preferences: " + e.getMessage()));
         }
     }
-
-    /**
-     * Deletes the user that corresponds to userId and its existing roles.
-     *
-     * @param userId
-     * @return ResponseEntity<Response < Void>>
-     */
-    @RequestMapping(method = RequestMethod.DELETE, path = "/delete")
-    public ResponseEntity<Response<Void>> delete(@RequestParam long userId) {
-        logger.info("in UserController.delete()");
-        try {
-            userService.delete(userId);
-            return ResponseEntity.ok(Response.success(null));
-        } catch (Exception e) {
-            logger.error("Error occurred during user delete: " + e.getMessage());
-            return ResponseEntity.badRequest().body(Response.failure("Error occurred while trying to delete user #"
-                    + userId + ": " + e.getMessage()));
-        }
-    }
-
 
 }

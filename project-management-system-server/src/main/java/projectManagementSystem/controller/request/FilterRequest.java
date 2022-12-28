@@ -4,11 +4,11 @@ import projectManagementSystem.entity.Importance;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class FilterRequest {
     private List<String> assignedToUser;
+    private List<Long> assignedToUserId;
     private LocalDate dueDate;
     private List<String> status;
     private List<String> type;
@@ -16,6 +16,7 @@ public class FilterRequest {
 
     public FilterRequest(){
         assignedToUser = new ArrayList<>();
+        assignedToUserId = new ArrayList<>();
         status = new ArrayList<>();
         type = new ArrayList<>();
         importance = new ArrayList<>();
@@ -29,12 +30,24 @@ public class FilterRequest {
         this.importance = importance;
     }
 
-    public List<String> getassignedToUser() {
+    public List<String> getAssignedToUser() {
         return assignedToUser;
     }
 
-    public void setassignedToUser(List<String> assignedToUser) {
+    public void setAssignedToUser(List<String> assignedToUser) {
         this.assignedToUser = assignedToUser;
+    }
+
+    public List<Long> getAssignedToUserId() {
+        return assignedToUserId;
+    }
+
+    public void setAssignedToUserId(List<Long> assignedToUserId) {
+        this.assignedToUserId = assignedToUserId;
+    }
+
+    public void addToAssignedToUserId(long assignedToId) {
+        this.assignedToUserId.add(assignedToId);
     }
 
     public LocalDate getDueDate() {

@@ -113,7 +113,7 @@ public class ItemController {
      * @param userId
      * @return the updated board's DTO version
      */
-    @RequestMapping(method = RequestMethod.PATCH, path = "/addItemComment")
+    @RequestMapping(method = RequestMethod.PATCH, path = "/addComment")
     public ResponseEntity<Response<BoardDTO>> addComment(@RequestHeader long boardId, @RequestBody CommentRequest commentRequest,
                                                              @RequestAttribute long userId) {
         logger.info("in ItemController.addItemComment()");

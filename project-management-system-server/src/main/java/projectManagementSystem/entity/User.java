@@ -10,13 +10,15 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     private String email;
     @Column(nullable = false)
     private String password;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "preference_id", referencedColumnName = "id")
     private NotificationPreference notificationPreferences;
+    @Enumerated(EnumType.STRING)
+    private LoginMethod loginMethod;
 
     public User() {
     }
@@ -26,10 +28,11 @@ public class User {
      * @param email
      * @param password
      */
-    private User(String email, String password) {
+    private User(String email, String password, LoginMethod loginMethod) {
         this.email = email;
         this.password = password;
         this.notificationPreferences = new NotificationPreference(this);
+        this.loginMethod = loginMethod;
     }
 
     /**
@@ -38,8 +41,8 @@ public class User {
      * @param password
      * @return the new user
      */
-    public static User createUser(String email, String password){
-        return new User(email,password);
+    public static User createUser(String email, String password, LoginMethod loginMethod) {
+        return new User(email, password, loginMethod);
     }
 
     /**
@@ -88,5 +91,13 @@ public class User {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public LoginMethod getLoginMethod() {
+        return loginMethod;
+    }
+
+    public void setLoginMethod(LoginMethod loginMethod) {
+        this.loginMethod = loginMethod;
     }
 }
