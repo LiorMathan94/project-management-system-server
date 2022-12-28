@@ -56,6 +56,28 @@ public class UserController {
     }
 
     /**
+     * @param code
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.POST, path = "/registerViaGitHub")
+    public ResponseEntity<Response<String>> registerViaGitHub(@RequestParam String code) {
+        logger.info("in UserController.registerViaGit()");
+        try {
+            String userEmail = authService.registerViaGit(code);
+            userService.create(userEmail, null); //TODO: send also LoginMethod
+
+
+            String token = authService.userLogin(userEmail, null);
+
+            return ResponseEntity.ok(Response.success(token));
+
+        } catch (Exception e) {
+            logger.error("Error occurred during user login: " + e.getMessage());
+            return ResponseEntity.badRequest().body(Response.failure("Error occurred during user registration via GitHub: " + e.getMessage()));
+        }
+    }
+
+    /**
      * Receives user's email and password. If they are valid sends them to userLogin method of UserService, in order to log in the user.
      *
      * @param userRequest - UserRequest object, contains inputted user email and password.
@@ -126,4 +148,6 @@ public class UserController {
                     + userId + ": " + e.getMessage()));
         }
     }
+
+
 }

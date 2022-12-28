@@ -1,13 +1,32 @@
 package projectManagementSystem.service;
 
 import net.bytebuddy.utility.RandomString;
+import org.apache.http.StatusLine;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.data.util.Pair;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import projectManagementSystem.entity.User;
 import projectManagementSystem.repository.UserRepository;
 import projectManagementSystem.utils.AuthenticationUtils;
 
+import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -91,4 +110,45 @@ public class AuthenticationService {
             return -1;
         }
     }
+
+    public String registerViaGit(String code) {
+
+
+         String clientSecret = "ba43bf521585a06eb2cab9f837f3612be8da589b";
+         String clientId = "71c2e93a422a96bbf6e4";
+
+        String url = "https://github.com/login/oauth/access_token?code="+code+"&client_id="+clientId+"&client_secret=" + clientSecret;
+
+        logger.debug("Got request for login through github - " + code);
+        if (code.equals("undefined")) {
+            throw new IllegalArgumentException("Registration via gitHub was failed");
+
+        }
+
+            RestTemplate rest = new RestTemplate();
+            ResponseEntity<String> res = rest.postForEntity("https://github.com/login/oauth/access_token?code=" + code + "&client_id=2298388bcf5985aa7bcb" + "&client_secret=c50b29b012b0b535aa7d2f20627b8ebf790b390a" + "&scope=user:email", null, String.class);
+            HttpHeaders headers = new HttpHeaders();
+            String token = res.getBody().split("&")[0].split("=")[1];
+
+            headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<User> exchange = rest.exchange("https://api.github.com/user", HttpMethod.GET, entity, User.class);
+            User githubUser = exchange.getBody();
+
+            if (githubUser == null) {
+                throw new IllegalArgumentException("User doesn't have a GitHub account");
+            }
+//            githubUser.setAccessToken(token);
+
+            ResponseEntity<User[]> exchange2 = rest.exchange("https://api.github.com/user/emails", HttpMethod.GET, entity, User[].class);
+            User[] githubUserMail = exchange2.getBody();
+            if (githubUserMail == null) {
+                throw new IllegalArgumentException("User doesn't have a GitHub account");
+            }
+
+            return (githubUserMail[githubUserMail.length - 1].getEmail()); //TODO: add LoginMethod
+    }
+
+
+
 }
