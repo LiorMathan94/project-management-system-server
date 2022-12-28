@@ -114,5 +114,4 @@ public class UserController {
             return ResponseEntity.internalServerError().body(Response.failure("Error occurred during setting the notifications preferences: " + e.getMessage()));
         }
     }
-
 }
