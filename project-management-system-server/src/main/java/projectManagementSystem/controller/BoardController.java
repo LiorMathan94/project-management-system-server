@@ -65,8 +65,12 @@ public class BoardController {
             BoardDTO board = boardService.createBoard(boardRequest);
             this.userRoleService.add(board.getId(), userId, Role.ADMIN);
             return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
+            logger.error("Error in BoardController.create() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in BoardController.create() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 
@@ -77,8 +81,12 @@ public class BoardController {
         try {
             BoardDTO board = boardService.getBoardById(boardId);
             return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            logger.error("Error in BoardController.getBoardById() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in BoardController.getBoardById() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 
@@ -101,8 +109,12 @@ public class BoardController {
             notificationService.notifyAll(board, BoardAction.SET_TITLE);
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
+            logger.error("Error in BoardController.setTitle() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in BoardController.setTitle() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 
@@ -124,8 +136,12 @@ public class BoardController {
             BoardDTO board = boardService.addStatus(boardId, value);
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
+            logger.error("Error in BoardController.addStatus() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in BoardController.addStatus() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 
@@ -144,8 +160,12 @@ public class BoardController {
             BoardDTO board = boardService.removeStatus(boardId, status);
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
+            logger.error("Error in BoardController.removeStatus() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in BoardController.removeStatus() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 
@@ -167,8 +187,12 @@ public class BoardController {
             BoardDTO board = boardService.addType(boardId, value);
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
+            logger.error("Error in BoardController.addType() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in BoardController.addType() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 
@@ -186,8 +210,12 @@ public class BoardController {
             BoardDTO board = boardService.removeType(boardId, value);
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
+            logger.error("Error in BoardController.removeType() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in BoardController.removeType() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 
@@ -208,8 +236,12 @@ public class BoardController {
             socketUtil.updateBoard(board);
 
             return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
+            logger.error("Error in BoardController.grantUserRole() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in BoardController.grantUserRole() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 
@@ -223,8 +255,12 @@ public class BoardController {
         try {
             List<BoardDTO> boards = boardService.getBoardsByUserId(userId);
             return ResponseEntity.ok(Response.success(boards));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            logger.error("Error in BoardController.getBoardsByUserId() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in BoardController.getBoardsByUserId() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 
@@ -238,8 +274,12 @@ public class BoardController {
         try {
             BoardDTO boards = boardService.getBoardById(boardId);
             return ResponseEntity.ok(Response.success(boards));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            logger.error("Error in BoardController.getBoardsByBoardId() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in BoardController.getBoardsByBoardId() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 
@@ -255,8 +295,12 @@ public class BoardController {
         try {
             boardService.delete(boardId);
             return ResponseEntity.ok(Response.success(null));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            logger.error("Error in BoardController.delete() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in BoardController.delete() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 
@@ -271,8 +315,12 @@ public class BoardController {
         try {
             BoardDTO board = filterCriteriaService.getFilteredBoard(boardId, filterRequest);
             return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            logger.error("Error in BoardController.filterByProperty() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in BoardController.filterByProperty() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 }

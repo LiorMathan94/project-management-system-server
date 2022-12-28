@@ -50,8 +50,12 @@ public class ItemController {
             BoardDTO board = boardService.addItem(itemService.createItem(itemRequest));
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
+            logger.error("Error in ItemController.create() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in ItemController.create() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 
@@ -63,15 +67,19 @@ public class ItemController {
      */
     @RequestMapping(method = RequestMethod.DELETE, path = "/removeItem")
     public ResponseEntity<Response<BoardDTO>> delete(@RequestParam long itemId) {
-        logger.info("in ItemController.removeItem()");
+        logger.info("in ItemController.delete()");
 
         try {
             BoardDTO board = itemService.delete(itemId);
             notificationService.notifyAll(board, BoardAction.DELETE_ITEM);
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
+            logger.error("Error in ItemController.delete() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in ItemController.delete() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 
@@ -85,8 +93,8 @@ public class ItemController {
      */
     @RequestMapping(method = RequestMethod.PATCH, path = "/updateItem")
     public ResponseEntity<Response<BoardDTO>> update(@RequestHeader long boardId, @RequestHeader BoardAction action,
-                                                         @RequestBody ItemRequest itemRequest) {
-        logger.info("in ItemController.updateItem()");
+                                                     @RequestBody ItemRequest itemRequest) {
+        logger.info("in ItemController.update()");
 
         try {
             itemRequest.setBoardId(boardId);
@@ -100,8 +108,12 @@ public class ItemController {
 
             socketUtil.updateBoard(board);
             return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
+            logger.error("Error in ItemController.update() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in ItemController.update() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 
@@ -115,8 +127,8 @@ public class ItemController {
      */
     @RequestMapping(method = RequestMethod.PATCH, path = "/addComment")
     public ResponseEntity<Response<BoardDTO>> addComment(@RequestHeader long boardId, @RequestBody CommentRequest commentRequest,
-                                                             @RequestAttribute long userId) {
-        logger.info("in ItemController.addItemComment()");
+                                                         @RequestAttribute long userId) {
+        logger.info("in ItemController.addComment()");
 
         try {
             itemService.addComment(commentRequest.getItemId(), userId, commentRequest.getContent());
@@ -125,8 +137,12 @@ public class ItemController {
             socketUtil.updateBoard(board);
 
             return ResponseEntity.ok(Response.success(board));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
+            logger.error("Error in ItemController.addComment() " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error in ItemController.addComment() " + e);
+            return ResponseEntity.internalServerError().body(Response.failure(e.getMessage()));
         }
     }
 

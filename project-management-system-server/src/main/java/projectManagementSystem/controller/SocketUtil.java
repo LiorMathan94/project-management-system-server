@@ -38,6 +38,9 @@ public class SocketUtil {
      * @param board
      */
     private void notify(BoardDTO board) {
+        if(board==null){
+            throw new NullPointerException("notify() method in SocketUtil received BoardDTO null");
+        }
         String destination = "/topic/notifications-" + board.getId();
         template.convertAndSend(destination, board.getNotifications());
     }

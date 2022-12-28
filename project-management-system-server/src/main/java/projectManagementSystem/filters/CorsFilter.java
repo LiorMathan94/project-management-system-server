@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-
 public class CorsFilter implements Filter {
     private final Set<String> origins = new HashSet<>(Set.of("http://localhost:9000"));
 

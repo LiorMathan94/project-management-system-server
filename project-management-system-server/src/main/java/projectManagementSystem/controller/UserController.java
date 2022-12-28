@@ -51,7 +51,7 @@ public class UserController {
             logger.error("Error occurred during user registration: " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during user registration: " + e.getMessage()));
         } catch (Exception e) {
-            logger.error("Internal Server Error occurred during user registration: " + e.getMessage());
+            logger.error("Internal Server Error occurred during user registration: " + e);
             return ResponseEntity.internalServerError().body(Response.failure("Error occurred during user registration: " + e.getMessage()));
         }
     }
@@ -82,7 +82,7 @@ public class UserController {
             logger.error("Error occurred during user login: " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during user login: " + e.getMessage()));
         } catch (Exception e) {
-            logger.error("Internal Server Error occurred during user login: " + e.getMessage());
+            logger.error("Internal Server Error occurred during user login: " + e);
             return ResponseEntity.internalServerError().body(Response.failure("Error occurred during user login: " + e.getMessage()));
         }
     }
@@ -110,7 +110,7 @@ public class UserController {
             logger.error("Error occurred during setting notification preferences for user: " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during setting the notifications preferences: " + e.getMessage()));
         } catch (Exception e) {
-            logger.error("Internal Server Error occurred during setting notification preferences for user: " + e.getMessage());
+            logger.error("Internal Server Error occurred during setting notification preferences for user: " + e);
             return ResponseEntity.internalServerError().body(Response.failure("Error occurred during setting the notifications preferences: " + e.getMessage()));
         }
     }
