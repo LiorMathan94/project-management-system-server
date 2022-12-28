@@ -94,7 +94,7 @@ public class PermissionFilter implements Filter {
      * @throws IOException, if an input or output exception occurs.
      */
     private void returnBadResponse(HttpServletResponse res) throws IOException {
-        res.sendError(403, "Unauthorized");
+        res.sendError(403, "Forbidden");
     }
 
     /**
