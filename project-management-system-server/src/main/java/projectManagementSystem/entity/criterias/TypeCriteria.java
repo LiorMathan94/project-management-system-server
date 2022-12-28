@@ -2,8 +2,8 @@ package projectManagementSystem.entity.criterias;
 
 import projectManagementSystem.entity.Item;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TypeCriteria implements Criteria {
     private List<String> type;
@@ -14,13 +14,8 @@ public class TypeCriteria implements Criteria {
 
     @Override
     public List<Item> meetCriteria(List<Item> items) {
-        List<Item> filteredItems = new ArrayList<Item>();
-
-        for (Item item : items) {
-            if (type.contains(item.getType())) {
-                filteredItems.add(item);
-            }
-        }
+        List<Item> filteredItems = items.stream().filter(item -> type.contains(item.getType()))
+                .collect(Collectors.toList());
 
         return filteredItems;
     }
