@@ -36,6 +36,10 @@ public class UserRoleService {
      */
     @Transactional
     public boolean isAuthorized(long boardId, long userId, BoardAction action) {
+        if (action.getRole() == null) {
+            return true;
+        }
+
         Optional<Board> board = boardRepository.findById(boardId);
         if (!board.isPresent()) {
             throw new IllegalArgumentException("Could not find board ID: " + boardId);

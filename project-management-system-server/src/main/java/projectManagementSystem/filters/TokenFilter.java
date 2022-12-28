@@ -1,5 +1,7 @@
 package projectManagementSystem.filters;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import projectManagementSystem.service.AuthenticationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,6 +10,9 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 public class TokenFilter implements Filter {
     public static final Logger logger = LogManager.getLogger(TokenFilter.class);
@@ -49,19 +54,26 @@ public class TokenFilter implements Filter {
         MutableHttpServletRequest req = new MutableHttpServletRequest((HttpServletRequest) servletRequest);
         HttpServletResponse res = (HttpServletResponse) servletResponse;
         String url = ((HttpServletRequest) servletRequest).getRequestURL().toString();
-        System.out.println(url);
-        if (url.contains("login") || url.contains("register")|| url.contains("info") || url.contains("ws")) {
-            filterChain.doFilter(req, res);
-        } else {
+
+        if (actionRequiresAuthentication(url)) {
             String authToken = req.getHeader("Authorization");
-            System.out.println(authToken);
+
             if (authToken != null && authService.isTokenCorrect(authToken)) {
                 req.setAttribute("userId", authService.extractIdFromToken(authToken));
                 filterChain.doFilter(req, res);
             } else {
                 returnBadResponse(res);
             }
+        } else {
+            filterChain.doFilter(req, res);
         }
+    }
+
+    private boolean actionRequiresAuthentication(String url) throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("configuration.json");
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, List<String>> configMap = mapper.readValue(inputStream, new TypeReference<Map<String, List<String>>>() {});
+        return !configMap.get("non-authentication-routes").stream().anyMatch(url::contains);
     }
 
     /**

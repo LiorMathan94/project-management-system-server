@@ -1,0 +1,12 @@
+{
+  "non-authentication-routes": [
+    "login",
+    "register",
+    "info",
+    "ws"
+  ],
+  "authorization-routes": [
+    "board",
+    "item"
+  ]
+}
