@@ -5,12 +5,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
+import projectManagementSystem.controller.request.NotificationRequest;
 import projectManagementSystem.controller.request.UserRequest;
+import projectManagementSystem.controller.response.Response;
 import projectManagementSystem.entity.DTO.UserDTO;
 import projectManagementSystem.entity.User;
 import projectManagementSystem.service.AuthenticationService;
 import projectManagementSystem.service.UserService;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.BDDMockito.given;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,19 +22,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 public class UserControllerTests {
     @Mock
-    private UserService userService;
+    private UserService userServiceMock;
     @Mock
-    private AuthenticationService authService;
+    private AuthenticationService authServiceMock;
     @InjectMocks
     private UserController userController;
-    private UserDTO userDtoSuccess;
+    private UserDTO expectedUserDto;
     private UserRequest userRequest;
+    private ResponseEntity<Response<UserDTO>> response;
 
     @Test
     void register_validUserRequest_ResponseEntityOk() {
         userRequest = new UserRequest("validEmail@gmail.com", "dsf$%f242");
-        userDtoSuccess = new UserDTO(User.createUser("validEmail@gmail.com", "dsf$%f242"));
-        given(userService.create(userRequest.getEmail(), userRequest.getPassword())).willReturn(userDtoSuccess);
+        expectedUserDto = new UserDTO(User.createUser("validEmail@gmail.com", "dsf$%f242"));
+        given(userServiceMock.create(userRequest.getEmail(), userRequest.getPassword())).willReturn(expectedUserDto);
         assertEquals(200, userController.register(userRequest).getStatusCodeValue(), "Register with valid user email and password did not return ResponseEntity status 200 (OK)");
     }
 
@@ -67,14 +72,14 @@ public class UserControllerTests {
     @Test
     void register_UserEmailTaken_ResponseEntityBadRequest() {
         userRequest = new UserRequest("takenEmail@gmail.com", "dsf$%f242");
-        given(userService.create(userRequest.getEmail(), userRequest.getPassword())).willThrow(new IllegalArgumentException());
+        given(userServiceMock.create(userRequest.getEmail(), userRequest.getPassword())).willThrow(new IllegalArgumentException());
         assertEquals(400, userController.register(new UserRequest(userRequest.getEmail(), userRequest.getPassword())).getStatusCodeValue(), "Register with email that is already taken did not return ResponseEntity status 400 (Bad Request)");
     }
 
     @Test
     void login_validUserRequest_ResponseEntityOk() {
         userRequest = new UserRequest("validEmail@gmail.com", "dsf$%f242");
-        given(authService.userLogin(userRequest.getEmail(), userRequest.getPassword())).willReturn("token");
+        given(authServiceMock.userLogin(userRequest.getEmail(), userRequest.getPassword())).willReturn("token");
         assertEquals(200, userController.login(userRequest).getStatusCodeValue(), "Login with valid and correct user email and password did not return ResponseEntity status 200 (OK)");
     }
 
@@ -111,35 +116,43 @@ public class UserControllerTests {
     @Test
     void register_UserEmailNotExists_ResponseEntityBadRequest() {
         userRequest = new UserRequest("wrongEmail@gmail.com", "dsf$%f242");
-        given(authService.userLogin(userRequest.getEmail(), userRequest.getPassword())).willThrow(new IllegalArgumentException());
+        given(authServiceMock.userLogin(userRequest.getEmail(), userRequest.getPassword())).willThrow(new IllegalArgumentException());
         assertEquals(400, userController.login(new UserRequest(userRequest.getEmail(), userRequest.getPassword())).getStatusCodeValue(), "Login with email that doesn't exist in the data base did not return ResponseEntity status 400 (Bad Request)");
     }
 
     @Test
     void register_UserPasswordIncorrect_ResponseEntityBadRequest() {
         userRequest = new UserRequest("validEmail@gmail.com", "gdgdg%^46122");
-        given(authService.userLogin(userRequest.getEmail(), userRequest.getPassword())).willThrow(new IllegalArgumentException());
+        given(authServiceMock.userLogin(userRequest.getEmail(), userRequest.getPassword())).willThrow(new IllegalArgumentException());
         assertEquals(400, userController.login(new UserRequest(userRequest.getEmail(), userRequest.getPassword())).getStatusCodeValue(), "Login with incorrect password did not return ResponseEntity status 400 (Bad Request)");
     }
 
     @Test
-    void delete_UserExists_ResponseEntityResponseOk() {
-        userRequest = new UserRequest("validEmail@gmail.com", "gdgdg%^46122");
-        given(authService.userLogin(userRequest.getEmail(), userRequest.getPassword())).willThrow(new IllegalArgumentException());
-        assertEquals(400, userController.login(new UserRequest(userRequest.getEmail(), userRequest.getPassword())).getStatusCodeValue(), "Login with incorrect password did not return ResponseEntity status 400 (Bad Request)");
-    }
-    //TODO: add tests for setNotifications and delete methods
-    @Test
-    void delete_UserNotExists_ResponseEntityBadRequest() {
-        userRequest = new UserRequest("validEmail@gmail.com", "gdgdg%^46122");
-        given(authService.userLogin(userRequest.getEmail(), userRequest.getPassword())).willThrow(new IllegalArgumentException());
-        assertEquals(400, userController.login(new UserRequest(userRequest.getEmail(), userRequest.getPassword())).getStatusCodeValue(), "Login with incorrect password did not return ResponseEntity status 400 (Bad Request)");
+    void setNotificationPreferences_UserNotExistsRequestValid_ResponseEntityBadRequest() {
+        NotificationRequest notificationRequest = new NotificationRequest();
+        given(userServiceMock.setNotificationPreferences(notificationRequest)).willThrow(new IllegalArgumentException());
+
+        ResponseEntity<Response<UserDTO>> response = userController.setNotificationPreferences(1L, notificationRequest);
+        assertNull(response.getBody().getData(), "Set notification preferences with non existing user id didn't return response with null in the data field of the body.");
+        assertEquals(400, response.getStatusCodeValue(), "Set notification preferences with non existing user id didn't return ResponseEntity status 400 (Bad Request).");
     }
 
     @Test
-    void delete_UserInput_ResponseEntityBadRequest() {
-        userRequest = new UserRequest("validEmail@gmail.com", "gdgdg%^46122");
-        given(authService.userLogin(userRequest.getEmail(), userRequest.getPassword())).willThrow(new IllegalArgumentException());
-        assertEquals(400, userController.login(new UserRequest(userRequest.getEmail(), userRequest.getPassword())).getStatusCodeValue(), "Login with incorrect password did not return ResponseEntity status 400 (Bad Request)");
+    void setNotificationPreferences_RequestNull_ResponseEntityBadRequest() {
+        response = userController.setNotificationPreferences(1L, null);
+
+        assertNull(response.getBody().getData(), "Set Notification preferences with null request didn't return response with null in the data field of the body.");
+        assertEquals(400, response.getStatusCodeValue(), "Set Notification preferences with null request didn't return ResponseEntity status 400 (Bad Request)");
+    }
+
+    @Test
+    void setNotificationPreferences_UserExistsRequestValid_ResponseEntityResponseOk() {
+        NotificationRequest notificationRequest = new NotificationRequest();
+        expectedUserDto = new UserDTO(new User());
+        given(userServiceMock.setNotificationPreferences(notificationRequest)).willReturn(expectedUserDto);
+
+        response = userController.setNotificationPreferences(1L, notificationRequest);
+        assertEquals(Response.success(expectedUserDto).getData(), userController.setNotificationPreferences(1L, notificationRequest).getBody().getData(), "Set notification preferences with existing user exists and valid notification request didn't return updated user data");
+        assertEquals(200, response.getStatusCodeValue(), "Set notification preferences with existing user exists and valid notification request didn't return ResponseEntity.ok (200) ");
     }
 }
