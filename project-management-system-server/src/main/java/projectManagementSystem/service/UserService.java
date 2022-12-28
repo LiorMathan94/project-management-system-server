@@ -35,18 +35,26 @@ public class UserService {
      */
     public UserDTO create(String email, String password, LoginMethod loginMethod) {
         logger.info("in UserService.create()");
-        if (userRepository.findByEmail(email).isPresent()) {
+        User existsUser= userRepository.findByEmail(email).orElse(null);
+
+        if (existsUser == null) {
+            User user = createNewUser(email,password,loginMethod);
+            return new UserDTO(user);
+        }
+
+        if (existsUser.getLoginMethod() == LoginMethod.PASSWORD_BASED) {
             logger.error("User with email " + email + " already exists.");
             throw new IllegalArgumentException("User with email " + email + " already exists.");
         }
-
-        String encryptedPassword = password != null ? AuthenticationUtils.encryptPassword(password) : null;
-        User user = User.createUser(email, encryptedPassword, loginMethod);
-
-        User savedUser = userRepository.save(user);
-        return new UserDTO(savedUser);
+        return new UserDTO(existsUser);
     }
 
+    private User createNewUser (String email, String password, LoginMethod loginMethod){
+        String encryptedPassword = password != null ? AuthenticationUtils.encryptPassword(password) : null;
+        User user = User.createUser(email, encryptedPassword, loginMethod);
+        return userRepository.save(user);
+
+    }
     /**
      * Sets user's notifications preferences.
      *

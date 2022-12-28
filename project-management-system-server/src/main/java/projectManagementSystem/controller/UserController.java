@@ -34,17 +34,11 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, path = "/register")
     public ResponseEntity<Response<UserDTO>> register(@RequestBody UserRequest userRequest) {
         logger.info("in UserController.register()");
-        if (userRequest == null) {
-            return ResponseEntity.badRequest().body(Response.failure("Error during user registration. Reason: User register request can't be null."));
-        }
-        if (!InputValidation.isValidEmail(userRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(Response.failure("Email format is invalid!"));
-        }
-        if (userRequest.getLoginMethod() == LoginMethod.PASSWORD_BASED &&
-                !InputValidation.isValidPassword(userRequest.getPassword())) {
-            return ResponseEntity.badRequest().body(Response.failure("Password format is invalid! " + InputValidation.passwordConstraints()));
-        }
 
+        String messageValidRequest = validUserRequest(userRequest);
+        if (!messageValidRequest.equals("OK")){
+            return ResponseEntity.badRequest().body(Response.failure(messageValidRequest));
+        }
         try {
             UserDTO user = userService.create(userRequest.getEmail(), userRequest.getPassword(), userRequest.getLoginMethod());
             return ResponseEntity.ok(Response.success(user));
@@ -54,6 +48,19 @@ public class UserController {
         }
     }
 
+    private String validUserRequest (UserRequest userRequest){
+        if (userRequest == null) {
+            return "Error during user registration. Reason: User register request can't be null.";
+        }
+        if (!InputValidation.isValidEmail(userRequest.getEmail())) {
+            return "Email format is invalid!";
+        }
+        if (userRequest.getLoginMethod() == LoginMethod.PASSWORD_BASED &&
+                !InputValidation.isValidPassword(userRequest.getPassword())) {
+            return "Password format is invalid! " + InputValidation.passwordConstraints();
+        }
+        return "OK";
+    }
     /**
      * @param code
      * @return
@@ -63,13 +70,12 @@ public class UserController {
         logger.info("in UserController.registerViaGit()");
         try {
             String userEmail = authService.registerViaGit(code);
-            if (InputValidation.isValidEmail(userEmail))
-            userService.create(userEmail, null, LoginMethod.GITHUB);
-
-
-            String token = authService.userLogin(userEmail, null);
-
-            return ResponseEntity.ok(Response.success(token));
+            if (!InputValidation.isValidEmail(userEmail)) {
+                return ResponseEntity.badRequest().body(Response.failure("Email of primary user from git authentication is invalid!"));
+            }
+                UserDTO userDTO = userService.create(userEmail, null, LoginMethod.GITHUB);
+                String token = authService.userLogin(userDTO.getEmail(), null);
+                return ResponseEntity.ok(Response.success(token));
 
         } catch (Exception e) {
             logger.error("Error occurred during user login: " + e.getMessage());
