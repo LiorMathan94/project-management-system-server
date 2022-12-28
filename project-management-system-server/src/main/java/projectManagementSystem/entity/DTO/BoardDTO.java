@@ -22,9 +22,10 @@ public class BoardDTO {
 
     /**
      * Constructor for BoardDTO
+     *
      * @param board
      */
-    public BoardDTO(Board board) {
+    private BoardDTO(Board board) {
         this.id = board.getId();
         this.title = board.getTitle();
         this.statuses = board.getStatuses();
@@ -35,27 +36,42 @@ public class BoardDTO {
     }
 
     /**
+     * Creates and returns BoardDTO object from given Board object.
+     *
+     * @param board - the Board object from which the BoardDTO is created
+     * @return BoardDTO object, contains board data that can be revealed to client if board is not null, otherwise - returns null.
+     */
+    public static BoardDTO createBoardDTOFromBoard(Board board) {
+        if (board == null) {
+            return null;
+        }
+        return new BoardDTO(board);
+    }
+
+    /**
      * Initialize authorizedUsers data member.
+     *
      * @param authorizedUsers
      * @return List of AuthorizedUserDTO
      */
     private List<AuthorizedUserDTO> initDTOAuthorizedUsers(List<AuthorizedUser> authorizedUsers) {
         List<AuthorizedUserDTO> authUsersDTO = new ArrayList<>();
         for (AuthorizedUser authUser : authorizedUsers) {
-            authUsersDTO.add(new AuthorizedUserDTO(authUser));
+            authUsersDTO.add(AuthorizedUserDTO.createAuthorizedUserDTOFromAuthorizedUser(authUser));
         }
 
         return authUsersDTO;
     }
 
-    public boolean findUserInAuthorizedUsers(User user){
+    public boolean findUserInAuthorizedUsers(User user) {
         for (int i = 0; i < this.authorizedUsers.size(); i++) {
-            if (authorizedUsers.get(i).getEmail() == user.getEmail()){
+            if (authorizedUsers.get(i).getEmail() == user.getEmail()) {
                 return true;
             }
         }
         return false;
     }
+
     /**
      * @return board's ID
      */
@@ -65,6 +81,7 @@ public class BoardDTO {
 
     /**
      * Sets board's ID
+     *
      * @param id
      */
     public void setId(long id) {
@@ -101,6 +118,7 @@ public class BoardDTO {
 
     /**
      * Sets board's items.
+     *
      * @param items
      */
     public void setItems(Map<String, List<Item>> items) {
@@ -116,6 +134,7 @@ public class BoardDTO {
 
     /**
      * Sets board's notifications.
+     *
      * @param notifications
      */
     public void setNotifications(List<NotificationResponse> notifications) {
@@ -124,6 +143,7 @@ public class BoardDTO {
 
     /**
      * Add a notification to notifications list.
+     *
      * @param notification
      */
     public void addNotification(NotificationResponse notification) {
