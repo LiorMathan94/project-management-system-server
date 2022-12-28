@@ -9,6 +9,7 @@ import projectManagementSystem.controller.request.NotificationRequest;
 import projectManagementSystem.controller.request.UserRequest;
 import projectManagementSystem.controller.response.Response;
 import projectManagementSystem.entity.DTO.UserDTO;
+import projectManagementSystem.entity.LoginMethod;
 import projectManagementSystem.service.AuthenticationService;
 import projectManagementSystem.service.UserService;
 import projectManagementSystem.utils.InputValidation;
@@ -39,7 +40,8 @@ public class UserController {
         if (!InputValidation.isValidEmail(userRequest.getEmail())) {
             return ResponseEntity.badRequest().body(Response.failure("Email format is invalid!"));
         }
-        if (!InputValidation.isValidPassword(userRequest.getPassword())) {
+        if (userRequest.getLoginMethod() == LoginMethod.PASSWORD_BASED &&
+                !InputValidation.isValidPassword(userRequest.getPassword())) {
             return ResponseEntity.badRequest().body(Response.failure("Password format is invalid! " + InputValidation.passwordConstraints()));
         }
 
