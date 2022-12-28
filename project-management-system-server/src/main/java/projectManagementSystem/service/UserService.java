@@ -4,9 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import projectManagementSystem.controller.UserController;
 import projectManagementSystem.controller.request.NotificationRequest;
 import projectManagementSystem.entity.DTO.UserDTO;
+import projectManagementSystem.entity.LoginMethod;
 import projectManagementSystem.entity.User;
 import projectManagementSystem.entity.notifications.NotificationPreference;
 import projectManagementSystem.repository.UserRepository;
@@ -33,7 +33,7 @@ public class UserService {
      * @return UserDTO object, contains user data that can be shown if registration is successful.
      * @throws IllegalArgumentException - if User with the given email already exists in the database.
      */
-    public UserDTO create(String email, String password) {
+    public UserDTO create(String email, String password, LoginMethod loginMethod) {
         logger.info("in UserService.create()");
         if (userRepository.findByEmail(email).isPresent()) {
             logger.error("User with email " + email + " already exists.");
@@ -41,9 +41,9 @@ public class UserService {
         }
 
         String encryptedPassword = AuthenticationUtils.encryptPassword(password);
-        User user = User.createUser(email, encryptedPassword);
-        User savedUser = userRepository.save(user);
+        User user = User.createUser(email, encryptedPassword, loginMethod);
 
+        User savedUser = userRepository.save(user);
         return new UserDTO(savedUser);
     }
 

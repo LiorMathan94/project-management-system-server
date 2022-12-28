@@ -10,7 +10,6 @@ import projectManagementSystem.controller.request.UserRequest;
 import projectManagementSystem.controller.response.Response;
 import projectManagementSystem.entity.DTO.UserDTO;
 import projectManagementSystem.service.AuthenticationService;
-import projectManagementSystem.service.UserRoleService;
 import projectManagementSystem.service.UserService;
 import projectManagementSystem.utils.InputValidation;
 
@@ -22,8 +21,6 @@ public class UserController {
     private UserService userService;
     @Autowired
     private AuthenticationService authService;
-    @Autowired
-    private UserRoleService userRoleService;
     private static final Logger logger = LogManager.getLogger(UserController.class.getName());
 
 
@@ -47,7 +44,7 @@ public class UserController {
         }
 
         try {
-            UserDTO user = userService.create(userRequest.getEmail(), userRequest.getPassword());
+            UserDTO user = userService.create(userRequest.getEmail(), userRequest.getPassword(), userRequest.getLoginMethod());
             return ResponseEntity.ok(Response.success(user));
         } catch (Exception e) {
             logger.error("Error occurred during user registration: " + e.getMessage());

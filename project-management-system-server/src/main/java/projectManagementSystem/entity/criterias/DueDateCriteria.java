@@ -3,9 +3,8 @@ package projectManagementSystem.entity.criterias;
 import projectManagementSystem.entity.Item;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DueDateCriteria implements Criteria {
     private LocalDate dueDate;
@@ -16,13 +15,8 @@ public class DueDateCriteria implements Criteria {
 
     @Override
     public List<Item> meetCriteria(List<Item> items) {
-        List<Item> filteredItems = new ArrayList<>();
-
-        for (Item item : items) {
-            if (item.getDueDate() != null && dueDate.isAfter(item.getDueDate())) {
-                filteredItems.add(item);
-            }
-        }
+        List<Item> filteredItems = items.stream().filter(item -> item.getDueDate() != null &&
+                        dueDate.isAfter(item.getDueDate())).collect(Collectors.toList());
 
         return filteredItems;
     }
