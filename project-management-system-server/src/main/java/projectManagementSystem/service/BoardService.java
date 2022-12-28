@@ -41,7 +41,7 @@ public class BoardService {
             throw new IllegalArgumentException("Could not find board ID: " + boardId);
         }
 
-        return BoardDTO.createBoardDTOFromBoard(board.get());
+        return BoardDTO.createFromBoard(board.get());
     }
 
     /**
@@ -53,7 +53,7 @@ public class BoardService {
         Board board = new Board(boardRequest.getTitle(), boardRequest.getStatuses(), boardRequest.getTypes());
         Board savedBoard = boardRepository.save(board);
 
-        return BoardDTO.createBoardDTOFromBoard(savedBoard);
+        return BoardDTO.createFromBoard(savedBoard);
     }
 
     /**
@@ -70,7 +70,7 @@ public class BoardService {
         }
 
         board.get().setTitle(title);
-        return BoardDTO.createBoardDTOFromBoard(boardRepository.save(board.get()));
+        return BoardDTO.createFromBoard(boardRepository.save(board.get()));
     }
 
     /**
@@ -87,7 +87,7 @@ public class BoardService {
         }
 
         board.get().addStatus(status);
-        return BoardDTO.createBoardDTOFromBoard(boardRepository.save(board.get()));
+        return BoardDTO.createFromBoard(boardRepository.save(board.get()));
     }
 
     /**
@@ -112,7 +112,7 @@ public class BoardService {
         }
 
         board.get().removeStatus(status);
-        return BoardDTO.createBoardDTOFromBoard(boardRepository.save(board.get()));
+        return BoardDTO.createFromBoard(boardRepository.save(board.get()));
     }
 
     /**
@@ -129,7 +129,7 @@ public class BoardService {
         }
 
         board.get().addType(type);
-        return BoardDTO.createBoardDTOFromBoard(boardRepository.save(board.get()));
+        return BoardDTO.createFromBoard(boardRepository.save(board.get()));
     }
 
     /**
@@ -146,7 +146,7 @@ public class BoardService {
         }
 
         board.get().removeType(type);
-        return BoardDTO.createBoardDTOFromBoard(boardRepository.save(board.get()));
+        return BoardDTO.createFromBoard(boardRepository.save(board.get()));
     }
 
     /**
@@ -161,7 +161,7 @@ public class BoardService {
         }
 
         board.get().addItem(item);
-        return BoardDTO.createBoardDTOFromBoard(boardRepository.save(board.get()));
+        return BoardDTO.createFromBoard(boardRepository.save(board.get()));
     }
 
     /**
@@ -213,7 +213,7 @@ public class BoardService {
         }
 
         List<Board> boards = boardRepository.getBoardsByUser(userId);
-        return boards.stream().map(BoardDTO::createBoardDTOFromBoard).collect(Collectors.toList());
+        return boards.stream().map(BoardDTO::createFromBoard).collect(Collectors.toList());
     }
 
 }

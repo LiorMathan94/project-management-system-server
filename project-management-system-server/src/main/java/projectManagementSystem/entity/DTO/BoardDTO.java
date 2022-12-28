@@ -41,10 +41,11 @@ public class BoardDTO {
      * @param board - the Board object from which the BoardDTO is created
      * @return BoardDTO object, contains board data that can be revealed to client if board is not null, otherwise - returns null.
      */
-    public static BoardDTO createBoardDTOFromBoard(Board board) {
+    public static BoardDTO createFromBoard(Board board) {
         if (board == null) {
             return null;
         }
+
         return new BoardDTO(board);
     }
 
@@ -57,7 +58,7 @@ public class BoardDTO {
     private List<AuthorizedUserDTO> initDTOAuthorizedUsers(List<AuthorizedUser> authorizedUsers) {
         List<AuthorizedUserDTO> authUsersDTO = new ArrayList<>();
         for (AuthorizedUser authUser : authorizedUsers) {
-            authUsersDTO.add(AuthorizedUserDTO.createAuthorizedUserDTOFromAuthorizedUser(authUser));
+            authUsersDTO.add(AuthorizedUserDTO.createFromAuthorizedUser(authUser));
         }
 
         return authUsersDTO;

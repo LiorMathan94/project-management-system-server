@@ -44,7 +44,7 @@ public class UserService {
         User user = User.createUser(email, encryptedPassword, loginMethod);
 
         User savedUser = userRepository.save(user);
-        return UserDTO.createUserDTOFromUser(savedUser);
+        return UserDTO.createFromUser(savedUser);
     }
 
     /**
@@ -68,7 +68,7 @@ public class UserService {
 
         user.get().setNotificationPreferences(preference);
 
-        return UserDTO.createUserDTOFromUser(userRepository.save(user.get()));
+        return UserDTO.createFromUser(userRepository.save(user.get()));
     }
 
 }
