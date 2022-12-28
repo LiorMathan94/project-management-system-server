@@ -38,10 +38,11 @@ public class ItemDTO {
      * @param item - the Item object from which the ItemDTO is created
      * @return ItemDTO object, contains item data that can be revealed to client if item is not null, otherwise - returns null.
      */
-    public static ItemDTO createItemDTOFromItem(Item item){
+    public static ItemDTO createFromItem(Item item){
         if (item == null) {
             return null;
         }
+
         return new ItemDTO(item);
     }
 
