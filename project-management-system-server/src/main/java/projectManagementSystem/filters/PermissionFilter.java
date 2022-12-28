@@ -1,5 +1,7 @@
 package projectManagementSystem.filters;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import projectManagementSystem.entity.BoardAction;
@@ -9,6 +11,11 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.Long.parseLong;
 
@@ -45,17 +52,21 @@ public class PermissionFilter implements Filter {
         MutableHttpServletRequest req = new MutableHttpServletRequest((HttpServletRequest) servletRequest);
         HttpServletResponse res = (HttpServletResponse) servletResponse;
         String url = ((HttpServletRequest) servletRequest).getRequestURL().toString();
+
         boolean isAuthorized = true;
 
-        boolean isAuthorizedBoardAction = url.contains("board") && !url.contains("create") && !url.contains("getBoardsByUserId");
-        boolean isAuthorizedItemAction = url.contains("item");
-
-        if (isAuthorizedBoardAction || isAuthorizedItemAction) {
+        if (actionRequiresAuthorization(url)) {
             BoardAction action = url.contains("updateItem") ?
                     BoardAction.valueOf(req.getHeader("action")) : BoardAction.getByRoute(url);
 
-            long userId = (long) req.getAttribute("userId");
-            long boardId = parseLong(req.getHeader("boardId"));
+            long userId, boardId;
+            try {
+                userId = (long) req.getAttribute("userId");
+                boardId = parseLong(req.getHeader("boardId"));
+            } catch (Exception e) {
+                userId = 0L;
+                boardId = 0L;
+            }
 
             if (!userRoleService.isAuthorized(boardId, userId, action)) {
                 returnBadResponse(res);
@@ -68,6 +79,13 @@ public class PermissionFilter implements Filter {
         }
     }
 
+    private boolean actionRequiresAuthorization(String url) throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("configuration.json");
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, List<String>> configMap = mapper.readValue(inputStream, new TypeReference<Map<String, List<String>>>() {});
+        return configMap.get("authorization-routes").stream().anyMatch(url::contains);
+    }
+
 
     /**
      * Sends an error response to the client using status code 401, with message Unauthorized.
@@ -76,7 +94,7 @@ public class PermissionFilter implements Filter {
      * @throws IOException, if an input or output exception occurs.
      */
     private void returnBadResponse(HttpServletResponse res) throws IOException {
-        res.sendError(401, "Unauthorized");
+        res.sendError(403, "Unauthorized");
     }
 
     /**
