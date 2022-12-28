@@ -36,6 +36,7 @@ public class UserService {
     public UserDTO create(String email, String password, LoginMethod loginMethod) {
         logger.info("in UserService.create()");
         if (userRepository.findByEmail(email).isPresent()) {
+            logger.error("User with email " + email + " already exists.");
             throw new IllegalArgumentException("User with email " + email + " already exists.");
         }
 
@@ -57,6 +58,7 @@ public class UserService {
         Optional<User> user = userRepository.findById(notificationRequest.getUserId());
 
         if (!user.isPresent()) {
+            logger.error("Could not find user ID: " + notificationRequest.getUserId());
             throw new IllegalArgumentException("Could not find user ID: " + notificationRequest.getUserId());
         }
 
@@ -69,13 +71,4 @@ public class UserService {
         return new UserDTO(userRepository.save(user.get()));
     }
 
-    /**
-     * Deletes the user that corresponds to userId.
-     *
-     * @param userId
-     */
-    public void delete(long userId) {
-        logger.info("in UserService.delete()");
-        this.userRepository.deleteById(userId);
-    }
 }
