@@ -47,5 +47,4 @@ public class GitUser {
     public void setVisibility(String visibility) {
         this.visibility = visibility;
     }
-
 }
