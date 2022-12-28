@@ -55,7 +55,7 @@ public class BoardControllerTests {
         types.add("bug");
 
         validBoardRequest = new BoardRequest(title, statuses, types);
-        boardDTOSuccess = new BoardDTO(new Board(title, statuses, types));
+        boardDTOSuccess = BoardDTO.createFromBoard(new Board(title, statuses, types));
     }
 
     @Test

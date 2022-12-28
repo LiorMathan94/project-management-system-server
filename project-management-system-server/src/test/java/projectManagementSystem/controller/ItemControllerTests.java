@@ -58,7 +58,7 @@ public class ItemControllerTests {
         types.add("task");
         types.add("bug");
 
-        boardDTOSuccess = new BoardDTO(new Board(title, statuses, types));
+        boardDTOSuccess = BoardDTO.createFromBoard(new Board(title, statuses, types));
 
         reset(itemService);
         reset(boardService);
@@ -92,7 +92,7 @@ public class ItemControllerTests {
     @Test
     public void addComment_ValidCommentRequest_ResponseEntityOk() {
         CommentRequest commentRequest = new CommentRequest(1L, 1L, "test comment");
-        given(itemService.addComment(1L, 1L, commentRequest.getContent())).willReturn(new ItemDTO(validItem));
+        given(itemService.addComment(1L, 1L, commentRequest.getContent())).willReturn(ItemDTO.createFromItem(validItem));
         given(boardService.getBoardById(any(Long.class))).willReturn(boardDTOSuccess);
 
         assertEquals(200, itemController.addComment(1, commentRequest, 1).getStatusCodeValue());

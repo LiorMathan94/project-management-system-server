@@ -37,7 +37,7 @@ public class UserControllerTests {
     @Test
     void register_validUserRequest_ResponseEntityOk() {
         userRequest = new UserRequest("validEmail@gmail.com", "dsf$%f242", LoginMethod.PASSWORD_BASED);
-        expectedUserDto = new UserDTO(User.createUser("validEmail@gmail.com", "dsf$%f242", LoginMethod.PASSWORD_BASED));
+        expectedUserDto = UserDTO.createFromUser(User.createUser("validEmail@gmail.com", "dsf$%f242", LoginMethod.PASSWORD_BASED));
         given(userServiceMock.create(userRequest.getEmail(), userRequest.getPassword(), userRequest.getLoginMethod())).willReturn(expectedUserDto);
         assertEquals(200, userController.register(userRequest).getStatusCodeValue(), "Register with valid user email and password did not return ResponseEntity status 200 (OK)");
     }
@@ -151,7 +151,7 @@ public class UserControllerTests {
     @Test
     void setNotificationPreferences_UserExistsRequestValid_ResponseEntityResponseOk() {
         NotificationRequest notificationRequest = new NotificationRequest();
-        expectedUserDto = new UserDTO(new User());
+        expectedUserDto = UserDTO.createFromUser(new User());
         given(userServiceMock.setNotificationPreferences(notificationRequest)).willReturn(expectedUserDto);
 
         response = userController.setNotificationPreferences(1L, notificationRequest);
