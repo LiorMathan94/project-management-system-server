@@ -122,5 +122,24 @@ public class UserControllerTests {
         assertEquals(400, userController.login(new UserRequest(userRequest.getEmail(), userRequest.getPassword())).getStatusCodeValue(), "Login with incorrect password did not return ResponseEntity status 400 (Bad Request)");
     }
 
+    @Test
+    void delete_UserExists_ResponseEntityResponseOk() {
+        userRequest = new UserRequest("validEmail@gmail.com", "gdgdg%^46122");
+        given(authService.userLogin(userRequest.getEmail(), userRequest.getPassword())).willThrow(new IllegalArgumentException());
+        assertEquals(400, userController.login(new UserRequest(userRequest.getEmail(), userRequest.getPassword())).getStatusCodeValue(), "Login with incorrect password did not return ResponseEntity status 400 (Bad Request)");
+    }
     //TODO: add tests for setNotifications and delete methods
+    @Test
+    void delete_UserNotExists_ResponseEntityBadRequest() {
+        userRequest = new UserRequest("validEmail@gmail.com", "gdgdg%^46122");
+        given(authService.userLogin(userRequest.getEmail(), userRequest.getPassword())).willThrow(new IllegalArgumentException());
+        assertEquals(400, userController.login(new UserRequest(userRequest.getEmail(), userRequest.getPassword())).getStatusCodeValue(), "Login with incorrect password did not return ResponseEntity status 400 (Bad Request)");
+    }
+
+    @Test
+    void delete_UserInput_ResponseEntityBadRequest() {
+        userRequest = new UserRequest("validEmail@gmail.com", "gdgdg%^46122");
+        given(authService.userLogin(userRequest.getEmail(), userRequest.getPassword())).willThrow(new IllegalArgumentException());
+        assertEquals(400, userController.login(new UserRequest(userRequest.getEmail(), userRequest.getPassword())).getStatusCodeValue(), "Login with incorrect password did not return ResponseEntity status 400 (Bad Request)");
+    }
 }

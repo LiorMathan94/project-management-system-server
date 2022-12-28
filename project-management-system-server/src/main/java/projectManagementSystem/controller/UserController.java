@@ -108,22 +108,4 @@ public class UserController {
         }
     }
 
-    /**
-     * Deletes the user that corresponds to userId and its existing roles.
-     *
-     * @param userId
-     * @return ResponseEntity<Response < Void>>
-     */
-    @RequestMapping(method = RequestMethod.DELETE, path = "/delete")
-    public ResponseEntity<Response<Void>> delete(@RequestParam long userId) {
-        logger.info("in UserController.delete()");
-        try {
-            userService.delete(userId);
-            return ResponseEntity.ok(Response.success(null));
-        } catch (Exception e) {
-            logger.error("Error occurred during user delete: " + e.getMessage());
-            return ResponseEntity.badRequest().body(Response.failure("Error occurred while trying to delete user #"
-                    + userId + ": " + e.getMessage()));
-        }
-    }
 }
