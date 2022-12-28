@@ -24,7 +24,6 @@ public class UserController {
     private AuthenticationService authService;
     private static final Logger logger = LogManager.getLogger(UserController.class.getName());
 
-
     /**
      * Receives user's email and password. If they are valid sends them to createUser method of UserService, in order to register the user.
      *
@@ -48,9 +47,12 @@ public class UserController {
         try {
             UserDTO user = userService.create(userRequest.getEmail(), userRequest.getPassword(), userRequest.getLoginMethod());
             return ResponseEntity.ok(Response.success(user));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Error occurred during user registration: " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during user registration: " + e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Internal Server Error occurred during user registration: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(Response.failure("Error occurred during user registration: " + e.getMessage()));
         }
     }
 
@@ -76,9 +78,12 @@ public class UserController {
         try {
             String token = authService.userLogin(userRequest.getEmail(), userRequest.getPassword());
             return ResponseEntity.ok(Response.success(token));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Error occurred during user login: " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during user login: " + e.getMessage()));
+        } catch (Exception e){
+            logger.error("Internal Server Error occurred during user login: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(Response.failure("Error occurred during user login: " + e.getMessage()));
         }
     }
 
@@ -101,9 +106,12 @@ public class UserController {
         try {
             UserDTO user = userService.setNotificationPreferences(notificationRequest);
             return ResponseEntity.ok(Response.success(user));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Error occurred during setting notification preferences for user: " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during setting the notifications preferences: " + e.getMessage()));
+        } catch (Exception e){
+            logger.error("Internal Server Error occurred during setting notification preferences for user: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(Response.failure("Error occurred during setting the notifications preferences: " + e.getMessage()));
         }
     }
 
