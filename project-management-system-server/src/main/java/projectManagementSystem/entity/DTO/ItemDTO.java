@@ -4,7 +4,6 @@ import projectManagementSystem.entity.Importance;
 import projectManagementSystem.entity.Item;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public class ItemDTO {
     private long id;
@@ -19,7 +18,7 @@ public class ItemDTO {
     private String title;
     private String description;
 
-    public ItemDTO(Item item) {
+    private ItemDTO(Item item) {
         this.id = item.getId();
         this.boardId = item.getBoardId();
         this.status = item.getStatus();
@@ -31,6 +30,19 @@ public class ItemDTO {
         this.importance = item.getImportance();
         this.title = item.getTitle();
         this.description = item.getDescription();
+    }
+
+    /**
+     * Creates and returns ItemDTO object from given Item object.
+     *
+     * @param item - the Item object from which the ItemDTO is created
+     * @return ItemDTO object, contains item data that can be revealed to client if item is not null, otherwise - returns null.
+     */
+    public static ItemDTO createItemDTOFromItem(Item item){
+        if (item == null) {
+            return null;
+        }
+        return new ItemDTO(item);
     }
 
     public long getId() {

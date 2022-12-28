@@ -4,9 +4,21 @@ import projectManagementSystem.entity.User;
 
 public class UserDTO {
     private String email;
-
-    public UserDTO(User user) {
+    private UserDTO(User user) {
         this.email = user.getEmail();
+    }
+
+    /**
+     * Creates and returns UserDTO object from given User object.
+     *
+     * @param user - the User object from which the UserDTO is created
+     * @return UserDTO object, contains user data that can be revealed to client if item is not null, otherwise - returns null.
+     */
+    public static UserDTO createUserDTOFromUser(User user){
+        if(user==null){
+            return null;
+        }
+        return new UserDTO(user);
     }
 
     public String getEmail() {

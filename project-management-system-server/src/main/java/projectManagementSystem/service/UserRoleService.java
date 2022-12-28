@@ -15,9 +15,9 @@ public class UserRoleService {
     private BoardRepository boardRepository;
     private UserRepository userRepository;
 
-
     /**
      * Constructor for UserRoleService
+     *
      * @param boardRepository
      * @param userRepository
      */
@@ -28,6 +28,7 @@ public class UserRoleService {
 
     /**
      * Checks if user corresponds to userId is authorized to perform action in board corresponds to boardId.
+     *
      * @param boardId
      * @param userId
      * @param action
@@ -47,6 +48,7 @@ public class UserRoleService {
 
     /**
      * Adds the user with the given email as an authorized user of the board.
+     *
      * @param boardId
      * @param email
      * @param role
@@ -63,6 +65,7 @@ public class UserRoleService {
 
     /**
      * Adds the user corresponds to userId as an authorized user of the board.
+     *
      * @param boardId
      * @param userId
      * @param role
@@ -80,7 +83,7 @@ public class UserRoleService {
         }
 
         board.get().assignUser(user.get(), role);
-        return new BoardDTO(this.boardRepository.save(board.get()));
+        return BoardDTO.createBoardDTOFromBoard(this.boardRepository.save(board.get()));
     }
 
     /**
