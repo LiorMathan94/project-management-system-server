@@ -87,7 +87,7 @@ public class UserRoleService {
         }
 
         board.get().assignUser(user.get(), role);
-        return BoardDTO.createBoardDTOFromBoard(this.boardRepository.save(board.get()));
+        return BoardDTO.createFromBoard(this.boardRepository.save(board.get()));
     }
 
     /**

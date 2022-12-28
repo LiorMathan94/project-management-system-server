@@ -14,10 +14,11 @@ public class UserDTO {
      * @param user - the User object from which the UserDTO is created
      * @return UserDTO object, contains user data that can be revealed to client if item is not null, otherwise - returns null.
      */
-    public static UserDTO createUserDTOFromUser(User user){
-        if(user==null){
+    public static UserDTO createFromUser(User user){
+        if (user == null) {
             return null;
         }
+
         return new UserDTO(user);
     }
 

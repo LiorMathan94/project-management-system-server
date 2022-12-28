@@ -53,7 +53,7 @@ public class FilterCriteriaService {
         }
 
         board.setItems(filteredItems);
-        return BoardDTO.createBoardDTOFromBoard(board);
+        return BoardDTO.createFromBoard(board);
     }
 
     private List<Item> filterByAssignedUsers(FilterRequest filterRequest, List<Item> filteredItems) {

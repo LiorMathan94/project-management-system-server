@@ -90,7 +90,7 @@ public class ItemService {
         }
 
         updateBoardItem(item.get(), itemRequest);
-        return ItemDTO.createItemDTOFromItem(itemRepository.save(item.get()));
+        return ItemDTO.createFromItem(itemRepository.save(item.get()));
     }
 
     /**
@@ -145,7 +145,7 @@ public class ItemService {
         }
 
         item.get().addComment(new Comment(userId, content));
-        return ItemDTO.createItemDTOFromItem(itemRepository.save(item.get()));
+        return ItemDTO.createFromItem(itemRepository.save(item.get()));
     }
 
     /**
@@ -167,7 +167,7 @@ public class ItemService {
 
         preRemove(item.get());
         board.get().removeItem(item.get());
-        return BoardDTO.createBoardDTOFromBoard(boardRepository.save(board.get()));
+        return BoardDTO.createFromBoard(boardRepository.save(board.get()));
     }
 
     private void preRemove(Item item) {

@@ -23,10 +23,11 @@ public class AuthorizedUserDTO {
      * @param authorizedUser - the AuthorizedUser object from which the AuthorizedUserDTO is created
      * @return AuthorizedUserDTO object, contains authorized user data that can be revealed to client if authorized user is not null, otherwise - returns null.
      */
-    public static AuthorizedUserDTO createAuthorizedUserDTOFromAuthorizedUser(AuthorizedUser authorizedUser){
-        if(authorizedUser==null){
+    public static AuthorizedUserDTO createFromAuthorizedUser(AuthorizedUser authorizedUser){
+        if (authorizedUser == null) {
             return null;
         }
+
         return new AuthorizedUserDTO(authorizedUser);
     }
 
