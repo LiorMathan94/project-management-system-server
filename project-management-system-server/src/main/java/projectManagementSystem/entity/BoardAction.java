@@ -1,6 +1,7 @@
 package projectManagementSystem.entity;
 
 public enum BoardAction {
+    CREATE_BOARD(null, "create", "A board eas created"),
     SET_TITLE(Role.ADMIN, "title", "Board's title was set"),
     ADD_STATUS(Role.ADMIN, "addStatus", "A status was added to the board"),
     REMOVE_STATUS(Role.ADMIN, "removeStatus", "A status was removed from the board"),
@@ -25,6 +26,7 @@ public enum BoardAction {
     FILTER(Role.USER, "filter", "Board's items were filtered"),
 
     GET_BOARD(Role.USER, "getBoardById", "Board was returned to a user"),
+    GET_USER_BOARDS(null, "getBoardsByUserId", "All user's boards were sent to a user"),
     UNKNOWN(Role.ADMIN, null, null);
 
     private Role role;
