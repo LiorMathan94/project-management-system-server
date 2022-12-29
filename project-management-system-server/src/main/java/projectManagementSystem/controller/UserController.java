@@ -1,5 +1,6 @@
 package projectManagementSystem.controller;
 
+import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +35,10 @@ public class UserController {
     public ResponseEntity<Response<UserDTO>> register(@RequestBody UserRequest userRequest) {
         logger.info("in UserController.register()");
 
-        String messageValidRequest = validUserRequest(userRequest);
-        if (!messageValidRequest.equals("OK")){
-            return ResponseEntity.badRequest().body(Response.failure(messageValidRequest));
+        if (!isValidUserRequest(userRequest).getKey()) {
+            return ResponseEntity.badRequest().body(Response.failure(isValidUserRequest(userRequest).getValue()));
         }
+
         try {
             UserDTO user = userService.create(userRequest.getEmail(), userRequest.getPassword(), userRequest.getLoginMethod());
             return ResponseEntity.ok(Response.success(user));
@@ -50,19 +51,21 @@ public class UserController {
         }
     }
 
-    private String validUserRequest (UserRequest userRequest){
+    private Pair<Boolean, String> isValidUserRequest(UserRequest userRequest) {
         if (userRequest == null) {
-            return "Error during user registration. Reason: User register request can't be null.";
+            return new Pair<>(false, "Error during user registration. Reason: User register request can't be null.");
         }
         if (!InputValidation.isValidEmail(userRequest.getEmail())) {
-            return "Email format is invalid!";
+            return new Pair<>(false, "Email format is invalid!");
         }
         if (userRequest.getLoginMethod() == LoginMethod.PASSWORD_BASED &&
                 !InputValidation.isValidPassword(userRequest.getPassword())) {
-            return "Password format is invalid! " + InputValidation.passwordConstraints();
+            return new Pair<>(false, "Password format is invalid! " + InputValidation.passwordConstraints());
         }
-        return "OK";
+
+        return new Pair<>(true, "OK");
     }
+
     /**
      * @param code
      * @return
@@ -70,18 +73,23 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, path = "/registerViaGitHub")
     public ResponseEntity<Response<String>> registerViaGitHub(@RequestParam String code) {
         logger.info("in UserController.registerViaGit()");
+
         try {
             String userEmail = authService.registerViaGit(code);
             if (!InputValidation.isValidEmail(userEmail)) {
                 return ResponseEntity.badRequest().body(Response.failure("Email of primary user from git authentication is invalid!"));
             }
-                UserDTO userDTO = userService.create(userEmail, null, LoginMethod.GITHUB);
-                String token = authService.userLogin(userDTO.getEmail(), null);
-                return ResponseEntity.ok(Response.success(token));
 
+            UserDTO userDTO = userService.create(userEmail, null, LoginMethod.GITHUB);
+            String token = authService.userLogin(userDTO.getEmail(), null);
+            return ResponseEntity.ok(Response.success(token));
+
+        } catch (IllegalArgumentException e) {
+            logger.error("Error occurred during user registration: " + e.getMessage());
+            return ResponseEntity.badRequest().body(Response.failure("Error occurred during user registration: " + e.getMessage()));
         } catch (Exception e) {
-            logger.error("Error occurred during user login: " + e.getMessage());
-            return ResponseEntity.badRequest().body(Response.failure("Error occurred during user registration via GitHub: " + e.getMessage()));
+            logger.error("Internal Server Error occurred during user registration: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(Response.failure("Error occurred during user registration: " + e.getMessage()));
         }
     }
 
@@ -94,14 +102,9 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, path = "/login")
     public ResponseEntity<Response<String>> login(@RequestBody UserRequest userRequest) {
         logger.info("in UserController.login()");
+
         if (userRequest == null) {
             return ResponseEntity.badRequest().body(Response.failure("User login credentials cannot be null."));
-        }
-        if (!InputValidation.isValidEmail(userRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(Response.failure("Email format is invalid!"));
-        }
-        if (!InputValidation.isValidPassword(userRequest.getPassword())) {
-            return ResponseEntity.badRequest().body(Response.failure("Password is incorrect!"));
         }
 
         try {
@@ -110,7 +113,7 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             logger.error("Error occurred during user login: " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during user login: " + e.getMessage()));
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error("Internal Server Error occurred during user login: " + e.getMessage());
             return ResponseEntity.internalServerError().body(Response.failure("Error occurred during user login: " + e.getMessage()));
         }
@@ -138,7 +141,7 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             logger.error("Error occurred during setting notification preferences for user: " + e.getMessage());
             return ResponseEntity.badRequest().body(Response.failure("Error occurred during setting the notifications preferences: " + e.getMessage()));
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error("Internal Server Error occurred during setting notification preferences for user: " + e.getMessage());
             return ResponseEntity.internalServerError().body(Response.failure("Error occurred during setting the notifications preferences: " + e.getMessage()));
         }
