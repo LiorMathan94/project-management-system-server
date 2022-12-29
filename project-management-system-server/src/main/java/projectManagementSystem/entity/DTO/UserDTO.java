@@ -1,11 +1,15 @@
 package projectManagementSystem.entity.DTO;
 
+import projectManagementSystem.entity.LoginMethod;
 import projectManagementSystem.entity.User;
 
 public class UserDTO {
     private String email;
+
+    private LoginMethod loginMethod;
     private UserDTO(User user) {
         this.email = user.getEmail();
+        this.loginMethod = user.getLoginMethod();
     }
 
     /**
@@ -30,4 +34,11 @@ public class UserDTO {
         this.email = email;
     }
 
+    public LoginMethod getLoginMethod() {
+        return loginMethod;
+    }
+
+    public void setLoginMethod(LoginMethod loginMethod) {
+        this.loginMethod = loginMethod;
+    }
 }

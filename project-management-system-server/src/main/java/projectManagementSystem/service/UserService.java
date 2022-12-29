@@ -30,6 +30,7 @@ public class UserService {
      *
      * @param email    - String, user email inputted during registration.
      * @param password - String, user password user email inputted during registration.
+     * @param loginMethod - Enum LoginMethod, specifies the login method the user will use after registration.
      * @return UserDTO object, contains user data that can be shown if registration is successful.
      * @throws IllegalArgumentException - if User with the given email already exists in the database.
      */
@@ -48,13 +49,24 @@ public class UserService {
         return UserDTO.createFromUser(existsUser);
     }
 
-    private UserDTO createNewUser (String email, String password, LoginMethod loginMethod){
+    /**
+     * Adds a User to database (if he doesn't already exist), after encrypting his password.
+     *
+     * @param email    - String, user email inputted during registration.
+     * @param password - String, user password user email inputted during registration.
+     * @param loginMethod - Enum LoginMethod, specifies the login method the user will use after registration.
+     * @return UserDTO object, contains user data that can be shown if registration is successful.
+     * @throws IllegalArgumentException - if User with the given email already exists in the database.
+     */
+    private UserDTO createNewUser(String email, String password, LoginMethod loginMethod){
+        logger.info("in UserService.createNewUser()");
         String encryptedPassword = password != null ? AuthenticationUtils.encryptPassword(password) : null;
         User user = User.createUser(email, encryptedPassword, loginMethod);
 
         User savedUser = userRepository.save(user);
         return UserDTO.createFromUser(savedUser);
     }
+
     /**
      * Sets user's notifications preferences.
      *

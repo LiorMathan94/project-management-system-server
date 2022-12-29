@@ -3,7 +3,7 @@ package projectManagementSystem.utils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class InputValidationTests {
     @Test
@@ -11,8 +11,7 @@ public class InputValidationTests {
     void isValidEmail_ValidEmail_ReturnsTrue() {
         String validEmail = "lior.mathan1994@gmail.com";
         boolean isValid = InputValidation.isValidEmail(validEmail);
-        assertEquals(true, isValid,
-                String.format("isValidEmail should return true for input: %s", validEmail));
+        assertTrue(isValid, String.format("isValidEmail should return true for input: %s", validEmail));
     }
 
     @Test
@@ -20,18 +19,15 @@ public class InputValidationTests {
     void isValidEmail_InvalidEmail_ReturnsFalse() {
         String invalidEmail = "lior.mathan1994gmail.com";
         boolean isValid = InputValidation.isValidEmail(invalidEmail);
-        assertEquals(false, isValid,
-                String.format("isValidEmail should return false for input: %s", invalidEmail));
+        assertFalse(isValid, String.format("isValidEmail should return false for input: %s", invalidEmail));
 
         invalidEmail = "lior.mathan1994@gmailcom";
         isValid = InputValidation.isValidEmail(invalidEmail);
-        assertEquals(false, isValid,
-                String.format("isValidEmail should return false for input: %s", invalidEmail));
+        assertFalse(isValid, String.format("isValidEmail should return false for input: %s", invalidEmail));
 
         invalidEmail = "lior.mathan";
         isValid = InputValidation.isValidEmail(invalidEmail);
-        assertEquals(false, isValid,
-                String.format("isValidEmail should return false for input: %s", invalidEmail));
+        assertFalse(isValid, String.format("isValidEmail should return false for input: %s", invalidEmail));
     }
 
     @Test
@@ -39,18 +35,15 @@ public class InputValidationTests {
     void isValidName_ValidName_ReturnsTrue() {
         String validName = "Lior Mathan";
         boolean isValid = InputValidation.isValidName(validName);
-        assertEquals(true, isValid,
-                String.format("isValidName should return true for input: %s", validName));
+        assertTrue(isValid, String.format("isValidName should return true for input: %s", validName));
 
         validName = "Lior";
         isValid = InputValidation.isValidName(validName);
-        assertEquals(true, isValid,
-                String.format("isValidName should return true for input: %s", validName));
+        assertTrue(isValid, String.format("isValidName should return true for input: %s", validName));
 
         validName = "lior mathan";
         isValid = InputValidation.isValidName(validName);
-        assertEquals(true, isValid,
-                String.format("isValidName should return true for input: %s", validName));
+        assertTrue(isValid, String.format("isValidName should return true for input: %s", validName));
     }
 
     @Test
@@ -58,13 +51,11 @@ public class InputValidationTests {
     void isValidName_InvalidName_ReturnsFalse() {
         String invalidName = "Lior Mathan94";
         boolean isValid = InputValidation.isValidName(invalidName);
-        assertEquals(false, isValid,
-                String.format("isValidName should return false for input: %s", invalidName));
+        assertFalse(isValid, String.format("isValidName should return false for input: %s", invalidName));
 
         invalidName = "Lior!!!";
         isValid = InputValidation.isValidName(invalidName);
-        assertEquals(false, isValid,
-                String.format("isValidName should return false for input: %s", invalidName));
+        assertFalse(isValid, String.format("isValidName should return false for input: %s", invalidName));
     }
 
     @Test
@@ -72,18 +63,15 @@ public class InputValidationTests {
     void isValid_ValidPassword_ReturnsTrue() {
         String validPassword = "A1234567";
         boolean isValid = InputValidation.isValidPassword(validPassword);
-        assertEquals(true, isValid,
-                String.format("isValidPassword should return true for input: %s", validPassword));
+        assertTrue(isValid, String.format("isValidPassword should return true for input: %s", validPassword));
 
         validPassword = "Lior956586";
         isValid = InputValidation.isValidPassword(validPassword);
-        assertEquals(true, isValid,
-                String.format("isValidPassword should return true for input: %s", validPassword));
+        assertTrue(isValid, String.format("isValidPassword should return true for input: %s", validPassword));
 
         validPassword = "lior1234567";
         isValid = InputValidation.isValidPassword(validPassword);
-        assertEquals(true, isValid,
-                String.format("isValidPassword should return true for input: %s", validPassword));
+        assertTrue(isValid, String.format("isValidPassword should return true for input: %s", validPassword));
     }
 
     @Test
@@ -91,18 +79,15 @@ public class InputValidationTests {
     void isValidPassword_InvalidPassword_ReturnsFalse() {
         String invalidPassword = null;
         boolean isValid = InputValidation.isValidPassword(invalidPassword);
-        assertEquals(false, isValid,
-                String.format("isValidPassword should return false for input: %s", invalidPassword));
+        assertFalse(isValid, String.format("isValidPassword should return false for input: %s", invalidPassword));
 
         invalidPassword = "L12";
         isValid = InputValidation.isValidPassword(invalidPassword);
-        assertEquals(false, isValid,
-                String.format("isValidPassword should return false for input: %s", invalidPassword));
+        assertFalse(isValid, String.format("isValidPassword should return false for input: %s", invalidPassword));
 
         invalidPassword = "gr$#%#$%greGerg21424666464";
         isValid = InputValidation.isValidPassword(invalidPassword);
-        assertEquals(false, isValid,
-                String.format("isValidPassword should return false for input: %s", invalidPassword));
+        assertFalse(isValid, String.format("isValidPassword should return false for input: %s", invalidPassword));
     }
 
     @Test
@@ -110,18 +95,15 @@ public class InputValidationTests {
     void isValidLabel_InvalidLabel_ReturnsFalse() {
         String invalidLabel = null;
         boolean isValid = InputValidation.isValidLabel(invalidLabel);
-        assertEquals(false, isValid,
-                String.format("isValidLabel should return false for input: %s", invalidLabel));
+        assertFalse(isValid, String.format("isValidLabel should return false for input: %s", invalidLabel));
 
         invalidLabel = "";
         isValid = InputValidation.isValidLabel(invalidLabel);
-        assertEquals(false, isValid,
-                String.format("isValidLabel should return false for input: %s", invalidLabel));
+        assertFalse(isValid, String.format("isValidLabel should return false for input: %s", invalidLabel));
 
         invalidLabel = "gr$#%#$%greGerg21424666464";
         isValid = InputValidation.isValidLabel(invalidLabel);
-        assertEquals(false, isValid,
-                String.format("isValidLabel should return false for input: %s", invalidLabel));
+        assertFalse(isValid, String.format("isValidLabel should return false for input: %s", invalidLabel));
     }
 
     @Test
@@ -129,17 +111,14 @@ public class InputValidationTests {
     void isValid_ValidLabel_ReturnsTrue() {
         String validLabel = "A1234567";
         boolean isValid = InputValidation.isValidLabel(validLabel);
-        assertEquals(true, isValid,
-                String.format("isValidLabel should return true for input: %s", validLabel));
+        assertTrue(isValid, String.format("isValidLabel should return true for input: %s", validLabel));
 
         validLabel = "Lior956586";
         isValid = InputValidation.isValidLabel(validLabel);
-        assertEquals(true, isValid,
-                String.format("isValidLabel should return true for input: %s", validLabel));
+        assertTrue(isValid, String.format("isValidLabel should return true for input: %s", validLabel));
 
         validLabel = "lior1234567";
         isValid = InputValidation.isValidLabel(validLabel);
-        assertEquals(true, isValid,
-                String.format("isValidLabel should return true for input: %s", validLabel));
+        assertTrue(isValid, String.format("isValidLabel should return true for input: %s", validLabel));
     }
 }
