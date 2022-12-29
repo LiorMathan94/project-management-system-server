@@ -16,7 +16,6 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-
     @Autowired
     private UserRepository userRepository;
     private static final Logger logger = LogManager.getLogger(UserService.class.getName());
@@ -36,17 +35,19 @@ public class UserService {
      */
     public UserDTO create(String email, String password, LoginMethod loginMethod) {
         logger.info("in UserService.create()");
-        User existsUser= userRepository.findByEmail(email).orElse(null);
 
-        if (existsUser == null) {
-            return createNewUser(email,password,loginMethod);
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if (!user.isPresent()) {
+            return createNewUser(email, password, loginMethod);
         }
 
-        if (existsUser.getLoginMethod() == LoginMethod.PASSWORD_BASED) {
+        if (user.get().getLoginMethod() == LoginMethod.PASSWORD_BASED) {
             logger.error("User with email " + email + " already exists.");
             throw new IllegalArgumentException("User with email " + email + " already exists.");
         }
-        return UserDTO.createFromUser(existsUser);
+
+        return UserDTO.createFromUser(user.get());
     }
 
     /**
