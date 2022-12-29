@@ -4,20 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import projectManagementSystem.controller.response.NotificationResponse;
-import projectManagementSystem.entity.AuthorizedUser;
 import projectManagementSystem.entity.BoardAction;
 import projectManagementSystem.entity.DTO.AuthorizedUserDTO;
 import projectManagementSystem.entity.DTO.BoardDTO;
-import projectManagementSystem.entity.User;
 import projectManagementSystem.entity.notifications.NotificationPreference;
 import projectManagementSystem.entity.notifications.NotificationVia;
 import projectManagementSystem.repository.UserRepository;
 import projectManagementSystem.utils.EmailUtil;
 
 import java.util.Optional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class NotificationService {
