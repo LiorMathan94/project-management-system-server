@@ -1,7 +1,6 @@
 package projectManagementSystem.entity.DTO;
 
 import projectManagementSystem.controller.response.NotificationResponse;
-import projectManagementSystem.entity.AuthorizedUser;
 import projectManagementSystem.entity.Board;
 import projectManagementSystem.entity.Item;
 import projectManagementSystem.entity.User;
@@ -10,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BoardDTO {
     private long id;
@@ -32,7 +32,9 @@ public class BoardDTO {
         this.types = board.getTypes();
         this.items = board.getItemsByStatus();
         this.notifications = new ArrayList<>();
-        this.authorizedUsers = initDTOAuthorizedUsers(board.getAuthorizedUsers());
+        this.authorizedUsers = board.getAuthorizedUsers().stream()
+                .map(AuthorizedUserDTO::createFromAuthorizedUser)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -47,21 +49,6 @@ public class BoardDTO {
         }
 
         return new BoardDTO(board);
-    }
-
-    /**
-     * Initialize authorizedUsers data member.
-     *
-     * @param authorizedUsers
-     * @return List of AuthorizedUserDTO
-     */
-    private List<AuthorizedUserDTO> initDTOAuthorizedUsers(List<AuthorizedUser> authorizedUsers) {
-        List<AuthorizedUserDTO> authUsersDTO = new ArrayList<>();
-        for (AuthorizedUser authUser : authorizedUsers) {
-            authUsersDTO.add(AuthorizedUserDTO.createFromAuthorizedUser(authUser));
-        }
-
-        return authUsersDTO;
     }
 
     public boolean findUserInAuthorizedUsers(User user) {
